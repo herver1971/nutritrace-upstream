@@ -37,6 +37,7 @@ export const USER_PREFS = new Set([
   'foodsShowYesterdayMeals','foodsYesterdayCollapsed','foodsSavedCollapsed','foodsSort','mealsSort','recipesSort',
   'foodsDefaultSource',
   'barcodeBeep','cropPhotos',
+  'baseFoodsEnabled',
   'offEnabled','offSearchLanguage','offSearchCountry','offUploadCountry','offImportPortion',
   'weightUnit','heightUnit','lengthUnit','distUnit','tempUnit',
   'waterGoalMl','waterUnit','waterContainers','waterShowInStats','waterShowInDiary',
@@ -540,11 +541,16 @@ export const mealsSort              = createSettingStore('mealsSort',           
 export const recipesSort            = createSettingStore('recipesSort',            'alpha');
 // Default source chip on the Foods page. 'local' preserves the historical
 // implicit behaviour (My Foods first — optimises for "log a food I've
-// eaten before"); users who spend more time discovering new foods can
+// eaten before"). Changed to 'base' once the bundled base-ingredient
+// catalogue landed: a search for a raw ingredient like "cebolla" against
+// an empty-ish personal library returns nothing, which reads as "the app
+// can't find it". 'base' answers instantly, offline and in the user's
+// language; brand-name products are one chip away. Users who spend more
+// time discovering new foods can
 // switch to 'all' to fan out across OFF/USDA/Mealie every visit
 // (requested via #128). Foods.svelte reads this on mount and initialises
 // searchSource from it.
-export const foodsDefaultSource     = createSettingStore('foodsDefaultSource',     'local');
+export const foodsDefaultSource     = createSettingStore('foodsDefaultSource',     'base');
 
 export const barcodeBeep            = createSettingStore('barcodeBeep',            false);
 export const barcodeFlashlight      = createSettingStore('barcodeFlashlight',      false);
@@ -553,6 +559,12 @@ export const cropPhotos             = createSettingStore('cropPhotos',          
 // OFF search is enabled by default — it's the public crowd-sourced food
 // database and the primary search source. Users who don't want their queries
 // hitting OFF servers (privacy / offline-first) can disable it.
+// The bundled base-ingredient catalogue (src/lib/base-foods.json) — raw,
+// unbranded foods in Spanish with household portions. On by default: it needs
+// no network and no API key, and it's the source that actually answers
+// "cebolla" or "papa" well, which OFF (branded packaged products) does not.
+export const baseFoodsEnabled       = createSettingStore('baseFoodsEnabled',       true);
+
 export const offEnabled             = createSettingStore('offEnabled',             true);
 export const offSearchLanguage      = createSettingStore('offSearchLanguage',      'en');
 export const offSearchCountry       = createSettingStore('offSearchCountry',       'World');

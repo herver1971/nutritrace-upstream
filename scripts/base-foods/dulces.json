@@ -1,0 +1,14 @@
+[
+  {"id":"azucar","cat":"dulces","es":"Azúcar","en":"Granulated sugar","src":"Sugars, granulated","alias":["azúcar blanca","azúcar común"]},
+  {"id":"azucar-negra","cat":"dulces","es":"Azúcar negra","en":"Brown sugar","src":"Sugars, brown","alias":["azúcar morena","azúcar rubia","panela"]},
+  {"id":"azucar-impalpable","cat":"dulces","es":"Azúcar impalpable","en":"Powdered sugar","src":"Sugars, powdered","alias":["azúcar glas","azúcar glacé"]},
+  {"id":"miel","cat":"dulces","es":"Miel","en":"Honey","src":"Honey","alias":["miel de abeja"]},
+  {"id":"jarabe-arce","cat":"dulces","es":"Jarabe de arce","en":"Maple syrup","src":"Syrups, maple","alias":["sirope de arce","maple"]},
+  {"id":"melaza","cat":"dulces","es":"Melaza","en":"Molasses","src":"Syrups, table blends, pancake, with 2% maple","alias":["miel de caña"]},
+  {"id":"cacao-polvo","cat":"dulces","es":"Cacao en polvo","en":"Unsweetened cocoa powder","src":"Cocoa, dry powder, unsweetened","alias":["cacao amargo","cocoa"]},
+  {"id":"chocolate-70","cat":"dulces","es":"Chocolate amargo 70-85%","en":"Dark chocolate 70-85%","src":"Chocolate, dark, 70-85% cacao solids","alias":["chocolate negro"]},
+  {"id":"chocolate-60","cat":"dulces","es":"Chocolate semiamargo 60-69%","en":"Dark chocolate 60-69%","src":"Chocolate, dark, 60-69% cacao solids","alias":[]},
+  {"id":"chocolate-45","cat":"dulces","es":"Chocolate 45-59%","en":"Dark chocolate 45-59%","src":"Chocolate, dark, 45- 59% cacao solids","alias":[]},
+  {"id":"mermelada","cat":"dulces","es":"Mermelada","en":"Jam / preserves","src":"Jams and preserves","alias":["dulce de fruta","confitura"]},
+  {"id":"jalea","cat":"dulces","es":"Jalea","en":"Jelly","src":"Jellies","alias":[]}
+]

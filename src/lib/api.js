@@ -2,6 +2,8 @@
  * api.js - External API calls (Open Food Facts)
  */
 
+import { USDA_NUTRIENT_MAP } from './usda-nutrients.js';
+
 // In native mode, call external APIs directly (no CORS in WebView).
 // In web mode, go through the server proxy to avoid CORS.
 //
@@ -570,40 +572,11 @@ function _rankUSDAResults(items) {
   });
 }
 
-// USDA FoodData Central nutrient ID → our nutrition object key
-const _USDA_NUTRIENT_MAP = {
-  1008: 'calories',        // Energy kcal
-  1062: 'kilojoules',      // Energy kJ
-  1003: 'proteins',
-  1004: 'fat',
-  1258: 'saturated-fat',
-  1257: 'trans-fat',
-  1292: 'polyunsaturated-fat',
-  1268: 'monounsaturated-fat',
-  1005: 'carbohydrates',
-  2000: 'sugars',
-  1235: 'added-sugars',
-  1079: 'fiber',
-  1093: 'sodium',          // mg
-  1253: 'cholesterol',     // mg
-  1087: 'calcium',         // mg
-  1089: 'iron',            // mg
-  1092: 'potassium',       // mg
-  1090: 'magnesium',       // mg
-  1095: 'zinc',            // mg
-  1091: 'phosphorus',      // mg
-  1162: 'vitamin-c',       // mg
-  1106: 'vitamin-a',       // mcg
-  1114: 'vitamin-d',       // mcg
-  1109: 'vitamin-e',       // mg
-  1185: 'vitamin-k',       // mcg
-  1165: 'b1',              // mg
-  1166: 'b2',              // mg
-  1167: 'b3',              // mg
-  1175: 'b6',              // mg
-  1177: 'b9',              // mcg (folate)
-  1178: 'b12',             // mcg
-};
+// USDA FoodData Central nutrient ID → our nutrition object key.
+// Lives in ./usda-nutrients.js so the offline base-catalogue build
+// (scripts/build-base-foods.mjs) maps the SR Legacy CSV dump with the
+// exact same keys this live client produces.
+const _USDA_NUTRIENT_MAP = USDA_NUTRIENT_MAP;
 
 const USDA = {
   _mapProduct(item, servingSize) {
@@ -750,6 +723,26 @@ const USDA = {
 // or native with a server URL configured) this HTTP implementation is used.
 import { isNative, getServerUrl, getAuthToken, resolveAssetUrl, apiUrl } from './platform.js';
 import { Nutrition } from './nutrition.js';
+
+/**
+ * True when `rec` is a row that already exists in the database, as opposed to
+ * an unsaved search hit from OFF / USDA / the bundled base catalogue.
+ *
+ * The test is the id's TYPE, not its truthiness. Every backend NutriTrace
+ * writes to -- the server's SQLite and the native Capacitor SQLite both --
+ * declares `id INTEGER PRIMARY KEY AUTOINCREMENT`, so a real row always has a
+ * numeric id. Search results carry none. Anything else (notably a string) is
+ * by definition not a saved row, and treating it as one sends an update at a
+ * row that does not exist -- the server answers 404 "Not found" and the user
+ * loses their edit.
+ *
+ * Exported so the Foods screen and the food editor answer this question the
+ * same way; they used to disagree, and that gap is what broke saving a food
+ * picked from the base-ingredient catalogue.
+ */
+export function isSavedRecord(rec) {
+  return typeof rec?.id === 'number';
+}
 
 const _NtApiHttp = {
   // Core fetch — apiUrl() handles the server URL prefix (native server mode)

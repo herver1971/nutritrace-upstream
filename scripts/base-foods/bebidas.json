@@ -1,0 +1,17 @@
+[
+  {"id": "agua", "cat": "bebidas", "es": "Agua", "en": "Water", "src": "Beverages, water, tap, drinking", "alias": ["agua potable", "agua de la canilla"]},
+  {"id": "agua-mineral", "cat": "bebidas", "es": "Agua mineral", "en": "Bottled water", "src": "Beverages, water, bottled, non-carbonated, CALISTOGA", "alias": ["agua embotellada"]},
+  {"id": "cafe", "cat": "bebidas", "es": "Café", "en": "Brewed coffee", "src": "Beverages, coffee, brewed, prepared with tap water", "alias": ["café negro", "café filtrado"]},
+  {"id": "cafe-descafeinado", "cat": "bebidas", "es": "Café descafeinado", "en": "Decaf coffee", "src": "Beverages, coffee, brewed, prepared with tap water, decaffeinated", "alias": ["descafeinado"]},
+  {"id": "cafe-espresso", "cat": "bebidas", "es": "Café espresso", "en": "Espresso", "src": "Beverages, coffee, brewed, espresso, restaurant-prepared", "alias": ["espresso", "expreso"]},
+  {"id": "te-negro", "cat": "bebidas", "es": "Té negro", "en": "Black tea", "src": "Beverages, tea, black, brewed, prepared with tap water", "alias": ["té"]},
+  {"id": "te-verde", "cat": "bebidas", "es": "Té verde", "en": "Green tea", "src": "Beverages, tea, green, brewed, regular", "alias": []},
+  {"id": "jugo-naranja", "cat": "bebidas", "es": "Jugo de naranja exprimido", "en": "Fresh orange juice", "src": "Orange juice, raw (Includes foods for USDA's Food Distribution Program)", "alias": ["zumo de naranja", "naranjada"]},
+  {"id": "jugo-manzana", "cat": "bebidas", "es": "Jugo de manzana", "en": "Apple juice", "src": "Apple juice, canned or bottled, unsweetened, without added ascorbic acid", "alias": ["zumo de manzana"]},
+  {"id": "jugo-pomelo", "cat": "bebidas", "es": "Jugo de pomelo", "en": "Grapefruit juice", "src": "Grapefruit juice, white, raw", "alias": ["zumo de toronja"]},
+  {"id": "jugo-tomate", "cat": "bebidas", "es": "Jugo de tomate", "en": "Tomato juice", "src": "Tomato juice, canned, with salt added", "alias": ["zumo de tomate"]},
+  {"id": "cerveza", "cat": "bebidas", "es": "Cerveza", "en": "Beer", "src": "Alcoholic beverage, beer, regular, all", "alias": ["birra"]},
+  {"id": "cerveza-light", "cat": "bebidas", "es": "Cerveza light", "en": "Light beer", "src": "Alcoholic beverage, beer, light", "alias": []},
+  {"id": "vino-tinto", "cat": "bebidas", "es": "Vino tinto", "en": "Red wine", "src": "Alcoholic beverage, wine, table, red", "alias": []},
+  {"id": "vino-blanco", "cat": "bebidas", "es": "Vino blanco", "en": "White wine", "src": "Alcoholic beverage, wine, table, white", "alias": []}
+]

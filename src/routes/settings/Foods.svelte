@@ -5,7 +5,7 @@
   import {
     foodsShowCategories, foodsShowLabels, foodsShowNotes, foodsShowThumbnails,
     foodsShowYesterdayMeals, foodsSort, mealsSort, recipesSort,
-    foodsDefaultSource, offEnabled, usdaEnabled,
+    foodsDefaultSource, baseFoodsEnabled, offEnabled, usdaEnabled,
     barcodeBeep, barcodeFlashlight, cropPhotos,
   } from '../../stores/settings.js';
   import { DB } from '../../lib/db.js';
@@ -42,11 +42,20 @@
     <div class="setting-divider"></div>
     <div class="setting-row">
       <div>
+        <span class="setting-label">{$_('settings_foods_picker.base_foods')}</span>
+        <div class="setting-desc">{$_('settings_foods_picker.base_foods_desc')}</div>
+      </div>
+      <Toggle checked={$baseFoodsEnabled} on:change={e => baseFoodsEnabled.set(e.detail)} />
+    </div>
+    <div class="setting-divider"></div>
+    <div class="setting-row">
+      <div>
         <span class="setting-label">{$_('settings_foods_picker.default_source')}</span>
         <div class="setting-desc">{$_('settings_foods_picker.default_source_desc')}</div>
       </div>
       <div class="select-wrap" style="width:160px">
         <select class="select sel-sm" value={$foodsDefaultSource} on:change={e => foodsDefaultSource.set(e.target.value)}>
+          {#if $baseFoodsEnabled}<option value="base">{$_('foods.sources.base')}</option>{/if}
           <option value="all">{$_('foods.sources.all')}</option>
           <option value="local">{$_('foods.sources.local')}</option>
           {#if $offEnabled}<option value="off">OFF</option>{/if}

@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy, tick } from 'svelte';
   import { push, location } from 'svelte-spa-router';
-  import { _ } from 'svelte-i18n';
+  import { _, locale } from 'svelte-i18n';
   import { fade, fly, slide } from 'svelte/transition';
 
   import Tabs        from '../components/ui/Tabs.svelte';
@@ -18,12 +18,13 @@
   import { editorState, clearFoodEditorState } from '../stores/editorState.js';
   import { DB, localDateStr } from '../lib/db.js';
   import { loadEntry } from '../stores/diary.js';
-  import { API, USDA, NtApi } from '../lib/api.js';
+  import { API, USDA, NtApi, isSavedRecord } from '../lib/api.js';
   import { Nutrition } from '../lib/nutrition.js';
   import { Mealie } from '../lib/mealieApi.js';
   import { resolveAssetUrl } from '../lib/platform.js';
   import { offCountryTagToFlag, offCountryTagToName } from '../lib/off-country-flag.js';
-  import { foodsShowThumbnails, foodsShowCategories, foodsShowLabels, foodsShowNotes, foodsSort, mealsSort, recipesSort, foodCategories, foodsShowYesterdayMeals, foodsYesterdayCollapsed, foodsSavedCollapsed, mealNames, usdaEnabled, usdaApiKey, offEnabled, offSearchCountry, offSearchLanguage, foodsDefaultSource, catName as _catName, catDisplay as _catDisplay, pageBanners, bannerStyle, energyUnit } from '../stores/settings.js';
+  import { BaseFoods } from '../lib/base-foods.js';
+  import { foodsShowThumbnails, foodsShowCategories, foodsShowLabels, foodsShowNotes, foodsSort, mealsSort, recipesSort, foodCategories, foodsShowYesterdayMeals, foodsYesterdayCollapsed, foodsSavedCollapsed, mealNames, usdaEnabled, usdaApiKey, offEnabled, offSearchCountry, offSearchLanguage, foodsDefaultSource, baseFoodsEnabled, catName as _catName, catDisplay as _catDisplay, pageBanners, bannerStyle, energyUnit } from '../stores/settings.js';
   import { mealIcon } from '../lib/mealIcon.js';
 
   // Query string params
@@ -94,6 +95,7 @@
   // parallel and shows results grouped by source with per-row source badges.
   $: _perSourceOptions = [
     { value: 'local',  label: $_('foods.sources.local')  },
+    ...(activeTab === 0 && $baseFoodsEnabled ? [{ value: 'base', label: $_('foods.sources.base') }] : []),
     ...(activeTab === 0 && $offEnabled    ? [{ value: 'off',    label: 'OFF' }] : []),
     ...(activeTab === 0 && $usdaEnabled   ? [{ value: 'usda',   label: 'USDA' }] : []),
     ...(activeTab === 0 && _mealieEnabled ? [{ value: 'mealie', label: 'Mealie' }] : []),
@@ -213,6 +215,7 @@
   // pinned set was correctly updated (verified via adb logcat).
   $: activeChips = {
     local:  pinnedSources.size > 0 ? pinnedSources.has('local')  : searchSource === 'local',
+    base:   pinnedSources.size > 0 ? pinnedSources.has('base')   : searchSource === 'base',
     off:    pinnedSources.size > 0 ? pinnedSources.has('off')    : searchSource === 'off',
     usda:   pinnedSources.size > 0 ? pinnedSources.has('usda')   : searchSource === 'usda',
     mealie: pinnedSources.size > 0 ? pinnedSources.has('mealie') : searchSource === 'mealie',
@@ -365,6 +368,42 @@
   // populate offResults / usdaResults separately so both can render together
   // alongside mealieResults, local matches, and shared matches. #96.
   let apiResults = [];
+  let baseResults = [];
+  // The user's own foods indexed by normalised barcode. Base-catalogue rows
+  // carry `fdcId_<n>` as their barcode, and so does the row saved from one, so
+  // this is what links a catalogue hit to the copy the user already owns.
+  $: _libraryByBarcode = (() => {
+    const m = new Map();
+    for (const f of localFoods || []) {
+      if (f && f.barcode) m.set(_normBarcode(f.barcode), f);
+    }
+    return m;
+  })();
+
+  /**
+   * Replace base-catalogue hits with the user's own saved copy of that food.
+   *
+   * A catalogue entry and the row saved from it share a barcode but nothing
+   * else: the saved row carries the user's photo, their edits, and a real
+   * numeric id. Showing the pristine catalogue entry alongside it reads as
+   * "my changes disappeared", and picking it would insert a second copy of a
+   * food they already have.
+   *
+   * In merged 'all' mode the local source already lists the saved row, so a
+   * match is dropped rather than swapped -- swapping would show it twice.
+   */
+  function _mergeBaseResults(items, mode) {
+    const lib = _libraryByBarcode;
+    if (!lib || lib.size === 0) return items;
+    const out = [];
+    for (const it of items || []) {
+      const saved = it.barcode ? lib.get(_normBarcode(it.barcode)) : null;
+      if (!saved) { out.push(it); continue; }
+      if (mode === 'all') continue;
+      out.push({ ...saved, _fromLibrary: true });
+    }
+    return out;
+  }
   let offResults = [];
   let usdaResults = [];
   let mealieResults = [];
@@ -385,6 +424,7 @@
   // state so each external source can page independently within the
   // merged view). loadMoreAll() fetches the next page from every source
   // with hasMore=true when the ALL-mode sentinel scrolls into view.
+  let _allBaseTotal = 0;
   let _allOffPage = 1, _allOffHasMore = false, _allOffTotal = 0;
   let _allUsdaPage = 1, _allUsdaHasMore = false, _allUsdaTotal = 0;
   let _allMealiePage = 1, _allMealieHasMore = false, _allMealieTotal = 0;
@@ -502,6 +542,7 @@
   $: _allModeItems = searchSource !== 'all' ? [] : [
     ...(_isSourceActive('local')  ? (_ownList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'local',  item })) : []),
     ...(_isSourceActive('shared') && _tabHasShared ? (_groupList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'shared', item })) : []),
+    ...(_isSourceActive('base')   ? (baseResults   || []).map(item => ({ source: 'base',   item })) : []),
     ...(_isSourceActive('mealie') ? (mealieResults || []).map(item => ({ source: 'mealie', item })) : []),
     ...(_isSourceActive('off')    ? (offResults    || []).filter(f => !offTiersFiltered  || offTiersActive.has(_bucketOff(f.completeness))).map(item => ({ source: 'off',    item })) : []),
     ...(_isSourceActive('usda')   ? (usdaResults   || []).filter(f => !usdaTiersFiltered || usdaTiersActive.has(f.dataType || 'unknown')).map(item => ({ source: 'usda',   item })) : []),
@@ -521,13 +562,16 @@
   // source so the merged list stays scannable.
   async function loadMoreExternal() {
     if (apiLoadingMore || !apiHasMore || !search.trim()) return;
-    if (searchSource !== 'off' && searchSource !== 'usda') return;
+    if (searchSource !== 'off' && searchSource !== 'usda' && searchSource !== 'base') return;
     apiLoadingMore = true;
     const nextPage = apiPage + 1;
     try {
-      const r = searchSource === 'off'
-        ? await API.searchByNameWithMeta(search, nextPage)
-        : await USDA.searchByNameWithMeta(search, nextPage, usdaApiKey.get());
+      const r = searchSource === 'base'
+        ? await BaseFoods.searchByNameWithMeta(search, nextPage, 50, { locale: $locale })
+              .then(x => ({ ...x, items: _mergeBaseResults(x.items, 'base') }))
+        : searchSource === 'off'
+          ? await API.searchByNameWithMeta(search, nextPage)
+          : await USDA.searchByNameWithMeta(search, nextPage, usdaApiKey.get());
       // De-dup on stable id (avoids double-inserts if the API returns
       // overlap between pages, which USDA occasionally does for common terms).
       const seen = new Set(apiResults.map(x => x.id ?? x.barcode ?? x.name));
@@ -688,6 +732,7 @@
   async function onSearch() {
     clearTimeout(searchTimeout);
     apiResults = [];
+    baseResults = [];
     offResults = [];
     usdaResults = [];
     mealieResults = [];
@@ -712,6 +757,14 @@
           apiPage = r.page;
         } catch { apiResults = []; apiTotalHits = 0; apiHasMore = false; }
         finally { loading = false; }
+      } else if (src === 'base') {
+        // Local catalogue: no network call, so no try/catch around a fetch —
+        // it resolves as fast as the dynamic import of the JSON chunk.
+        const r = await BaseFoods.searchByNameWithMeta(search, 1, 50, { locale: $locale });
+        apiResults = _mergeBaseResults(r.items, 'base');
+        apiTotalHits = r.totalHits;
+        apiHasMore = r.hasMore;
+        apiPage = r.page;
       } else if (src === 'usda') {
         try {
           loading = true;
@@ -740,11 +793,17 @@
         // and paginates on scroll for parity with single-source mode. #96.
         _allOffPage = _allUsdaPage = _allMealiePage = 1;
         _allOffHasMore = _allUsdaHasMore = _allMealieHasMore = false;
+        _allBaseTotal = 0;
         _allOffTotal = _allUsdaTotal = _allMealieTotal = 0;
         const jobs = [];
         const usesOffOrUsda = $offEnabled || $usdaEnabled;
         loading = usesOffOrUsda;
         mealieLoading = _mealieEnabled;
+        if ($baseFoodsEnabled) {
+          jobs.push(BaseFoods.searchByNameWithMeta(search, 1, ALL_MODE_PAGE_SIZE, { locale: $locale })
+            .then(r => { baseResults = _mergeBaseResults(r.items || [], 'all'); _allBaseTotal = r.totalHits; })
+            .catch(() => { baseResults = []; }));
+        }
         if ($offEnabled) {
           jobs.push(API.searchByNameWithMeta(search, 1, ALL_MODE_PAGE_SIZE)
             .then(r => {
@@ -839,7 +898,7 @@
     // visible confirmation.
     const { addDiaryItem } = await import('../stores/diary.js');
     let savedFood = food;
-    if (!food.id || typeof food.id !== 'number') {
+    if (!isSavedRecord(food)) {
       const { id: _drop, ...rest } = food;
       savedFood = await NtApi.createFood({ ...rest, created_at: food.dateTime || new Date().toISOString() });
     }
@@ -955,7 +1014,7 @@
   async function _addFoodToDiaryNoNav(food, qty) {
     const { addDiaryItem } = await import('../stores/diary.js');
     let savedFood = food;
-    if (!food.id || typeof food.id !== 'number') {
+    if (!isSavedRecord(food)) {
       const { id: _drop, ...rest } = food;
       savedFood = await NtApi.createFood({ ...rest, created_at: food.dateTime || new Date().toISOString() });
     }
@@ -1553,7 +1612,7 @@
   </div>
 
   <!-- Category filter chips (Local + Foods tab only) -->
-  {#if activeTab === 0 && searchSource === 'local' && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
+  {#if activeTab === 0 && (!search.trim() || searchSource === 'local') && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
     <div class="cat-filter-row">
       <button class="cat-chip" class:active={!activeCategoryFilter}
         on:click={() => activeCategoryFilter = ''}>{$_('foods.category_all')}</button>
@@ -1621,7 +1680,12 @@
   {/if}
 
   <div class="page-content">
-    {#if searchSource === 'all'}
+    <!-- An empty search box always shows the user's own library, whatever
+         source chip is selected. The chip picks WHERE A SEARCH GOES, not what
+         the screen shows at rest: 'base', 'off' and 'usda' have nothing to
+         list until you type, and letting them own the idle screen left the
+         user staring at a blank page with no way to browse their own foods. -->
+    {#if searchSource === 'all' && search.trim()}
       <!-- ── All: merged results from every enabled source ─────────────────── -->
       {#if !search.trim()}
         <div class="empty-state">
@@ -1642,7 +1706,7 @@
         <ul class="food-list">
           {#each _allModeItems as { source, item } (source + ':' + (item.id || item.slug || item.barcode || item.name))}
             {@const isMealie = source === 'mealie'}
-            {@const isExternal = source === 'off' || source === 'usda'}
+            {@const isExternal = source === 'off' || source === 'usda' || source === 'base'}
             {@const _foodEnergy = isMealie
               ? null
               : Nutrition.displayEnergy(item.nutrition?.calories || item.calories || 0, $energyUnit)}
@@ -1661,7 +1725,7 @@
                 {:else}
                   <div class="food-thumb-placeholder">
                     <span class="material-symbols-rounded">
-                      {#if isMealie}menu_book{:else if source === 'usda'}science{:else if source === 'off'}public{:else}{_tabIcon}{/if}
+                      {#if isMealie}menu_book{:else if source === 'base'}nutrition{:else if source === 'usda'}science{:else if source === 'off'}public{:else}{_tabIcon}{/if}
                     </span>
                   </div>
                 {/if}
@@ -1717,6 +1781,7 @@
                   {#if source === 'local'}{$_('foods.sources.local')}
                   {:else if source === 'shared'}{$_('foods.sources.shared')}
                   {:else if source === 'mealie'}{$_('foods.sources.mealie')}
+                  {:else if source === 'base'}{$_('foods.sources.base')}
                   {:else if source === 'usda'}USDA
                   {:else}OFF{/if}
                 </span>
@@ -1728,7 +1793,7 @@
              turn silent 0s into visible signals (e.g. "OFF · 0" tells the
              user OFF didn't return anything, not that ALL is broken).
              Sentinel fires loadMoreAll() when it scrolls into view. #96. -->
-        {#if _allModeItems.length > 0 || _allOffTotal > 0 || _allUsdaTotal > 0 || _allMealieTotal > 0}
+        {#if _allModeItems.length > 0 || _allBaseTotal > 0 || _allOffTotal > 0 || _allUsdaTotal > 0 || _allMealieTotal > 0}
           {@const _localCount = (_ownList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).length}
           {@const _sharedCount = _tabHasShared ? (_groupList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).length : 0}
           <div class="all-source-counts">
@@ -1738,6 +1803,9 @@
             {/if}
             {#if _mealieEnabled}
               <span class="asc-chip"><span class="asc-dot asc-mealie"></span>Mealie · {mealieResults.length}{#if _allMealieTotal > mealieResults.length} of {_allMealieTotal.toLocaleString()}{/if}</span>
+            {/if}
+            {#if $baseFoodsEnabled}
+              <span class="asc-chip"><span class="asc-dot asc-base"></span>{$_('foods.sources.base')} · {baseResults.length}</span>
             {/if}
             {#if $offEnabled}
               <span class="asc-chip"><span class="asc-dot asc-off"></span>OFF · {offResults.length}{#if _allOffTotal > offResults.length} of {_allOffTotal.toLocaleString()}{/if}</span>
@@ -1763,7 +1831,7 @@
         {/if}
       {/if}
 
-    {:else if searchSource === 'local' || searchSource === 'shared' || activeTab !== 0}
+    {:else if !search.trim() || searchSource === 'local' || searchSource === 'shared' || activeTab !== 0}
       <!-- ── Local list ─────────────────────────────────────────────────────── -->
       {#if filteredList.length === 0 && !search && !loadError}
         <div class="empty-state">
@@ -1909,12 +1977,13 @@
                     <img class="food-thumb" src={food.imgUrl} alt="" loading="lazy" referrerpolicy="no-referrer" on:error={e => e.target.style.display='none'} />
                   {:else}
                     <div class="food-thumb-placeholder">
-                      <span class="material-symbols-rounded">{searchSource === 'usda' ? 'science' : 'public'}</span>
+                      <span class="material-symbols-rounded">{searchSource === 'usda' ? 'science' : searchSource === 'base' ? 'nutrition' : 'public'}</span>
                     </div>
                   {/if}
                   <div class="food-info">
                     <span class="food-name">
                       {food.name}
+                      {#if food._fromLibrary}<span class="source-badge source-badge-local lib-mark">{$_('foods.sources.local')}</span>{/if}
                       {#if searchSource === 'off' && food.originTag}
                         {@const _flag = offCountryTagToFlag(food.originTag)}
                         {#if _flag}
@@ -2670,6 +2739,8 @@
   .source-badge-local  { background: rgba(74, 222, 128, 0.14); color: rgb(52, 179, 105); }
   .source-badge-shared { background: rgba(168, 85, 247, 0.14); color: rgb(168, 85, 247); }
   .source-badge-mealie { background: rgba(251, 146, 60, 0.14); color: rgb(234, 128, 42); }
+  .lib-mark { margin-left: 6px; vertical-align: middle; }
+  .source-badge-base   { background: rgba(16, 185, 129, 0.14); color: rgb(13, 148, 105); }
   .source-badge-usda   { background: rgba(59, 130, 246, 0.14); color: rgb(59, 130, 246); }
   .source-badge-off    { background: rgba(148, 163, 184, 0.18); color: rgb(148, 163, 184); }
 
@@ -2733,6 +2804,7 @@
   .asc-local  { background: rgb(52, 179, 105); }
   .asc-shared { background: rgb(168, 85, 247); }
   .asc-mealie { background: rgb(234, 128, 42); }
+  .asc-base   { background: rgb(13, 148, 105); }
   .asc-usda   { background: rgb(59, 130, 246); }
   .asc-off    { background: rgb(148, 163, 184); }
 

@@ -4,7 +4,7 @@
 
   import { portal } from '../lib/portal.js';
   import { pop, push } from 'svelte-spa-router';
-  import { NtApi } from '../lib/api.js';
+  import { NtApi, isSavedRecord } from '../lib/api.js';
   import { NUTRIMENTS } from '../lib/nutrition.js';
   import { showSuccess, showError } from '../stores/toast.js';
   import { editorState, clearFoodEditorState } from '../stores/editorState.js';
@@ -617,7 +617,7 @@
     try {
       // Strip the upstream id so it inserts as a new row owned by the current user.
       const copy = { ...food };
-      const sourceId = food.id;
+      const sourceId = isSavedRecord(food) ? food.id : null;
       delete copy.id;
       delete copy._shared_by;
       delete copy.user_id;
@@ -658,7 +658,7 @@
         if (Object.keys(flags).length) _nutrition._derived = flags;
       }
       const item = { ...food, nutrition: _nutrition };
-      const saved = food.id
+      const saved = isSavedRecord(food)
         ? await NtApi.updateFood(food.id, item)
         : await NtApi.createFood(item);
       item.id = saved.id;
@@ -728,8 +728,8 @@
     <button class="btn-icon" on:click={pop} aria-label={$_('common.back')} title={$_('common.back')}>
       <span class="material-symbols-rounded">arrow_back</span>
     </button>
-    <h2 class="editor-title">{_readOnly ? `Shared by ${food._shared_by}` : (food.id ? 'Edit Food' : 'Add Food')}</h2>
-    {#if food.id && !_readOnly}
+    <h2 class="editor-title">{_readOnly ? `Shared by ${food._shared_by}` : (isSavedRecord(food) ? 'Edit Food' : 'Add Food')}</h2>
+    {#if isSavedRecord(food) && !_readOnly}
       <button class="btn-icon fav-btn" class:on={!!food.favorite}
         on:click={() => { food.favorite = food.favorite ? 0 : 1; food = food; }}
         aria-label={food.favorite ? 'Unfavorite' : 'Favorite'}

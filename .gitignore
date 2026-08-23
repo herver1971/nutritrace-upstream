@@ -45,3 +45,16 @@ android/.idea/
 *.aab
 *.keystore
 android/keystore.properties
+docker-compose.override.yml
+SETUP-LOCAL.md
+retomar.sh
+Dockerfile.local
+docker-compose.override.yml.bak
+
+# FDC dataset download cache for scripts/build-base-foods.mjs
+.cache/
+
+# Python bytecode (mqtt-bridge)
+__pycache__/
+*.pyc
+mqtt-bridge/
