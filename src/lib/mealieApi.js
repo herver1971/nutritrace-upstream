@@ -98,6 +98,20 @@ const Mealie = {
   imageUrl(recipeId) {
     const { baseUrl } = _cfg();
     if (!baseUrl || !recipeId) return '';
+    // In the browser, route through our own server rather than hitting Mealie
+    // directly. A self-hosted Mealie is nearly always plain HTTP on a LAN
+    // address, and when NutriTrace is served over HTTPS the browser blocks
+    // those <img> requests as mixed content -- with no auto-upgrade, because
+    // the host is a bare IP. The server route also supplies the Mealie bearer
+    // token, which an <img> tag cannot send.
+    //
+    // Native keeps the direct URL: the WebView isn't subject to that rule, and
+    // its bearer auth wouldn't survive an <img src> to our own API anyway.
+    //
+    // Only affects live thumbnails. Recipes actually saved into the library go
+    // through the server's localizeImage(), which downloads the file to
+    // /uploads/ -- those already worked and are untouched.
+    if (!isNative) return apiUrl(`/api/mealie/image/${recipeId}`);
     return `${baseUrl}/api/media/recipes/${recipeId}/images/original.webp`;
   },
 
