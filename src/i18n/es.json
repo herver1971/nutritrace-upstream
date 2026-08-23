@@ -386,7 +386,9 @@
     },
     "errors": {
       "name_required": "Ingresa un nombre"
-    }
+    },
+    "draft_restored": "Se restauraron cambios sin guardar de antes.",
+    "draft_discard": "Descartar"
   },
   "meal_editor": {
     "meal_name_placeholder": "Nombre de la comida",
@@ -414,7 +416,9 @@
     },
     "errors": {
       "no_ingredients": "Agrega al menos un ingrediente"
-    }
+    },
+    "draft_restored": "Se restauraron cambios sin guardar de antes.",
+    "draft_discard": "Descartar"
   },
   "diary": {
     "add_food": "Agregar alimento",
@@ -606,7 +610,10 @@
       "api_key_desc": "Agrega la key de tu proveedor de IA en <strong>Ajustes → Asistente de IA</strong> para empezar a chatear.",
       "supported_providers": "Compatible con Anthropic Claude, OpenAI y Google Gemini.",
       "open_settings": "Abrir ajustes"
-    }
+    },
+    "clear_confirm_title": "¿Borrar esta conversación?",
+    "clear_confirm_message": "Se eliminarán los mensajes de esta conversación. No se puede deshacer.",
+    "clear_confirm_ok": "Borrar"
   },
   "statistics_page": {
     "range": {
@@ -2092,7 +2099,18 @@
       "copy_failed": "No se pudo copiar. Copia el comando a mano.",
       "view_notes": "Ver las notas de la versión",
       "channel_note": "Para cambiar de canal en el servidor, cambia la etiqueta de la imagen en tu docker-compose.yml (:latest, :1.0, :1, :dev) y vuelve a ejecutar docker-compose pull && docker-compose up -d."
-    }
+    },
+    "interval": {
+      "label": "Frecuencia de comprobación",
+      "desc": "Cada cuánto la app busca una nueva versión mientras está abierta. «Solo manual» desactiva todas las comprobaciones automáticas.",
+      "hourly": "Cada hora",
+      "every_4h": "Cada 4 horas",
+      "every_12h": "Cada 12 horas",
+      "daily": "Una vez al día",
+      "manual": "Solo manual"
+    },
+    "available_generic": "Hay una nueva versión disponible",
+    "banner_reload": "Recargar"
   },
   "accept_invite": {
     "title": "Crear cuenta",
