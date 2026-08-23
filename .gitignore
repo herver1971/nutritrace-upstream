@@ -57,4 +57,3 @@ docker-compose.override.yml.bak
 # Python bytecode (mqtt-bridge)
 __pycache__/
 *.pyc
-mqtt-bridge/
