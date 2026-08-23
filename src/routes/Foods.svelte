@@ -589,10 +589,10 @@
     try {
       const r = searchSource === 'base'
         ? await BaseFoods.searchByNameWithMeta(search, nextPage, 50, { locale: $locale })
-              .then(x => ({ ...x, items: _mergeBaseResults(x.items, 'base') }))
         : searchSource === 'off'
           ? await API.searchByNameWithMeta(search, nextPage)
           : await USDA.searchByNameWithMeta(search, nextPage, usdaApiKey.get());
+      if (searchSource === 'base') r.items = _mergeBaseResults(r.items, 'base');
       // De-dup on stable id (avoids double-inserts if the API returns
       // overlap between pages, which USDA occasionally does for common terms).
       const seen = new Set(apiResults.map(x => x.id ?? x.barcode ?? x.name));

@@ -560,10 +560,10 @@ export const recipesSort            = createSettingStore('recipesSort',         
 // Default source chip on the Foods page. 'local' preserves the historical
 // implicit behaviour (My Foods first — optimises for "log a food I've
 // eaten before"). Changed to 'base' once the bundled base-ingredient
-// catalogue landed: a search for a raw ingredient like "cebolla" against
-// an empty-ish personal library returns nothing, which reads as "the app
-// can't find it". 'base' answers instantly, offline and in the user's
-// language; brand-name products are one chip away. Users who spend more
+// catalogue landed: searching a raw ingredient against a still-small personal
+// library returns nothing, which reads as "the app can't find it". 'base'
+// answers instantly and offline, in the user's own language; brand-name
+// products stay one chip away. Users who spend more
 // time discovering new foods can
 // switch to 'all' to fan out across OFF/USDA/Mealie every visit
 // (requested via #128). Foods.svelte reads this on mount and initialises
@@ -583,9 +583,10 @@ export const cropPhotos             = createSettingStore('cropPhotos',          
 // database and the primary search source. Users who don't want their queries
 // hitting OFF servers (privacy / offline-first) can disable it.
 // The bundled base-ingredient catalogue (src/lib/base-foods.json) — raw,
-// unbranded foods in Spanish with household portions. On by default: it needs
-// no network and no API key, and it's the source that actually answers
-// "cebolla" or "papa" well, which OFF (branded packaged products) does not.
+// unbranded whole foods with localised names and household portions. On by
+// default: it needs no network and no API key, and it answers a plain
+// "onion" or "potato" query, which Open Food Facts (branded packaged
+// products) does not.
 export const baseFoodsEnabled       = createSettingStore('baseFoodsEnabled',       true);
 
 export const offEnabled             = createSettingStore('offEnabled',             true);

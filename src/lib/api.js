@@ -2,7 +2,7 @@
  * api.js - External API calls (Open Food Facts)
  */
 
-import { USDA_NUTRIENT_MAP } from './usda-nutrients.js';
+import { USDA_NUTRIENT_MAP as _USDA_NUTRIENT_MAP } from './usda-nutrients.js';
 
 // In native mode, call external APIs directly (no CORS in WebView).
 // In web mode, go through the server proxy to avoid CORS.
@@ -572,12 +572,6 @@ function _rankUSDAResults(items) {
   });
 }
 
-// USDA FoodData Central nutrient ID → our nutrition object key.
-// Lives in ./usda-nutrients.js so the offline base-catalogue build
-// (scripts/build-base-foods.mjs) maps the SR Legacy CSV dump with the
-// exact same keys this live client produces.
-const _USDA_NUTRIENT_MAP = USDA_NUTRIENT_MAP;
-
 const USDA = {
   _mapProduct(item, servingSize) {
     // Normalise all nutrient values to per-100g basis
@@ -726,19 +720,19 @@ import { Nutrition } from './nutrition.js';
 
 /**
  * True when `rec` is a row that already exists in the database, as opposed to
- * an unsaved search hit from OFF / USDA / the bundled base catalogue.
+ * an unsaved search hit from an external source (OFF, USDA, Mealie...).
  *
- * The test is the id's TYPE, not its truthiness. Every backend NutriTrace
- * writes to -- the server's SQLite and the native Capacitor SQLite both --
- * declares `id INTEGER PRIMARY KEY AUTOINCREMENT`, so a real row always has a
- * numeric id. Search results carry none. Anything else (notably a string) is
- * by definition not a saved row, and treating it as one sends an update at a
- * row that does not exist -- the server answers 404 "Not found" and the user
- * loses their edit.
+ * The test is the id's TYPE, not its truthiness. Both backends NutriTrace
+ * writes to -- the server's SQLite and the native Capacitor SQLite -- declare
+ * `id INTEGER PRIMARY KEY AUTOINCREMENT`, so a saved row always has a numeric
+ * id, while a search hit has none. Treating any other value as a saved row
+ * sends an update at a row that does not exist: the server answers 404 and the
+ * user loses their edit.
  *
- * Exported so the Foods screen and the food editor answer this question the
- * same way; they used to disagree, and that gap is what broke saving a food
- * picked from the base-ingredient catalogue.
+ * Shared so the Foods screen and the food editor answer this question the same
+ * way. They previously disagreed -- Foods.svelte tested the type, FoodEditor
+ * tested truthiness -- which left the editor open to any source attaching a
+ * non-numeric id to its results.
  */
 export function isSavedRecord(rec) {
   return typeof rec?.id === 'number';
