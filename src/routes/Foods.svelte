@@ -483,7 +483,16 @@
       const saved = it.barcode ? lib.get(_normBarcode(it.barcode)) : null;
       if (!saved) { out.push(it); continue; }
       if (mode === 'all') continue;
-      out.push({ ...saved, _fromLibrary: true, _light: it._light, _baseCategoryLabel: it._baseCategoryLabel });
+      out.push({
+        ...saved,
+        _fromLibrary: true,
+        // Carry the whole catalogue side across, not a hand-picked subset:
+        // omitting _baseCategory made the category filter hide the user's own
+        // saved copy of a food, which is the one they most expect to find.
+        _light: it._light,
+        _baseCategory: it._baseCategory,
+        _baseCategoryLabel: it._baseCategoryLabel,
+      });
     }
     return out;
   }
@@ -2281,7 +2290,7 @@
             <span class="material-symbols-rounded empty-icon">filter_alt_off</span>
             <p>
               {apiResults.length.toLocaleString()} result{apiResults.length === 1 ? '' : 's'} hidden by the
-              {searchSource === 'off' ? 'OFF' : 'USDA'} tier filter.
+              {searchSource === 'off' ? 'OFF tier' : searchSource === 'base' ? 'category' : 'USDA tier'} filter.
               Widen your selection in the dropdown next to the source chip.
             </p>
           </div>
