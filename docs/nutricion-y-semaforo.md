@@ -145,9 +145,9 @@ Ordenadas por grasa saturada. El sodio explica por qué las curadas
 | 🟢 | Pecho de ternera crudo (magro) | 157 | 7.4 | 2.6 | 3.7 | 20.7 | 79 |
 | 🟢 | Pechuga de pollo con piel | 172 | 9.3 | 2.7 | 5.8 | 20.9 | 63 |
 | 🟡 | Peceto crudo (con grasa) | 166 | 8.2 | 3.2 | 3.9 | 21.5 | 58 |
-| 🟡 | Lomo de ternera a la parrilla (magro) | 198 | 8.3 | 3.3 | 4.3 | 30.7 | 59 |
+| 🟢 | Lomo de ternera a la parrilla (magro) | 198 | 8.3 | 3.3 | 4.3 | 30.7 | 59 |
 | 🟡 | Carne picada (90/10) | 176 | 10.0 | 3.9 | 4.5 | 20.0 | 66 |
-| 🟡 | Muslo de pollo al horno (con piel) | 232 | 14.7 | 4.1 | 9.3 | 23.3 | 102 |
+| 🟢 | Muslo de pollo al horno (con piel) | 232 | 14.7 | 4.1 | 9.3 | 23.3 | 102 |
 | 🟡 | Chuleta de cerdo cruda (con grasa) | 198 | 12.6 | 4.4 | 7.0 | 19.7 | 50 |
 | 🟡 | Muslo de pollo con piel crudo | 221 | 16.6 | 4.5 | 10.4 | 16.5 | 81 |
 | 🟡 | Ternera picada | 197 | 13.1 | 5.1 | 6.9 | 18.6 | 103 |
@@ -191,6 +191,7 @@ la salazón y el ahumado, sí.
 | 🟢 | Corvina cruda | 104 | 3.2 | 1.1 | 1.6 | 17.8 | 56 |
 | 🟢 | Trucha cruda | 148 | 6.6 | 1.1 | 4.8 | 20.8 | 52 |
 | 🟢 | Anchoa cruda | 131 | 4.8 | 1.3 | 2.8 | 20.4 | 104 |
+| 🟢 | Trucha cocida | 190 | 8.5 | 1.5 | 6.1 | 26.6 | 67 |
 | 🟢 | Sardina en aceite | 208 | 11.4 | 1.5 | 9.0 | 24.6 | 307 |
 | 🟢 | Pez espada crudo | 144 | 6.7 | 1.6 | 4.2 | 19.7 | 81 |
 | 🟢 | Arenque crudo | 158 | 9.0 | 2.0 | 5.9 | 18.0 | 90 |
@@ -393,7 +394,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **355 🟢 · 44 🟡 · 58 🔴** sobre 457 alimentos.
+Reparto actual: **356 🟢 · 44 🟡 · 58 🔴** sobre 458 alimentos.
 
 ---
 
@@ -453,5 +454,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 457 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 458 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
