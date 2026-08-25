@@ -369,11 +369,19 @@ un pescado por su sal. Una fórmula única no puede capturar eso.
 | **Cereales** | Fibra / carbohidratos | 🟢 ≥0,04 · 🟡 ≥0,02 · 🔴 <0,02 | Sobrevive a la cocción. Arroz integral 0,047 vs blanco 0,016 |
 | **Frutas** | Azúcar | 🟡 si >40 g | Solo las desecadas concentran azúcar; la fruta entera no es el problema |
 | **Verduras** | — | Siempre 🟢 | No hay diferencias relevantes para estos objetivos |
-| **Legumbres** | Sodio | 🟡 si >600 | Distingue el grano del miso y la salsa de soja |
-| **Frutos secos** | Sodio | 🟡 si >300 | Distingue el natural del salado |
+| **Legumbres** | Sodio, y % de saturada si la grasa supera 5 g | Na >600 → 🟡<br>sat 🟢 ≤30% · 🟡 ≤50% | El % solo se aplica donde la grasa es real: un poroto tiene 0,5 g de grasa total y su «54 % saturada» es ruido |
+| **Frutos secos** | Sodio, y % de saturada si la grasa supera 5 g | Na >300 → 🟡<br>sat 🟢 ≤30% · 🟡 ≤50% | El coco vive en esta categoría y es 94 % saturado, peor que la manteca; todo fruto seco real ronda 6-25 % |
 | **Dulces** | Azúcar | 🟢 ≤10 · 🟡 ≤40 · 🔴 >40 | Es el eje, sin vueltas |
 | **Condimentos** | Sodio | 🟢 ≤800 · 🟡 ≤3000 · 🔴 >3000 | Aísla la sal del resto de las especias |
 | **Bebidas** | Azúcar + alcohol | 🟢 ≤4 · 🟡 ≤10 · 🔴 >10<br>alcohol → 🟡 | El azúcar no ve las calorías del alcohol |
+
+> **Por qué los pescados no miran el colesterol.** El calamar tiene 233 mg de
+> colesterol y 0,4 g de saturada; la manteca tiene 215 mg y **50,5 g**. Mismo
+> colesterol dietario, impacto sobre el LDL incomparable. El colesterol de la
+> dieta tiene un efecto modesto — el que manda es la grasa saturada — y por eso
+> las guías retiraron el límite de 300 mg/día. Marcar camarones o calamar en
+> rojo sería empujar a evitar alimentos magros y ricos en proteína por un
+> número que no predice lo que importa.
 
 ### Dónde vive y cómo se recalibra
 
@@ -385,7 +393,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **355 🟢 · 46 🟡 · 56 🔴** sobre 457 alimentos.
+Reparto actual: **355 🟢 · 44 🟡 · 58 🔴** sobre 457 alimentos.
 
 ---
 

@@ -285,8 +285,30 @@ function trafficLight(cat, n, cooked = false) {
     }
     case 'frutas':  return sug > 40 ? LIGHT.AMBER : LIGHT.GREEN;  // dried concentrates sugar
     case 'verduras': return LIGHT.GREEN;
-    case 'legumbres':    return na > 600 ? LIGHT.AMBER : LIGHT.GREEN;
-    case 'frutos-secos': return na > 300 ? LIGHT.AMBER : LIGHT.GREEN;
+    // Nuts and legumes: sodium separates the natural from the salted, but it
+    // is not the only thing hiding in these drawers. Coconut sits under
+    // "frutos secos" and is 94 % saturated — worse than butter — while every
+    // actual nut runs 6-25 %. Judging the category on salt alone had grated
+    // coconut and coconut milk green, contradicting the oils rule, where
+    // coconut oil is red for exactly this reason.
+    //
+    // The share-of-saturated test only applies where fat is a real part of the
+    // food. Dry beans carry 0.5 g of fat total, of which 0.2 g saturated reads
+    // as "54 % saturated" — a percentage computed on noise, the same trap that
+    // put glutinous rice in green. Below the floor, sodium decides.
+    case 'legumbres':
+    case 'frutos-secos': {
+      const naLimit = cat === 'legumbres' ? 600 : 300;
+      const bySodium = na > naLimit ? LIGHT.AMBER : LIGHT.GREEN;
+      const fat = v('fat');
+      if (fat < 5) return bySodium;
+      const unsat = v('monounsaturated-fat') + v('polyunsaturated-fat');
+      const total = sat + unsat;
+      if (!total) return bySodium;
+      const byFat = band(100 * sat / total, 30, 50);
+      return [bySodium, byFat].includes(LIGHT.RED) ? LIGHT.RED
+           : [bySodium, byFat].includes(LIGHT.AMBER) ? LIGHT.AMBER : LIGHT.GREEN;
+    }
     case 'dulces':  return band(sug, 10, 40);
     case 'condimentos': return band(na, 800, 3000);
     case 'bebidas': {
