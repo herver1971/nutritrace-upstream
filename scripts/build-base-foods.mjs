@@ -231,7 +231,15 @@ function trafficLight(cat, n) {
       // the composition can tell them apart.
       return band(100 * sat / total, 20, 45);
     }
-    case 'carnes':  return band(sat, 3, 7);
+    case 'carnes': {
+      // Sodium matters here for the same reason it does for fish: curing is
+      // what separates a fresh cut from ham or bacon, and lean ham passes the
+      // fat test on its own (1.8 g saturated) while carrying 1200 mg sodium.
+      const byFat = band(sat, 3, 7);
+      if (na > 900) return LIGHT.RED;
+      if (na > 400 && byFat === LIGHT.GREEN) return LIGHT.AMBER;
+      return byFat;
+    }
     // Every fish here sits under 3.5 g saturated, so fat cannot separate them.
     // Salting and smoking can, and that is the real difference between a
     // fresh fillet and salt cod.

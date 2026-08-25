@@ -13,6 +13,31 @@
  * and costs nothing until the user actually searches.
  */
 
+// Display names for the catalogue's own categories. These are ours, not the
+// user's curated food categories — a catalogue entry deliberately ships with
+// an empty `categories` so it never writes into that list (see toResult).
+const CATEGORY_LABELS = {
+  aceites:        { es: 'Aceites y grasas',  en: 'Oils & fats' },
+  bebidas:        { es: 'Bebidas',           en: 'Drinks' },
+  carnes:         { es: 'Carnes',            en: 'Meat' },
+  cereales:       { es: 'Cereales y panes',  en: 'Grains & bread' },
+  condimentos:    { es: 'Condimentos',       en: 'Seasonings' },
+  dulces:         { es: 'Dulces',            en: 'Sweets' },
+  frutas:         { es: 'Frutas',            en: 'Fruit' },
+  'frutos-secos': { es: 'Frutos secos',      en: 'Nuts & seeds' },
+  lacteos:        { es: 'Lácteos y huevos',  en: 'Dairy & eggs' },
+  legumbres:      { es: 'Legumbres',         en: 'Legumes' },
+  pescados:       { es: 'Pescados y mariscos', en: 'Fish & seafood' },
+  verduras:       { es: 'Verduras',          en: 'Vegetables' },
+};
+
+/** Human-readable name for a catalogue category slug. */
+export function categoryLabel(slug, locale = 'es') {
+  const e = CATEGORY_LABELS[slug];
+  if (!e) return slug;
+  return String(locale || '').startsWith('es') ? e.es : e.en;
+}
+
 let _catalogue = null;    // resolved JSON document
 let _index = null;        // [{ food, haystack: [normalised strings] }]
 let _loadPromise = null;  // single-flight guard
@@ -126,6 +151,7 @@ function toResult(food, locale) {
     _source:   'base',
     _baseId:   food.id,
     _baseCategory: food.cat,
+    _baseCategoryLabel: categoryLabel(food.cat, locale),
   };
 }
 
@@ -184,5 +210,5 @@ export async function browse(category, locale = 'es') {
 }
 
 export const BaseFoods = {
-  normalize, catalogueInfo, categories, searchByName, searchByNameWithMeta, browse,
+  normalize, catalogueInfo, categories, categoryLabel, searchByName, searchByNameWithMeta, browse,
 };

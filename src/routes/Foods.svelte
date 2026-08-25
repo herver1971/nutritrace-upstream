@@ -438,7 +438,7 @@
       const saved = it.barcode ? lib.get(_normBarcode(it.barcode)) : null;
       if (!saved) { out.push(it); continue; }
       if (mode === 'all') continue;
-      out.push({ ...saved, _fromLibrary: true, _light: it._light });
+      out.push({ ...saved, _fromLibrary: true, _light: it._light, _baseCategoryLabel: it._baseCategoryLabel });
     }
     return out;
   }
@@ -2008,7 +2008,8 @@
                       <span class="food-brand text-3 text-sm">{item.recipeCategory.map(c => c.name).join(', ')}</span>
                     {/if}
                   {:else}
-                    {#if item.brand}<span class="food-brand text-3 text-sm">{item.brand}</span>{/if}
+                    {#if item.brand}<span class="food-brand text-3 text-sm">{item.brand}</span>
+                    {:else if item._baseCategoryLabel}<span class="food-brand text-3 text-sm">{item._baseCategoryLabel}</span>{/if}
                     {#if _foodEnergy}
                       <span class="food-kcal text-sm">
                         {_foodEnergy.value.toLocaleString()} {_foodEnergy.unit}
@@ -2158,7 +2159,8 @@
                     {food.name}
                   </span>
                   {#if activeTab === 0}
-                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>{/if}
+                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>
+                    {:else if food._baseCategoryLabel}<span class="food-brand text-3 text-sm">{food._baseCategoryLabel}</span>{/if}
                     <span class="food-kcal text-sm">{amountAndUnit(food.portion || 100, food.unit)}{#if food.nutrition_basis && ($showUnitMetadata || $warnUnitMismatch)} · <span class="food-basis text-3">per 100 {food.nutrition_basis}</span>{/if}{#if food._shared_by} · <span style="color:var(--accent)">by {food._shared_by}</span>{/if}</span>
                   {:else}
                     {@const _kcal = Math.round(Nutrition.sum((food.items||[]).map(i => Nutrition.calculate(i))).calories || food.nutrition?.calories || 0)}
