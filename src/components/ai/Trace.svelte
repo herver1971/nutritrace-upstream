@@ -654,16 +654,26 @@
               hint: `Found ${substringLocal.length} local food(s) containing "${foodQuery}"${substringLocal.length > 5 ? ' (showing top 5)' : ''}. Ask the user which one (or none) before calling log_food again with the chosen name.`,
             };
           }
-          // Tier 2: Open Food Facts (uses local mirror if admin enabled it).
-          let offHits = [];
+          // Tier 2: the bundled base-ingredient catalogue, then Open Food Facts
+          // (which uses the local mirror if the admin enabled it). Catalogue
+          // hits are searched first and listed first: for a bare ingredient
+          // ("cebolla", "arroz integral") the curated unbranded entry is almost
+          // always what was meant, whereas OFF answers the same word with a
+          // wall of packaged products. OFF still supplies every branded match,
+          // which the catalogue has no opinion about.
+          let extHits = [];
+          try {
+            const { BaseFoods } = await import('../../lib/base-foods.js');
+            extHits = await BaseFoods.searchByName(foodQuery, 1) || [];
+          } catch {}
           try {
             const { API } = await import('../../lib/api.js');
-            offHits = await API.searchByName(foodQuery, 1);
+            extHits = [...extHits, ...(await API.searchByName(foodQuery, 1) || [])];
           } catch {}
-          if (Array.isArray(offHits) && offHits.length > 0) {
-            // Exact name match in OFF results — auto-pick and create in catalog.
-            const exactOff = offHits.find(h => _norm(h.name) === qNorm);
-            const pickedOff = exactOff || (offHits.length === 1 ? offHits[0] : null);
+          if (Array.isArray(extHits) && extHits.length > 0) {
+            // Exact name match — auto-pick and create in catalog.
+            const exactOff = extHits.find(h => _norm(h.name) === qNorm);
+            const pickedOff = exactOff || (extHits.length === 1 ? extHits[0] : null);
             if (pickedOff) {
               try {
                 // Create in local catalog so future asks hit local tier and
@@ -678,22 +688,22 @@
                 const { addDiaryItem } = await import('../../stores/diary.js');
                 await addDiaryItem(item, mealIdx, date);
                 const kcal = Math.round(((saved.nutrition?.calories || 0) * (item.portion / (saved.portion || 100))) * quantity);
-                return { ok: true, date, meal: mealIdx, meal_name: mealName, food_name: saved.name, portion: item.portion, unit: item.unit, quantity, kcal, source: 'off' };
+                return { ok: true, date, meal: mealIdx, meal_name: mealName, food_name: saved.name, portion: item.portion, unit: item.unit, quantity, kcal, source: pickedOff._source || 'off' };
               } catch (e) {
-                return { error: 'Failed to log food after OFF lookup: ' + (e?.message || String(e)) };
+                return { error: 'Failed to log food after catalog lookup: ' + (e?.message || String(e)) };
               }
             }
-            // Multiple OFF hits, none exact — return top candidates for the
-            // user to disambiguate.
+            // Multiple hits, none exact — return top candidates for the user
+            // to disambiguate.
             return {
-              candidates: offHits.slice(0, 5).map(h => ({
+              candidates: extHits.slice(0, 5).map(h => ({
                 name: h.name,
                 brand: h.brand || '',
                 portion: h.portion || 100,
                 unit: h.unit || 'g',
-                source: 'off',
+                source: h._source || 'off',
               })),
-              hint: `Found ${offHits.length} Open Food Facts matches for "${foodQuery}". None is an exact name match — ask the user which one fits, then call log_food again with that exact name.`,
+              hint: `Found ${extHits.length} match(es) for "${foodQuery}" in the base-ingredient catalog and Open Food Facts. None is an exact name match — ask the user which one fits, then call log_food again with that exact name.`,
             };
           }
           // Tier 3: nothing matched. Tell the user how to add it.

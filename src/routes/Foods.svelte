@@ -370,6 +370,33 @@
   // alongside mealieResults, local matches, and shared matches. #96.
   let apiResults = [];
   let baseResults = [];
+
+  // What fills the screen with an empty search box depends on the source:
+  // 'local' / 'shared' (and the Meals / Recipes tabs) list the user's own
+  // library, 'all' does too since it merges the library in, 'base' browses the
+  // bundled catalogue, and the remote sources have nothing to list until you
+  // type. Held in one place because the list body, the category chips and the
+  // chip-row spacing all have to agree on it.
+  $: _showingLibrary = activeTab !== 0
+    || searchSource === 'local'
+    || searchSource === 'shared'
+    || (!search.trim() && searchSource === 'all');
+
+  // Básicos is the one non-local source with something to show before you
+  // type — it's a fixed catalogue that ships with the app, so an empty box
+  // browses it instead of leaving the screen blank. Driven from onSearch()
+  // rather than its own reactive block: onSearch already fires on every
+  // search/source change and clears apiResults first, so going through it
+  // avoids depending on the order two reactive statements happen to run in.
+  async function _browseBase() {
+    const items = await BaseFoods.browse(null, $locale);
+    // A keystroke (or a source switch) may have landed while we awaited.
+    if (activeTab !== 0 || searchSource !== 'base' || search.trim()) return;
+    apiResults   = _mergeBaseResults(items, 'base');
+    apiTotalHits = apiResults.length;
+    apiHasMore   = false;
+    apiPage      = 1;
+  }
   // The user's own foods indexed by normalised barcode. Base-catalogue rows
   // carry `fdcId_<n>` as their barcode, and so does the row saved from one, so
   // this is what links a catalogue hit to the copy the user already owns.
@@ -764,6 +791,7 @@
     apiHasMore = false;
     // Local + shared don't need remote calls; 'all' mode always needs the
     // debounce because it fans out to external APIs alongside local filter.
+    if (activeTab === 0 && searchSource === 'base' && !search.trim()) { _browseBase(); return; }
     if (!search.trim() || searchSource === 'local' || searchSource === 'shared') return;
     const src = searchSource;
     searchTimeout = setTimeout(async () => {
@@ -1714,7 +1742,7 @@
 {/snippet}
 
 {#snippet catChips()}
-  {#if activeTab === 0 && (!search.trim() || searchSource === 'local') && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
+  {#if activeTab === 0 && _showingLibrary && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
     <button class="cat-chip" class:active={!activeCategoryFilter}
       on:click={() => activeCategoryFilter = ''}>{$_('foods.category_all')}</button>
     {#each $foodCategories as cat}
@@ -1829,13 +1857,13 @@
           {@render sourceChips()}
         </div>
       {/if}
-      {#if activeTab === 0 && (!search.trim() || searchSource === 'local') && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
+      {#if activeTab === 0 && _showingLibrary && $foodsShowCategories && $foodCategories && $foodCategories.length > 0}
         <p class="foods-filter-heading">Categories</p>
         <div class="foods-rail-chips foods-rail-cats">
           {@render catChips()}
         </div>
       {/if}
-      {#if availableSources.length <= 1 && !(activeTab === 0 && (!search.trim() || searchSource === 'local') && $foodsShowCategories && $foodCategories && $foodCategories.length > 0)}
+      {#if availableSources.length <= 1 && !(activeTab === 0 && _showingLibrary && $foodsShowCategories && $foodCategories && $foodCategories.length > 0)}
         <!-- Rail would be empty otherwise — leave a low-key hint so
              the column doesn't render as a mysteriously-empty box. -->
         <p class="foods-filter-empty">No filters available for this tab.</p>
@@ -2053,7 +2081,7 @@
         {/if}
       {/if}
 
-    {:else if !search.trim() || searchSource === 'local' || searchSource === 'shared' || activeTab !== 0}
+    {:else if _showingLibrary}
       <!-- ── Local list ─────────────────────────────────────────────────────── -->
       {#if filteredList.length === 0 && !search && !loadError}
         <div class="empty-state">

@@ -301,7 +301,25 @@ async function _matchFood(parsedItem) {
     console.warn('[quick-log] local food search failed:', e.message);
   }
 
-  // ── 2. OFF fallback ─────────────────────────────────────────────────────
+  // ── 2. Bundled base-ingredient catalogue ────────────────────────────────
+  // Sits between the user's own foods and OFF on purpose. A bare ingredient
+  // ("cebolla", "arroz integral") has a curated, unbranded answer here, while
+  // OFF would return a wall of packaged products for the same word. Local,
+  // so it costs nothing to try before going out to the network.
+  try {
+    const { BaseFoods } = await import('./base-foods.js');
+    const baseResults = await BaseFoods.searchByName(query, 1);
+    if (Array.isArray(baseResults) && baseResults.length > 0) {
+      out.candidates = baseResults.slice(0, 5);
+      out.best = baseResults[0];
+      out.source = 'base';
+      return out;
+    }
+  } catch (e) {
+    console.warn('[quick-log] base catalogue search failed:', e.message);
+  }
+
+  // ── 3. OFF fallback ─────────────────────────────────────────────────────
   try {
     const offResults = await API.searchByName(query, 1);
     if (Array.isArray(offResults) && offResults.length > 0) {
@@ -519,14 +537,15 @@ export async function saveItems(matchedList, { date, defaultMealSlot = 0 }) {
     // ── Single food / recipe (local / off / unknown / recipe) ────────────
     let food = m.food;
 
-    // If the food came from OFF, persist it to the local foods table first so
-    // future quick-log calls find it via the local-search fast path.
-    if (m.source === 'off' && !food.id) {
+    // If the food came from OFF or the base catalogue, persist it to the local
+    // foods table first so future quick-log calls find it via the local-search
+    // fast path.
+    if ((m.source === 'off' || m.source === 'base') && !food.id) {
       try {
         const created = await NtApi.createFood(food);
         if (created && created.id) food = created;
       } catch (e) {
-        console.warn('[quick-log] failed to save OFF food locally:', e.message);
+        console.warn('[quick-log] failed to save picked food locally:', e.message);
       }
     }
 

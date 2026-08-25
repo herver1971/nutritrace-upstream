@@ -350,6 +350,7 @@
               <div class="ql-row-name">
                 {m.food?.name || m.item.name}
                 {#if m.source === 'local'}<span class="ql-badge ql-badge-local">{$_('smart_log.badge_local')}</span>{/if}
+                {#if m.source === 'base'}<span class="ql-badge ql-badge-base">{$_('foods.sources.base')}</span>{/if}
                 {#if m.source === 'off'}<span class="ql-badge ql-badge-off">OFF</span>{/if}
                 {#if m.source === 'meal'}<span class="ql-badge ql-badge-meal">Meal</span>{/if}
                 {#if m.source === 'recipe'}<span class="ql-badge ql-badge-recipe">{$_('smart_log.badge_recipe')}</span>{/if}
@@ -614,6 +615,7 @@
     letter-spacing: 0.04em;
   }
   .ql-badge-local     { background: var(--accent-dim); color: var(--accent); }
+  .ql-badge-base      { background: color-mix(in srgb, #10b981 20%, transparent); color: #34d399; }
   .ql-badge-off       { background: color-mix(in srgb, #3b82f6 20%, transparent); color: #60a5fa; }
   .ql-badge-meal      { background: color-mix(in srgb, #a855f7 20%, transparent); color: #c084fc; }
   .ql-badge-recipe    { background: color-mix(in srgb, #ec4899 20%, transparent); color: #f472b6; }
