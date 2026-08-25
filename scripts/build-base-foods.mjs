@@ -195,6 +195,78 @@ function buildPortions(rows, description) {
     .map(([abbr, grams]) => ({ abbr, grams }));
 }
 
+// ── Traffic light ─────────────────────────────────────────────────────────
+// A colour per food, meant as a substitution aid: "within this category, is
+// this a better or worse pick than its neighbours?" It is NOT a health verdict
+// on the food in isolation, and it is not one of the validated label schemes.
+//
+// Deliberately NOT a single formula across all categories. A first attempt at
+// one scored olive oil worse than sunflower, mackerel red, and cornstarch
+// green -- because what separates a good oil (its saturated share) is not what
+// separates a good grain (its fibre density) or a good fish (its salt load).
+// Each category is judged on the axis that actually differentiates it.
+//
+// The axes are weighted toward lowering LDL and liver fat: saturated fat,
+// free sugars, sodium, and fibre. Thresholds are calibrated against the real
+// spread in this catalogue, not taken from a standard, so they are documented
+// here and easy to re-tune.
+const LIGHT = { GREEN: 'green', AMBER: 'amber', RED: 'red' };
+
+function trafficLight(cat, n) {
+  const v    = k => Number(n[k] || 0);
+  const sat  = v('saturated-fat'), sug = v('sugars'), na = v('sodium');
+  const fib  = v('fiber'), carb = v('carbohydrates'), kcal = v('calories');
+  // Lower value = better, so thresholds read in ascending order.
+  const band = (x, green, amber) =>
+    x <= green ? LIGHT.GREEN : x <= amber ? LIGHT.AMBER : LIGHT.RED;
+
+  switch (cat) {
+    case 'aceites': {
+      // Industrial trans is the one unambiguous harm; margarine lands here.
+      if (v('trans-fat') > 2) return LIGHT.RED;
+      const unsat = v('monounsaturated-fat') + v('polyunsaturated-fat');
+      const total = sat + unsat;
+      if (!total) return LIGHT.AMBER;
+      // Share of saturated, not grams: every oil is ~100 g of fat, so only
+      // the composition can tell them apart.
+      return band(100 * sat / total, 20, 45);
+    }
+    case 'carnes':  return band(sat, 3, 7);
+    // Every fish here sits under 3.5 g saturated, so fat cannot separate them.
+    // Salting and smoking can, and that is the real difference between a
+    // fresh fillet and salt cod.
+    case 'pescados': return na > 1500 ? LIGHT.RED
+                          : (na > 600 || sat > 4) ? LIGHT.AMBER : LIGHT.GREEN;
+    case 'lacteos': {
+      // Sugar has to be checked too, or dulce de leche passes on fat alone.
+      const bySugar = band(sug, 12, 25);
+      const byFat   = band(sat, 2, 10);
+      return [bySugar, byFat].includes(LIGHT.RED) ? LIGHT.RED
+           : [bySugar, byFat].includes(LIGHT.AMBER) ? LIGHT.AMBER : LIGHT.GREEN;
+    }
+    case 'cereales': {
+      // Fibre per gram of carbohydrate, not grams of fibre: a cooked grain is
+      // mostly water, so absolute fibre would mark every cooked entry poor.
+      // This ratio survives cooking and is exactly the wholegrain signal —
+      // brown rice 0.047 vs white 0.016.
+      if (!carb) return LIGHT.GREEN;
+      return band(-(fib / carb), -0.04, -0.02);
+    }
+    case 'frutas':  return sug > 40 ? LIGHT.AMBER : LIGHT.GREEN;  // dried concentrates sugar
+    case 'verduras': return LIGHT.GREEN;
+    case 'legumbres':    return na > 600 ? LIGHT.AMBER : LIGHT.GREEN;
+    case 'frutos-secos': return na > 300 ? LIGHT.AMBER : LIGHT.GREEN;
+    case 'dulces':  return band(sug, 10, 40);
+    case 'condimentos': return band(na, 800, 3000);
+    case 'bebidas': {
+      // Alcohol carries energy the sugar figure does not account for.
+      if (kcal > 35 && sug < 3) return LIGHT.AMBER;
+      return band(sug, 4, 10);
+    }
+    default: return LIGHT.GREEN;
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────
 function main() {
   ensureDataset();
@@ -271,6 +343,7 @@ function main() {
       alias: { es: e.alias || [] },
       nutrition,
       units: buildPortions(portionsByFood.get(food.fdc_id) || [], food.description),
+      light: trafficLight(e.cat, nutrition),
     });
   }
 

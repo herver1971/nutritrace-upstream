@@ -438,7 +438,7 @@
       const saved = it.barcode ? lib.get(_normBarcode(it.barcode)) : null;
       if (!saved) { out.push(it); continue; }
       if (mode === 'all') continue;
-      out.push({ ...saved, _fromLibrary: true });
+      out.push({ ...saved, _fromLibrary: true, _light: it._light });
     }
     return out;
   }
@@ -1970,7 +1970,7 @@
             {@const _foodEnergy = isMealie
               ? null
               : Nutrition.displayEnergy(item.nutrition?.calories || item.calories || 0, $energyUnit)}
-            <li class="food-item card" in:fade={{ duration: 140 }}>
+            <li class="food-item card" in:fade={{ duration: 140 }} class:nl-green={item._light === 'green'} class:nl-amber={item._light === 'amber'} class:nl-red={item._light === 'red'}>
               <button class="food-item-btn"
                 on:click={() => _pickBySource(source, item)}
                 on:contextmenu|preventDefault={() => !isMealie && !isExternal && longPress(item)}
@@ -2225,7 +2225,7 @@
             {#each visibleApiResults as food (food.id || food.barcode)}
               {@const _sel = selectedFoods.has(food)}
               {@const _foodEnergy = Nutrition.displayEnergy(food.nutrition?.calories || food.calories || 0, $energyUnit)}
-              <li class="food-item card" class:food-selected={_sel}>
+              <li class="food-item card" class:food-selected={_sel} class:nl-green={food._light === 'green'} class:nl-amber={food._light === 'amber'} class:nl-red={food._light === 'red'}>
                 {#if pickMode}
                   <button class="food-select-btn" on:click={() => toggleSelect(food)} aria-label="Select">
                     <span class="food-check material-symbols-rounded" class:food-check-on={_sel}>
@@ -3030,6 +3030,14 @@
   .source-badge-shared { background: rgba(168, 85, 247, 0.14); color: rgb(168, 85, 247); }
   .source-badge-mealie { background: rgba(251, 146, 60, 0.14); color: rgb(234, 128, 42); }
   .lib-mark { margin-left: 6px; vertical-align: middle; }
+  /* Nutrition traffic light — a substitution hint, not a verdict. Rendered as
+     a left edge plus a wash so it reads at a glance without fighting the
+     card's own colours or the source badges. */
+  .nl-green, .nl-amber, .nl-red { border-left: 4px solid transparent; }
+  .nl-green { border-left-color: rgb(34, 197, 94);  background: color-mix(in srgb, rgb(34, 197, 94) 6%, var(--surface, transparent)); }
+  .nl-amber { border-left-color: rgb(234, 179, 8);  background: color-mix(in srgb, rgb(234, 179, 8) 7%, var(--surface, transparent)); }
+  .nl-red   { border-left-color: rgb(239, 68, 68);  background: color-mix(in srgb, rgb(239, 68, 68) 7%, var(--surface, transparent)); }
+
   .source-badge-base   { background: rgba(16, 185, 129, 0.14); color: rgb(13, 148, 105); }
   .source-badge-usda   { background: rgba(59, 130, 246, 0.14); color: rgb(59, 130, 246); }
   .source-badge-off    { background: rgba(148, 163, 184, 0.18); color: rgb(148, 163, 184); }

@@ -120,6 +120,9 @@ function toResult(food, locale) {
     // Household portions ("1 unidad mediana = 110 g"). createFood() spreads
     // this straight through to the foods table's alt_units column.
     alt_units: food.units,
+    // Substitution hint, precomputed by scripts/build-base-foods.mjs and
+    // committed with the catalogue so the criteria stay auditable.
+    _light:    food.light,
     _source:   'base',
     _baseId:   food.id,
     _baseCategory: food.cat,
