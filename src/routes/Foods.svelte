@@ -123,6 +123,27 @@
   // yellow 40-70%, grey <40%; "unknown" for entries OFF didn't populate).
   // USDA tiers = the actual dataType values USDA returns; matches the
   // tier badge letters (F, L, S, B, X).
+  // Básicos category filter. Mirrors the OFF / USDA tier dropdowns: same chip
+  // caret, same panel, same dismissal. The category list is read from the
+  // catalogue itself rather than hard-coded here, so it cannot drift from the
+  // data when a category is added or renamed.
+  let _baseCats = [];
+  let baseCatsActive = new Set();
+  // Fetched only once the catalogue is actually in play. Calling it at
+  // component init would pull the whole catalogue chunk on every visit to
+  // Foods, including for users who never leave their own library.
+  $: if ($baseFoodsEnabled && (searchSource === 'base' || searchSource === 'all')
+         && _baseCats.length === 0) _loadBaseCats();
+  async function _loadBaseCats() {
+    const c = await BaseFoods.categories();
+    _baseCats = c;
+    baseCatsActive = new Set(c);
+  }
+  let baseDropdownOpen = false;
+  let baseCaretEl = null;
+  let baseDropdownPos = { top: 0, right: 0 };
+  let baseDropdownPanelEl = null;
+
   const _OFF_TIERS = ['hi', 'mid', 'lo', 'unknown'];
   const _USDA_TIERS = ['Foundation', 'SR Legacy', 'Survey (FNDDS)', 'Branded', 'Experimental', 'unknown'];
   let offTiersActive  = new Set(_OFF_TIERS);
@@ -262,6 +283,16 @@
     if (s.size === 0) s.add(t);
     usdaTiersActive = s;
   }
+  function toggleBaseCat(c) {
+    const s = new Set(baseCatsActive);
+    if (s.has(c)) s.delete(c); else s.add(c);
+    // Deselecting the last one would show nothing at all; treat an empty set
+    // as "no filter" instead, matching how the tier dropdowns behave.
+    baseCatsActive = s.size === 0 ? new Set(_baseCats) : s;
+  }
+  function resetBaseCats() { baseCatsActive = new Set(_baseCats); }
+  $: baseCatsFiltered = _baseCats.length > 0 && baseCatsActive.size !== _baseCats.length;
+
   function resetOffTiers()  { offTiersActive  = new Set(_OFF_TIERS); }
   function resetUsdaTiers() { usdaTiersActive = new Set(_USDA_TIERS); }
 
@@ -276,7 +307,10 @@
     // re-runs when the user's library finishes loading. Baked in at fetch
     // time it silently produced the un-swapped catalogue entry whenever the
     // browse won the race against the library load.
-    if (searchSource === 'base') return _mergeBaseResults(apiResults, 'base', _libraryByBarcode);
+    if (searchSource === 'base') {
+      const merged = _mergeBaseResults(apiResults, 'base', _libraryByBarcode);
+      return baseCatsFiltered ? merged.filter(f => baseCatsActive.has(f._baseCategory)) : merged;
+    }
     if (searchSource === 'off' && offTiersFiltered) {
       return apiResults.filter(f => offTiersActive.has(_bucketOff(f.completeness)));
     }
@@ -286,14 +320,20 @@
     return apiResults;
   })();
 
+  function openBaseDropdown() {
+    offDropdownOpen = false; usdaDropdownOpen = false;
+    const r = baseCaretEl?.getBoundingClientRect();
+    if (r) baseDropdownPos = { top: r.bottom + 6, right: Math.max(8, window.innerWidth - r.right) };
+    baseDropdownOpen = true;
+  }
   function openOffDropdown() {
-    usdaDropdownOpen = false;
+    baseDropdownOpen = false; usdaDropdownOpen = false;
     const r = offCaretEl?.getBoundingClientRect();
     if (r) offDropdownPos = { top: r.bottom + 6, right: Math.max(8, window.innerWidth - r.right) };
     offDropdownOpen = true;
   }
   function openUsdaDropdown() {
-    offDropdownOpen = false;
+    baseDropdownOpen = false; offDropdownOpen = false;
     const r = usdaCaretEl?.getBoundingClientRect();
     if (r) usdaDropdownPos = { top: r.bottom + 6, right: Math.max(8, window.innerWidth - r.right) };
     usdaDropdownOpen = true;
@@ -308,14 +348,17 @@
   let offDropdownPanelEl = null;
   let usdaDropdownPanelEl = null;
   function _closeTierDropdowns() {
+    baseDropdownOpen = false;
     offDropdownOpen = false;
     usdaDropdownOpen = false;
   }
   function _onWindowClick(e) {
-    if (!offDropdownOpen && !usdaDropdownOpen) return;
+    if (!baseDropdownOpen && !offDropdownOpen && !usdaDropdownOpen) return;
     const t = e.target;
+    if (baseCaretEl && baseCaretEl.contains(t)) return;
     if (offCaretEl && offCaretEl.contains(t)) return;
     if (usdaCaretEl && usdaCaretEl.contains(t)) return;
+    if (baseDropdownPanelEl && baseDropdownPanelEl.contains(t)) return;
     if (offDropdownPanelEl  && offDropdownPanelEl.contains(t))  return;
     if (usdaDropdownPanelEl && usdaDropdownPanelEl.contains(t)) return;
     _closeTierDropdowns();
@@ -325,7 +368,7 @@
     // Since backdrop is pointer-events:none the touch actually landed
     // on the underlying element, so the scroll happens natively while
     // we dismiss.
-    if (offDropdownOpen || usdaDropdownOpen) _closeTierDropdowns();
+    if (baseDropdownOpen || offDropdownOpen || usdaDropdownOpen) _closeTierDropdowns();
   }
 
   // Sharing — "From Others" source filter (per-category)
@@ -600,7 +643,7 @@
   $: _allModeItems = searchSource !== 'all' ? [] : [
     ...(_isSourceActive('local')  ? (_ownList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'local',  item })) : []),
     ...(_isSourceActive('shared') && _tabHasShared ? (_groupList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'shared', item })) : []),
-    ...(_isSourceActive('base')   ? _mergeBaseResults(baseResults || [], 'all', _libraryByBarcode).map(item => ({ source: 'base',   item })) : []),
+    ...(_isSourceActive('base')   ? _mergeBaseResults(baseResults || [], 'all', _libraryByBarcode).filter(f => !baseCatsFiltered || baseCatsActive.has(f._baseCategory)).map(item => ({ source: 'base',   item })) : []),
     ...(_isSourceActive('mealie') ? (mealieResults || []).map(item => ({ source: 'mealie', item })) : []),
     ...(_isSourceActive('off')    ? (offResults    || []).filter(f => !offTiersFiltered  || offTiersActive.has(_bucketOff(f.completeness))).map(item => ({ source: 'off',    item })) : []),
     ...(_isSourceActive('usda')   ? (usdaResults   || []).filter(f => !usdaTiersFiltered || usdaTiersActive.has(f.dataType || 'unknown')).map(item => ({ source: 'usda',   item })) : []),
@@ -1689,7 +1732,30 @@
 {#snippet sourceChips()}
   {#if availableSources.length > 1}
     {#each availableSources as src}
-      {#if src.value === 'off'}
+      {#if src.value === 'base'}
+        <div class="source-chip-wrap">
+          <button class="source-chip source-chip-split"
+                  class:active={activeChips.base}
+                  on:click={() => _onChipTap('base')}
+                  on:contextmenu|preventDefault={() => _toggleChipInMulti('base')}
+                  on:touchstart|passive={(e) => _startChipLongPress('base', e)}
+                  on:touchmove|passive={_maybeCancelChipLongPress}
+                  on:touchend={_cancelChipLongPress}
+                  on:touchcancel={_cancelChipLongPress}>
+            {src.label}
+            {#if baseCatsFiltered}<span class="tier-active-dot" title={$_('foods.tier.base_categories')}></span>{/if}
+          </button>
+          <button class="source-chip-caret"
+                  class:active={activeChips.base}
+                  class:open={baseDropdownOpen}
+                  bind:this={baseCaretEl}
+                  on:click={openBaseDropdown}
+                  aria-label={$_('foods.tier.base_categories')}
+                  aria-expanded={baseDropdownOpen}>
+            <span class="material-symbols-rounded">expand_more</span>
+          </button>
+        </div>
+      {:else if src.value === 'off'}
         <div class="source-chip-wrap">
           <button class="source-chip source-chip-split"
                   class:active={activeChips.off}
@@ -2672,6 +2738,33 @@
      exact pattern of ActionSheet.svelte: backdrop's on:click closes,
      inner panel uses on:click|stopPropagation so clicks on checkboxes
      don't propagate to the backdrop. -->
+{#if baseDropdownOpen}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div use:portal class="tier-dropdown-backdrop"
+    in:fade={{ duration: 120 }} out:fade={{ duration: 100 }}>
+    <div class="tier-dropdown-panel"
+      bind:this={baseDropdownPanelEl}
+      style="top:{baseDropdownPos.top}px; right:{baseDropdownPos.right}px;"
+      on:click|stopPropagation
+      in:slide={{ duration: 140 }}>
+      <div class="tier-dropdown-header">
+        <span>{$_('foods.tier.base_categories')}</span>
+        {#if baseCatsFiltered}
+          <button class="tier-reset" on:click={resetBaseCats}>{$_('foods.tier.reset')}</button>
+        {/if}
+      </div>
+      {#each _baseCats as c}
+        <label class="tier-option">
+          <input type="checkbox" checked={baseCatsActive.has(c)} on:change={() => toggleBaseCat(c)} />
+          <span class="tier-swatch cat-swatch cat-{c}"></span>
+          <span class="tier-label">{BaseFoods.categoryLabel(c, $locale)}</span>
+        </label>
+      {/each}
+    </div>
+  </div>
+{/if}
+
 {#if offDropdownOpen}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -3035,6 +3128,8 @@
   /* Catalogue category tag. Rendered as a chip rather than muted text so it
      reads as a label at a glance; sits in the slot a branded product would
      use for its brand, which a raw ingredient leaves empty. */
+  .cat-swatch { background: hsl(var(--cat-h, 220) var(--cat-s, 42%) 55%); }
+
   .cat-tag {
     /* .food-info is a flex column, which stretches its children to the full
        row width — the chip has to opt out or it reads as a grey band. */
