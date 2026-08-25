@@ -291,6 +291,8 @@
     baseCatsActive = s.size === 0 ? new Set(_baseCats) : s;
   }
   function resetBaseCats() { baseCatsActive = new Set(_baseCats); }
+  // Isolating one category out of twelve otherwise means unticking eleven.
+  function onlyBaseCat(c) { baseCatsActive = new Set([c]); }
   $: baseCatsFiltered = _baseCats.length > 0 && baseCatsActive.size !== _baseCats.length;
 
   function resetOffTiers()  { offTiersActive  = new Set(_OFF_TIERS); }
@@ -2759,6 +2761,10 @@
           <input type="checkbox" checked={baseCatsActive.has(c)} on:change={() => toggleBaseCat(c)} />
           <span class="tier-swatch cat-swatch cat-{c}"></span>
           <span class="tier-label">{BaseFoods.categoryLabel(c, $locale)}</span>
+          <!-- Inside the <label>, so a plain click would reach the checkbox and
+               toggle it as well; both defaults have to be stopped. -->
+          <button class="tier-only"
+                  on:click|stopPropagation|preventDefault={() => onlyBaseCat(c)}>{$_('foods.tier.only')}</button>
         </label>
       {/each}
     </div>
@@ -3129,6 +3135,19 @@
      reads as a label at a glance; sits in the slot a branded product would
      use for its brand, which a raw ingredient leaves empty. */
   .cat-swatch { background: hsl(var(--cat-h, 220) var(--cat-s, 42%) 55%); }
+  :global(.tier-only) {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  :global(.tier-only:hover) { color: var(--accent); background: var(--surface-3); }
 
   .cat-tag {
     /* .food-info is a flex column, which stretches its children to the full

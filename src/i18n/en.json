@@ -739,7 +739,8 @@
       "usda_branded_hint": "(brand-submitted)",
       "usda_experimental": "Experimental",
       "usda_experimental_hint": "(research)",
-      "base_categories": "Base categories"
+      "base_categories": "Base categories",
+      "only": "Only"
     },
     "search_placeholder": "Search foods or scan barcode...",
     "scan_barcode": "Scan Barcode",

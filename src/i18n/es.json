@@ -291,7 +291,8 @@
       "usda_branded_hint": "(cargado por la marca)",
       "usda_experimental": "Experimental",
       "usda_experimental_hint": "(investigación)",
-      "base_categories": "Categorías de Básicos"
+      "base_categories": "Categorías de Básicos",
+      "only": "Solo"
     },
     "search_placeholder": "Buscar alimentos o escanear código...",
     "scan_barcode": "Escanear código",
