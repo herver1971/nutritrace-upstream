@@ -214,7 +214,7 @@
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
                  is the only thing identifying where it sits. -->
             {#if _displayFood._baseCategoryLabel}
-              <span class="pill pill-cat">{_displayFood._baseCategoryLabel}</span>
+              <span class="pill pill-cat cat-{_displayFood._baseCategory}">{_displayFood._baseCategoryLabel}</span>
             {/if}
             {#if energyChip}
               <span class="pill">{energyChip}</span>
@@ -295,7 +295,7 @@
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
                  is the only thing identifying where it sits. -->
             {#if _displayFood._baseCategoryLabel}
-              <span class="pill pill-cat">{_displayFood._baseCategoryLabel}</span>
+              <span class="pill pill-cat cat-{_displayFood._baseCategory}">{_displayFood._baseCategoryLabel}</span>
             {/if}
             {#if energyChip}
               <span class="pill">{energyChip}</span>
@@ -396,7 +396,15 @@
     gap: 10px;
   }
   .brand { color: var(--text-3); font-size: 13px; font-weight: 500; }
-  .pill-cat { background: var(--surface-3); color: var(--text-2); }
+  .pill-cat {
+    --h: var(--cat-h, 220); --s: var(--cat-s, 42%);
+    color: hsl(var(--h) var(--s) 30%);
+    background: hsl(var(--h) var(--s) 93%);
+  }
+  :global([data-theme="dark"]) .pill-cat {
+    color: hsl(var(--h) calc(var(--s) + 18%) 72%);
+    background: hsl(var(--h) var(--s) 16%);
+  }
   .meta-pills { display: flex; gap: 6px; flex-wrap: wrap; }
   .pill {
     display: inline-flex; align-items: center; gap: 4px;

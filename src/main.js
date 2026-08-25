@@ -15,6 +15,7 @@ import './styles/base.css';
 import './styles/typography.css';
 import './styles/animations.css';
 import './styles/buttons.css';
+import './styles/food-categories.css';
 import './styles/forms.css';
 import App from './App.svelte';
 import { DB } from './lib/db.js';

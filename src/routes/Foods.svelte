@@ -2009,7 +2009,7 @@
                     {/if}
                   {:else}
                     {#if item.brand}<span class="food-brand text-3 text-sm">{item.brand}</span>
-                    {:else if item._baseCategoryLabel}<span class="cat-tag">{item._baseCategoryLabel}</span>{/if}
+                    {:else if item._baseCategoryLabel}<span class="cat-tag cat-{item._baseCategory}">{item._baseCategoryLabel}</span>{/if}
                     {#if _foodEnergy}
                       <span class="food-kcal text-sm">
                         {_foodEnergy.value.toLocaleString()} {_foodEnergy.unit}
@@ -2265,7 +2265,7 @@
                       {/if}
                     </span>
                     {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>
-                    {:else if food._baseCategoryLabel}<span class="cat-tag">{food._baseCategoryLabel}</span>{/if}
+                    {:else if food._baseCategoryLabel}<span class="cat-tag cat-{food._baseCategory}">{food._baseCategoryLabel}</span>{/if}
                     <span class="food-kcal text-sm">
                       {_foodEnergy.value.toLocaleString()} {_foodEnergy.unit}
                       {#if searchSource === 'off' && typeof food.completeness === 'number'}
@@ -3036,16 +3036,32 @@
      reads as a label at a glance; sits in the slot a branded product would
      use for its brand, which a raw ingredient leaves empty. */
   .cat-tag {
+    /* .food-info is a flex column, which stretches its children to the full
+       row width — the chip has to opt out or it reads as a grey band. */
+    align-self: flex-start;
     display: inline-block;
-    padding: 1px 7px;
+    padding: 0 7px;
     border-radius: 999px;
     font-size: 11px;
     font-weight: 600;
-    line-height: 1.5;
-    color: var(--text-2);
-    background: var(--surface-3);
-    border: 1px solid var(--border);
+    line-height: 17px;
     white-space: nowrap;
+    /* Categorical colour, deliberately NOT the traffic light's palette. The
+       light is semantic (green / amber / red) and already owns the row's left
+       edge and wash, so these hues sit in the teal→blue→violet→magenta arc
+       instead, and the three earth-toned categories are desaturated enough to
+       read as brown / tan / olive rather than as red or amber. Hue per
+       category, one formula for all of them. */
+    --h: var(--cat-h, 220); --s: var(--cat-s, 42%);
+    color: hsl(var(--h) var(--s) 30%);
+    background: hsl(var(--h) var(--s) 93%);
+    border: 1px solid hsl(var(--h) var(--s) 83%);
+  }
+  :global([data-theme="dark"]) .cat-tag,
+  :global(:root:not([data-theme="light"])) .cat-tag {
+    color: hsl(var(--h) calc(var(--s) + 18%) 72%);
+    background: hsl(var(--h) var(--s) 16%);
+    border-color: hsl(var(--h) var(--s) 26%);
   }
 
   /* Nutrition traffic light — a substitution hint, not a verdict. Rendered as

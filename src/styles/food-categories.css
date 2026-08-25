@@ -1,0 +1,28 @@
+/**
+ * Hue per base-catalogue category.
+ *
+ * These are categorical colours, not semantic ones. The nutrition traffic
+ * light already owns green / amber / red on the row's left edge and wash, so
+ * these hues sit in the teal→blue→violet→magenta arc instead, and the three
+ * earth-toned categories are desaturated enough to read as brown, tan and
+ * olive rather than as red or amber.
+ *
+ * Only the hue and saturation live here; each component decides how to spend
+ * them (a chip in the foods list, a pill in the detail sheet) so the two stay
+ * visually native to their surroundings while agreeing on the colour.
+ *
+ * Global rather than component-scoped because two components need the same
+ * map, and a custom property set here is readable by their scoped rules.
+ */
+.cat-verduras     { --cat-h: 168; --cat-s: 44%; }
+.cat-bebidas      { --cat-h: 191; --cat-s: 46%; }
+.cat-pescados     { --cat-h: 209; --cat-s: 48%; }
+.cat-lacteos      { --cat-h: 231; --cat-s: 40%; }
+.cat-legumbres    { --cat-h: 254; --cat-s: 38%; }
+.cat-frutos-secos { --cat-h: 276; --cat-s: 34%; }
+.cat-condimentos  { --cat-h: 296; --cat-s: 32%; }
+.cat-dulces       { --cat-h: 318; --cat-s: 40%; }
+.cat-frutas       { --cat-h: 338; --cat-s: 46%; }
+.cat-carnes       { --cat-h:  18; --cat-s: 30%; }
+.cat-cereales     { --cat-h:  36; --cat-s: 30%; }
+.cat-aceites      { --cat-h:  58; --cat-s: 26%; }
