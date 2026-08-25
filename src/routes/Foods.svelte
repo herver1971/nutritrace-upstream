@@ -272,6 +272,11 @@
   // set. Only applies for the dedicated OFF or USDA source; 'all' mode
   // keeps the raw mixed list.
   $: visibleApiResults = (() => {
+    // Applied here rather than where the results are assigned, so it also
+    // re-runs when the user's library finishes loading. Baked in at fetch
+    // time it silently produced the un-swapped catalogue entry whenever the
+    // browse won the race against the library load.
+    if (searchSource === 'base') return _mergeBaseResults(apiResults, 'base', _libraryByBarcode);
     if (searchSource === 'off' && offTiersFiltered) {
       return apiResults.filter(f => offTiersActive.has(_bucketOff(f.completeness)));
     }
@@ -392,7 +397,7 @@
     const items = await BaseFoods.browse(null, $locale);
     // A keystroke (or a source switch) may have landed while we awaited.
     if (activeTab !== 0 || searchSource !== 'base' || search.trim()) return;
-    apiResults   = _mergeBaseResults(items, 'base');
+    apiResults   = items;
     apiTotalHits = apiResults.length;
     apiHasMore   = false;
     apiPage      = 1;
@@ -420,8 +425,13 @@
    * In merged 'all' mode the local source already lists the saved row, so a
    * match is dropped rather than swapped -- swapping would show it twice.
    */
-  function _mergeBaseResults(items, mode) {
-    const lib = _libraryByBarcode;
+  // `lib` is passed in rather than read off _libraryByBarcode inside, so the
+  // reactive statements that call this list it as a dependency. Svelte only
+  // tracks what a reactive block references directly -- reading the map in
+  // here would leave the swap stale until something else invalidated the
+  // block, which is what made a saved food's photo appear only after
+  // visiting another source first.
+  function _mergeBaseResults(items, mode, lib) {
     if (!lib || lib.size === 0) return items;
     const out = [];
     for (const it of items || []) {
@@ -590,7 +600,7 @@
   $: _allModeItems = searchSource !== 'all' ? [] : [
     ...(_isSourceActive('local')  ? (_ownList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'local',  item })) : []),
     ...(_isSourceActive('shared') && _tabHasShared ? (_groupList || []).filter(f => search.trim() ? _fuzzyMatch(f, search) : false).map(item => ({ source: 'shared', item })) : []),
-    ...(_isSourceActive('base')   ? (baseResults   || []).map(item => ({ source: 'base',   item })) : []),
+    ...(_isSourceActive('base')   ? _mergeBaseResults(baseResults || [], 'all', _libraryByBarcode).map(item => ({ source: 'base',   item })) : []),
     ...(_isSourceActive('mealie') ? (mealieResults || []).map(item => ({ source: 'mealie', item })) : []),
     ...(_isSourceActive('off')    ? (offResults    || []).filter(f => !offTiersFiltered  || offTiersActive.has(_bucketOff(f.completeness))).map(item => ({ source: 'off',    item })) : []),
     ...(_isSourceActive('usda')   ? (usdaResults   || []).filter(f => !usdaTiersFiltered || usdaTiersActive.has(f.dataType || 'unknown')).map(item => ({ source: 'usda',   item })) : []),
@@ -619,7 +629,7 @@
         : searchSource === 'off'
           ? await API.searchByNameWithMeta(search, nextPage)
           : await USDA.searchByNameWithMeta(search, nextPage, usdaApiKey.get());
-      if (searchSource === 'base') r.items = _mergeBaseResults(r.items, 'base');
+
       // De-dup on stable id (avoids double-inserts if the API returns
       // overlap between pages, which USDA occasionally does for common terms).
       const seen = new Set(apiResults.map(x => x.id ?? x.barcode ?? x.name));
@@ -810,7 +820,7 @@
         // Local catalogue: no network call, so no try/catch around a fetch —
         // it resolves as fast as the dynamic import of the JSON chunk.
         const r = await BaseFoods.searchByNameWithMeta(search, 1, 50, { locale: $locale });
-        apiResults = _mergeBaseResults(r.items, 'base');
+        apiResults = r.items;
         apiTotalHits = r.totalHits;
         apiHasMore = r.hasMore;
         apiPage = r.page;
@@ -850,7 +860,7 @@
         mealieLoading = _mealieEnabled;
         if ($baseFoodsEnabled) {
           jobs.push(BaseFoods.searchByNameWithMeta(search, 1, ALL_MODE_PAGE_SIZE, { locale: $locale })
-            .then(r => { baseResults = _mergeBaseResults(r.items || [], 'all'); _allBaseTotal = r.totalHits; })
+            .then(r => { baseResults = r.items || []; _allBaseTotal = r.totalHits; })
             .catch(() => { baseResults = []; }));
         }
         if ($offEnabled) {
