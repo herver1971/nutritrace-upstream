@@ -274,6 +274,24 @@ function main() {
     });
   }
 
+  // Two curated entries resolving to the same SR Legacy row is not just
+  // redundant data -- they end up sharing a barcode (fdcId_<n>), which is the
+  // key the Foods screen uses for its keyed {#each}. Svelte throws on
+  // duplicate keys, and the thrown error takes the whole search view down
+  // until a full reload. ("tomate" and "tomate cherry" pointed at the same row
+  // and did exactly that.) If two names should share nutrition, one of them
+  // belongs in the other's `alias` list, not in a second entry.
+  const byFdc = new Map();
+  for (const f of out) {
+    if (!byFdc.has(f.fdc)) byFdc.set(f.fdc, []);
+    byFdc.get(f.fdc).push(f.id);
+  }
+  for (const [fdc, ids] of byFdc) {
+    if (ids.length > 1) {
+      problems.push(`fdc ${fdc} is claimed by ${ids.length} entries (${ids.join(', ')}) — they would share a barcode; fold all but one into the survivor's "alias" list`);
+    }
+  }
+
   if (problems.length) {
     console.error(`\n✗ ${problems.length} problem(s) — nothing written:\n`);
     for (const p of problems) console.error('  ' + p);

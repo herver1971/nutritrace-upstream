@@ -170,6 +170,47 @@ test('ensureUuids returns empty array for non-array input', () => {
   assert.deepEqual(ensureUuids({}), []);
 });
 
+test('ensureUuids adopts the server uuid of a matching entry instead of minting', () => {
+  const server = [_item('a'), _item('b')];
+  // A client that predates per-entry uuids strips them on every write.
+  const client = server.map(({ uuid, ...rest }) => rest);
+  const out = ensureUuids(client, server);
+  assert.deepEqual(out.map(i => i.uuid), ['a', 'b'], 'echoed entries keep server identity');
+});
+
+test('ensureUuids claims each server entry once, so real repeats still get fresh uuids', () => {
+  const server = [{ uuid: 'w1', amount: 500, time: '20:23' }];
+  const client = [{ amount: 500, time: '20:23' }, { amount: 500, time: '20:23' }];
+  const out = ensureUuids(client, server);
+  assert.equal(out[0].uuid, 'w1', 'first claims the server copy');
+  assert.ok(out[1].uuid && out[1].uuid !== 'w1', 'second is a genuinely new entry');
+});
+
+test('ensureUuids mints for an entry the server does not hold', () => {
+  const server = [_item('a')];
+  const client = [{ meal: 0, addedAt: '2026-08-10T10:00:00.000Z', name: 'item-a' },
+                  { meal: 1, addedAt: '2026-08-10T13:00:00.000Z', name: 'lunch' }];
+  const out = ensureUuids(client, server);
+  assert.equal(out[0].uuid, 'a');
+  assert.ok(out[1].uuid && out[1].uuid !== 'a', 'unmatched entry gets a fresh uuid');
+});
+
+test('regression: a client that strips uuids cannot double the day', () => {
+  // The 2026-08-24 incident: a pre-uuid client kept re-sending its copy of
+  // the day with the identity removed. Each write minted new uuids, the
+  // merge read them as additions, and five breakfast items became 2633 in
+  // four minutes. Adoption makes the same write idempotent.
+  const strip = items => items.map(({ uuid, ...rest }) => rest);
+  let server = [_item('a'), _item('b'), _item('c'), _item('d'), _item('e')];
+  let client = strip(server);
+  for (let cycle = 0; cycle < 10; cycle++) {
+    ({ merged: server } = mergeEntries(server, ensureUuids(client, server), [], []));
+    client = strip(server);
+  }
+  assert.equal(server.length, 5, 'day is stable across repeated legacy writes');
+  assert.deepEqual(server.map(i => i.uuid).sort(), ['a', 'b', 'c', 'd', 'e']);
+});
+
 test('regression: the 2026-08-11 incident cannot happen under the new merge', () => {
   // Reproduce the incident shape:
   //   - Server had 24 items on 2026-08-10 for user 1

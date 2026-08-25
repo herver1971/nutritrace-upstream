@@ -118,18 +118,50 @@ export function mergeEntries(serverEntries, clientEntries, deletedUuids, tombsto
 }
 
 /**
+ * Content signature for an entry that arrived without a uuid, used to
+ * re-attach it to the server copy it is an echo of. Items are keyed by meal
+ * slot + creation timestamp + name, water by amount + clock time: in both
+ * cases the fields a client round-trips verbatim. Returns null for anything
+ * carrying too little identity to match on, which falls back to a fresh uuid.
+ */
+function _identitySig(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  if (entry.name != null) return `i|${entry.meal ?? ''}|${entry.addedAt ?? ''}|${entry.name}`;
+  if (entry.amount != null && entry.time != null) return `w|${entry.amount}|${entry.time}`;
+  return null;
+}
+
+/**
  * Ensure every entry in `list` has a uuid, mutating the copy (not the
  * caller's array). Idempotent. Used on server-side reads to guarantee any
  * legacy row without uuids gets stable identity before the merge sees it.
+ *
+ * `adoptFrom` is the server's current entries for the same day. A client
+ * that predates per-entry uuids strips them on every write, so minting a
+ * fresh uuid for each incoming entry would make the merge read the client's
+ * own copy of the day as brand-new entries and append it alongside what the
+ * server already holds — doubling the day on every write. Matching such an
+ * entry back to the server copy it echoes keeps that client idempotent.
+ * Each server entry can be claimed only once, so a client that genuinely
+ * logged the same thing twice still gets two distinct uuids.
  */
-export function ensureUuids(list) {
+export function ensureUuids(list, adoptFrom = []) {
   if (!Array.isArray(list)) return [];
+  const adoptable = new Map();
+  for (const entry of (Array.isArray(adoptFrom) ? adoptFrom : [])) {
+    const sig = _identitySig(entry);
+    if (!sig || !entry.uuid || typeof entry.uuid !== 'string') continue;
+    if (!adoptable.has(sig)) adoptable.set(sig, []);
+    adoptable.get(sig).push(entry.uuid);
+  }
   let changed = false;
   const out = list.map(entry => {
     if (!entry || typeof entry !== 'object') return entry;
     if (entry.uuid && typeof entry.uuid === 'string') return entry;
     changed = true;
-    return { ...entry, uuid: randomUUID() };
+    const claimable = adoptable.get(_identitySig(entry));
+    const adopted = claimable && claimable.length ? claimable.shift() : null;
+    return { ...entry, uuid: adopted || randomUUID() };
   });
   return changed ? out : list;
 }

@@ -281,9 +281,9 @@ router.post('/push', wrap((req, res) => {
         const serverItems = existingRow ? JSON.parse(existingRow.items || '[]') : [];
         const serverWater = existingRow ? JSON.parse(existingRow.water || '[]') : [];
         const { merged: mergedItems, newTombstoneUuids: newItemTombstones } =
-          mergeEntries(serverItems, ensureUuids(d.items || []), deletedItemUuids, priorItemTombstones);
+          mergeEntries(serverItems, ensureUuids(d.items || [], serverItems), deletedItemUuids, priorItemTombstones);
         const { merged: mergedWater, newTombstoneUuids: newWaterTombstones } =
-          mergeEntries(serverWater, ensureUuids(d.water || []), deletedWaterUuids, priorWaterTombstones);
+          mergeEntries(serverWater, ensureUuids(d.water || [], serverWater), deletedWaterUuids, priorWaterTombstones);
 
         // body_stats: last-writer-wins with the issue-#81 empty guard.
         const incomingBsEmpty = !d.body_stats || (typeof d.body_stats === 'object' && Object.keys(d.body_stats).length === 0);

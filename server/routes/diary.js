@@ -129,9 +129,9 @@ router.put('/:date', wrap((req, res) => {
   // Merge. Any client entry with a uuid we've already tombstoned is
   // dropped; any server entry not mentioned by the client is preserved.
   const { merged: mergedItems, newTombstoneUuids: newItemTombstones } =
-    mergeEntries(serverItems, ensureUuids(items || []), deletedItemUuids, priorItemTombstones);
+    mergeEntries(serverItems, ensureUuids(items || [], serverItems), deletedItemUuids, priorItemTombstones);
   const { merged: mergedWater, newTombstoneUuids: newWaterTombstones } =
-    mergeEntries(serverWater, ensureUuids(water || []), deletedWaterUuids, priorWaterTombstones);
+    mergeEntries(serverWater, ensureUuids(water || [], serverWater), deletedWaterUuids, priorWaterTombstones);
 
   // body_stats: same empty-guard as before (issue #81).
   const incomingBsEmpty = !body_stats || (typeof body_stats === 'object' && Object.keys(body_stats).length === 0);
