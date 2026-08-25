@@ -1,8 +1,9 @@
 <script>
   import { onMount, tick } from 'svelte';
   import { pop } from 'svelte-spa-router';
-  import { _ } from 'svelte-i18n';
-  import { NtApi, API, USDA } from '../lib/api.js';
+  import { _, locale } from 'svelte-i18n';
+  import { NtApi, API, USDA, isSavedRecord } from '../lib/api.js';
+  import { BaseFoods } from '../lib/base-foods.js';
   import { Mealie } from '../lib/mealieApi.js';
   import BarcodeScanner from '../components/foods/BarcodeScanner.svelte';
   import { DB } from '../lib/db.js';
@@ -17,7 +18,7 @@
   import { showSuccess, showError } from '../stores/toast.js';
   import { editorState, clearMealEditorState } from '../stores/editorState.js';
   import { Nutrition, NUTRIMENTS } from '../lib/nutrition.js';
-  import { foodsShowCategories, foodsShowLabels, foodsShowNotes, foodCategories, cropPhotos, visibleNutriments, nutrimentsOrder, catName as _catName, catDisplay as _catDisplay, energyUnit, foodsSort, mealsSort, recipesSort, offEnabled, usdaEnabled, usdaApiKey } from '../stores/settings.js';
+  import { foodsShowCategories, foodsShowLabels, foodsShowNotes, foodCategories, cropPhotos, visibleNutriments, nutrimentsOrder, catName as _catName, catDisplay as _catDisplay, energyUnit, foodsSort, mealsSort, recipesSort, offEnabled, usdaEnabled, usdaApiKey, baseFoodsEnabled } from '../stores/settings.js';
   import { fitImageDataUrl } from '../lib/image-fit.js';
   import { draftKey as _mkDraftKey, loadDraft, loadDraftImg, clearDraft, makeDebouncedPersist } from '../lib/editor-draft.js';
   import { decimalInput, parseDecimal } from '../lib/decimal-input.js';
@@ -92,7 +93,7 @@
   // compositions, no external catalog to search). On pick from a non-local
   // source, the food is saved to local first so the ingredient row has a
   // persistent reference, matching Foods.svelte's pickFood flow.
-  let _pickerSource = 'local';      // 'local' | 'off' | 'usda' | 'mealie' | 'shared'
+  let _pickerSource = 'local';      // 'local' | 'base' | 'off' | 'usda' | 'mealie' | 'shared'
   let _pickerApiResults    = [];    // OFF / USDA results
   let _pickerMealieResults = [];    // Mealie recipe results
   let _pickerSharedFoods   = [];    // foods shared by other users
@@ -105,6 +106,7 @@
   const _pickerMealieEnabled = DB.getSetting('mealieEnabled', false);
   $: _pickerSourceOptions = [
     { value: 'local',  label: 'Local'        },
+    ...($baseFoodsEnabled                    ? [{ value: 'base',   label: $_('foods.sources.base') }] : []),
     ...($offEnabled                          ? [{ value: 'off',    label: 'OFF'        }] : []),
     ...($usdaEnabled                         ? [{ value: 'usda',   label: 'USDA'       }] : []),
     ...(_pickerMealieEnabled                 ? [{ value: 'mealie', label: 'Mealie'     }] : []),
@@ -332,7 +334,9 @@
     _pickerSearchTimeout = setTimeout(async () => {
       _pickerLoadingExt = true;
       try {
-        if (src === 'off') {
+        if (src === 'base') {
+          _pickerApiResults = await BaseFoods.searchByName(q, 1, { locale: $locale }) || [];
+        } else if (src === 'off') {
           _pickerApiResults = await API.searchByName(q) || [];
         } else if (src === 'usda') {
           const key = $usdaApiKey;
@@ -375,7 +379,7 @@
   // Local lists get the favorite-aware sort; external sources (OFF/USDA/
   // Mealie) come back pre-filtered + pre-ranked by their own API, so we
   // skip the local sort and the local search filter for those.
-  $: _isExternalSearch = pickerTab === 0 && (_pickerSource === 'off' || _pickerSource === 'usda' || _pickerSource === 'mealie');
+  $: _isExternalSearch = pickerTab === 0 && (_pickerSource === 'base' || _pickerSource === 'off' || _pickerSource === 'usda' || _pickerSource === 'mealie');
   $: _pickerListSorted = _isExternalSearch ? _pickerList : _applyPickerSort(_pickerList, _pickerSortMode);
   $: pickerFiltered = (_isExternalSearch || !pickerSearch)
     ? _pickerListSorted
@@ -467,9 +471,11 @@
         pickerFoods = await NtApi.getFoods();
         return mine;
       }
-      if (_pickerSource === 'off' || _pickerSource === 'usda' || _pickerSource === 'mealie') {
-        // OFF / USDA / Mealie items arrive without a numeric id — strip
-        // whatever placeholder is there and createFood to mint a real row.
+      if (_pickerSource === 'base' || _pickerSource === 'off' || _pickerSource === 'usda' || _pickerSource === 'mealie') {
+        // Catalogue / OFF / USDA / Mealie items arrive without a numeric id —
+        // strip whatever placeholder is there and createFood to mint a real
+        // row. Re-picking the same one is safe: the server de-duplicates on
+        // barcode and hands back the existing row instead of inserting again.
         const { id: _drop, ...rest } = food;
         const saved = await NtApi.createFood({ ...rest, created_at: food.dateTime || new Date().toISOString() });
         if (!saved) throw new Error('Create returned no food');
