@@ -2159,8 +2159,7 @@
                     {food.name}
                   </span>
                   {#if activeTab === 0}
-                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>
-                    {:else if food._baseCategoryLabel}<span class="cat-tag">{food._baseCategoryLabel}</span>{/if}
+                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>{/if}
                     <span class="food-kcal text-sm">{amountAndUnit(food.portion || 100, food.unit)}{#if food.nutrition_basis && ($showUnitMetadata || $warnUnitMismatch)} · <span class="food-basis text-3">per 100 {food.nutrition_basis}</span>{/if}{#if food._shared_by} · <span style="color:var(--accent)">by {food._shared_by}</span>{/if}</span>
                   {:else}
                     {@const _kcal = Math.round(Nutrition.sum((food.items||[]).map(i => Nutrition.calculate(i))).calories || food.nutrition?.calories || 0)}
@@ -2265,7 +2264,8 @@
                         {/if}
                       {/if}
                     </span>
-                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>{/if}
+                    {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>
+                    {:else if food._baseCategoryLabel}<span class="cat-tag">{food._baseCategoryLabel}</span>{/if}
                     <span class="food-kcal text-sm">
                       {_foodEnergy.value.toLocaleString()} {_foodEnergy.unit}
                       {#if searchSource === 'off' && typeof food.completeness === 'number'}

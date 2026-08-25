@@ -211,6 +211,11 @@
             <div class="brand">{_displayFood.brand}</div>
           {/if}
           <div class="meta-pills">
+            <!-- Catalogue category. A base-catalogue entry has no brand, so this
+                 is the only thing identifying where it sits. -->
+            {#if _displayFood._baseCategoryLabel}
+              <span class="pill pill-cat">{_displayFood._baseCategoryLabel}</span>
+            {/if}
             {#if energyChip}
               <span class="pill">{energyChip}</span>
             {/if}
@@ -287,6 +292,11 @@
             <div class="brand">{_displayFood.brand}</div>
           {/if}
           <div class="meta-pills">
+            <!-- Catalogue category. A base-catalogue entry has no brand, so this
+                 is the only thing identifying where it sits. -->
+            {#if _displayFood._baseCategoryLabel}
+              <span class="pill pill-cat">{_displayFood._baseCategoryLabel}</span>
+            {/if}
             {#if energyChip}
               <span class="pill">{energyChip}</span>
             {/if}
@@ -386,6 +396,7 @@
     gap: 10px;
   }
   .brand { color: var(--text-3); font-size: 13px; font-weight: 500; }
+  .pill-cat { background: var(--surface-3); color: var(--text-2); }
   .meta-pills { display: flex; gap: 6px; flex-wrap: wrap; }
   .pill {
     display: inline-flex; align-items: center; gap: 4px;
