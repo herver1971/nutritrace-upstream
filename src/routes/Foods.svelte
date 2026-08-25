@@ -2009,7 +2009,7 @@
                     {/if}
                   {:else}
                     {#if item.brand}<span class="food-brand text-3 text-sm">{item.brand}</span>
-                    {:else if item._baseCategoryLabel}<span class="food-brand text-3 text-sm">{item._baseCategoryLabel}</span>{/if}
+                    {:else if item._baseCategoryLabel}<span class="cat-tag">{item._baseCategoryLabel}</span>{/if}
                     {#if _foodEnergy}
                       <span class="food-kcal text-sm">
                         {_foodEnergy.value.toLocaleString()} {_foodEnergy.unit}
@@ -2160,7 +2160,7 @@
                   </span>
                   {#if activeTab === 0}
                     {#if food.brand}<span class="food-brand text-3 text-sm">{food.brand}</span>
-                    {:else if food._baseCategoryLabel}<span class="food-brand text-3 text-sm">{food._baseCategoryLabel}</span>{/if}
+                    {:else if food._baseCategoryLabel}<span class="cat-tag">{food._baseCategoryLabel}</span>{/if}
                     <span class="food-kcal text-sm">{amountAndUnit(food.portion || 100, food.unit)}{#if food.nutrition_basis && ($showUnitMetadata || $warnUnitMismatch)} · <span class="food-basis text-3">per 100 {food.nutrition_basis}</span>{/if}{#if food._shared_by} · <span style="color:var(--accent)">by {food._shared_by}</span>{/if}</span>
                   {:else}
                     {@const _kcal = Math.round(Nutrition.sum((food.items||[]).map(i => Nutrition.calculate(i))).calories || food.nutrition?.calories || 0)}
@@ -3032,6 +3032,21 @@
   .source-badge-shared { background: rgba(168, 85, 247, 0.14); color: rgb(168, 85, 247); }
   .source-badge-mealie { background: rgba(251, 146, 60, 0.14); color: rgb(234, 128, 42); }
   .lib-mark { margin-left: 6px; vertical-align: middle; }
+  /* Catalogue category tag. Rendered as a chip rather than muted text so it
+     reads as a label at a glance; sits in the slot a branded product would
+     use for its brand, which a raw ingredient leaves empty. */
+  .cat-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-2);
+    background: color-mix(in srgb, var(--text-2) 12%, transparent);
+    white-space: nowrap;
+  }
+
   /* Nutrition traffic light — a substitution hint, not a verdict. Rendered as
      a left edge plus a wash so it reads at a glance without fighting the
      card's own colours or the source badges. */

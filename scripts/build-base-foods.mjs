@@ -253,12 +253,25 @@ function trafficLight(cat, n) {
            : [bySugar, byFat].includes(LIGHT.AMBER) ? LIGHT.AMBER : LIGHT.GREEN;
     }
     case 'cereales': {
-      // Fibre per gram of carbohydrate, not grams of fibre: a cooked grain is
-      // mostly water, so absolute fibre would mark every cooked entry poor.
-      // This ratio survives cooking and is exactly the wholegrain signal —
-      // brown rice 0.047 vs white 0.016.
       if (!carb) return LIGHT.GREEN;
-      return band(-(fib / carb), -0.04, -0.02);
+      // Protein-dominant products (vital wheat gluten is 75 % protein) are not
+      // acting as a starch source; judging them on fibre is a category error.
+      if (v('proteins') > carb) return LIGHT.GREEN;
+      // Fibre per gram of carbohydrate, not grams of fibre: a cooked grain is
+      // mostly water, so absolute fibre alone would mark every cooked entry
+      // poor. The ratio survives cooking and is the wholegrain signal —
+      // brown rice 0.047 vs white 0.016.
+      //
+      // The ratio alone is not enough, though: glutinous rice also lands at
+      // 0.047 while being just as refined as any other white rice. Requiring a
+      // floor of real fibre as well demotes it, along with couscous and rice
+      // noodles. Millet sits 0.1 g under the floor and is demoted with them —
+      // no threshold separates it from couscous on these two numbers, and for
+      // a liver-fat goal erring against refined starch is the safer miss.
+      const ratio = fib / carb;
+      if (ratio >= 0.04 && fib >= 1.5) return LIGHT.GREEN;
+      if (ratio >= 0.02 && fib >= 0.8) return LIGHT.AMBER;
+      return LIGHT.RED;
     }
     case 'frutas':  return sug > 40 ? LIGHT.AMBER : LIGHT.GREEN;  // dried concentrates sugar
     case 'verduras': return LIGHT.GREEN;

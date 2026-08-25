@@ -42,5 +42,7 @@
   {"id": "pan-centeno", "cat": "cereales", "es": "Pan de centeno", "en": "Rye bread", "src": "Bread, rye", "alias": []},
   {"id": "pan-pita", "cat": "cereales", "es": "Pan pita", "en": "Pita bread", "src": "Bread, pita, white, unenriched", "alias": ["pan árabe"]},
   {"id": "pan-frances", "cat": "cereales", "es": "Pan francés (de panadería)", "en": "French / Vienna bread", "src": "Bread, french or vienna (includes sourdough)", "alias": ["pan de panadería", "flauta", "baguette", "pan crocante", "pan de masa madre"]},
-  {"id": "pan-italiano", "cat": "cereales", "es": "Pan italiano", "en": "Italian bread", "src": "Bread, Italian", "alias": ["pan italiano de panadería"]}
+  {"id": "pan-italiano", "cat": "cereales", "es": "Pan italiano", "en": "Italian bread", "src": "Bread, Italian", "alias": ["pan italiano de panadería"]},
+  {"id": "arroz-grano-corto-cocido", "cat": "cereales", "es": "Arroz blanco de grano corto cocido", "en": "Short-grain white rice, cooked", "src": "Rice, white, short-grain, cooked, unenriched", "alias": ["arroz de sushi", "arroz japonés", "koshihikari", "arroz para sushi", "arroz redondo"]},
+  {"id": "arroz-grano-corto", "cat": "cereales", "es": "Arroz blanco de grano corto crudo", "en": "Short-grain white rice, raw", "src": "Rice, white, short-grain, raw, unenriched", "alias": ["arroz de sushi crudo", "koshihikari crudo", "arroz redondo crudo"]}
 ]

@@ -232,24 +232,47 @@ mayormente agua).
 | 🟢 | Sorgo | 329 | 72.1 | 6.7 | 0.093 |
 | 🟢 | Arroz salvaje cocido | 101 | 21.3 | 1.8 | 0.084 |
 | 🟢 | Arroz integral cocido | 123 | 25.6 | 1.6 | 0.063 |
-| 🟢 | Cuscús cocido | 112 | 23.2 | 1.4 | 0.060 |
+| 🟡 | Cuscús cocido | 112 | 23.2 | 1.4 | 0.060 |
 | 🟢 | Harina de arroz integral | 363 | 76.5 | 4.6 | 0.060 |
-| 🟢 | Mijo cocido | 119 | 23.7 | 1.3 | 0.055 |
+| 🟡 | Mijo cocido | 119 | 23.7 | 1.3 | 0.055 |
 | 🟢 | Pan blanco de molde | 266 | 49.4 | 2.7 | 0.055 |
-| 🟢 | Arroz glutinoso | 97 | 21.1 | 1.0 | 0.047 |
+| 🟡 | Arroz glutinoso | 97 | 21.1 | 1.0 | 0.047 |
 | 🟢 | Arroz integral crudo | 367 | 76.3 | 3.6 | 0.047 |
 | 🟢 | Pan italiano | 259 | 48.1 | 2.1 | 0.044 |
 | 🟢 | Gluten de trigo | 370 | 13.8 | 0.6 | 0.044 |
 | 🟢 | Pan francés (de panadería) | 272 | 51.9 | 2.2 | 0.042 |
-| 🟢 | Fideos de arroz cocidos | 108 | 24.0 | 1.0 | 0.042 |
+| 🟡 | Fideos de arroz cocidos | 108 | 24.0 | 1.0 | 0.042 |
 | 🟡 | Pan pita | 275 | 55.7 | 2.2 | 0.039 |
 | 🔴 | Arroz blanco crudo | 365 | 80.0 | 1.3 | 0.016 |
 | 🔴 | Arroz blanco cocido | 130 | 28.2 | 0.4 | 0.014 |
 | 🔴 | Tapioca | 358 | 88.7 | 0.9 | 0.010 |
 | 🔴 | Almidón de maíz | 381 | 91.3 | 0.9 | 0.010 |
+| 🔴 | Arroz blanco de grano corto cocido | 130 | 28.7 | 0.0 | 0.000 |
+| 🔴 | Arroz blanco de grano corto crudo | 358 | 79.2 | 0.0 | 0.000 |
 | 🔴 | Fideos soba cocidos | 99 | 21.4 | 0.0 | 0.000 |
 | 🔴 | Pasta casera al huevo | 130 | 23.5 | 0.0 | 0.000 |
 | 🔴 | Pasta fresca cocida | 131 | 24.9 | 0.0 | 0.000 |
+
+### Arroz: cuál es cuál
+
+Tres cosas distintas que se confunden fácil:
+
+| | Qué es | En el catálogo |
+|---|---|---|
+| **Grano largo** | El arroz suelto de uso diario | Arroz blanco cocido/crudo 🔴 |
+| **Grano corto (japónica)** | El de sushi. **Koshihikari es este.** Se pega por su almidón, no por ser "glutinoso" | Arroz blanco de grano corto 🔴 |
+| **Glutinoso** (*mochigome*) | Variedad **distinta**, para mochi y postres. No se usa para sushi | Arroz glutinoso 🟡 |
+
+**El arroz de sushi no es arroz glutinoso.** Son variedades diferentes pese a
+que ambos queden pegajosos. Para Koshihikari corresponde *grano corto*.
+
+Nutricionalmente los tres son arroz blanco refinado y quedan igual de
+desaconsejados: la diferencia entre ellos es de textura, no de salud.
+El salto real es a **integral** (🟢), que triplica la fibra.
+
+> El 🟡 del glutinoso es un **falso positivo conocido** del criterio: su fibra
+> declarada en USDA (1,0 g) lo sube apenas por encima del blanco común. Sigue
+> siendo refinado.
 
 ### Lácteos y huevos
 
@@ -362,7 +385,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **359 🟢 · 42 🟡 · 54 🔴** sobre 455 alimentos.
+Reparto actual: **355 🟢 · 46 🟡 · 56 🔴** sobre 457 alimentos.
 
 ---
 
@@ -422,5 +445,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 455 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 457 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
