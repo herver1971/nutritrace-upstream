@@ -18,8 +18,14 @@ export const USDA_NUTRIENT_MAP = {
   1004: 'fat',
   1258: 'saturated-fat',
   1257: 'trans-fat',
-  1292: 'polyunsaturated-fat',
-  1268: 'monounsaturated-fat',
+  // 1292 is the MONOunsaturated total and 1293 the POLYunsaturated total, per
+  // FoodData Central's own nutrient table. These were swapped: 1292 was read
+  // as polyunsaturated, and monounsaturated was taken from 1268 — which is
+  // not a total at all but "MUFA 18:1", oleic acid alone. Olive oil came out
+  // as 13.8 g saturated + 71.3 mono + 73.0 poly = 158 g of fat per 100 g,
+  // which is how the swap surfaced.
+  1292: 'monounsaturated-fat',
+  1293: 'polyunsaturated-fat',
   1005: 'carbohydrates',
   2000: 'sugars',
   1235: 'added-sugars',
