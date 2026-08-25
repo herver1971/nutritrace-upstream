@@ -2174,7 +2174,10 @@
 
     {:else}
       <!-- ── External source results ─────────────────────────────────────────── -->
-      {#if !search.trim()}
+      <!-- The prompt is for sources that genuinely have nothing to show until
+           you type. Básicos does: it browses its bundled catalogue with an
+           empty box, so only fall back to the prompt when nothing is loaded. -->
+      {#if !search.trim() && apiResults.length === 0}
         <div class="empty-state">
           <span class="material-symbols-rounded empty-icon">search</span>
           <p>{$_('foods.search_in', { values: { source: _sourceLabel } })}</p>
