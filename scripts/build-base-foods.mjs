@@ -212,7 +212,17 @@ function buildPortions(rows, description) {
 // here and easy to re-tune.
 const LIGHT = { GREEN: 'green', AMBER: 'amber', RED: 'red' };
 
-function trafficLight(cat, n) {
+// Cooking drives off water, so 100 g of grilled beef is denser than 100 g of
+// the same cut raw: the tenderloin goes from 21.9 g protein and 1.96 g
+// saturated to 30.7 and 3.30. Nothing about it got less healthy — a fixed
+// per-100 g threshold simply penalises it for having lost water. Meat and fish
+// thresholds are scaled by that concentration for cooked entries so the same
+// cut lands on the same colour whichever way it is logged.
+const COOKED_RE = /\b(cooked|roasted|grilled|broiled|braised|boiled|baked|fried|stewed|microwaved|smoked)\b/i;
+const COOKED_FACTOR = 1.4;
+
+function trafficLight(cat, n, cooked = false) {
+  const k = cooked ? COOKED_FACTOR : 1;
   const v    = k => Number(n[k] || 0);
   const sat  = v('saturated-fat'), sug = v('sugars'), na = v('sodium');
   const fib  = v('fiber'), carb = v('carbohydrates'), kcal = v('calories');
@@ -235,7 +245,7 @@ function trafficLight(cat, n) {
       // Sodium matters here for the same reason it does for fish: curing is
       // what separates a fresh cut from ham or bacon, and lean ham passes the
       // fat test on its own (1.8 g saturated) while carrying 1200 mg sodium.
-      const byFat = band(sat, 3, 7);
+      const byFat = band(sat, 3 * k, 7 * k);
       if (na > 900) return LIGHT.RED;
       if (na > 400 && byFat === LIGHT.GREEN) return LIGHT.AMBER;
       return byFat;
@@ -244,7 +254,7 @@ function trafficLight(cat, n) {
     // Salting and smoking can, and that is the real difference between a
     // fresh fillet and salt cod.
     case 'pescados': return na > 1500 ? LIGHT.RED
-                          : (na > 600 || sat > 4) ? LIGHT.AMBER : LIGHT.GREEN;
+                          : (na > 600 || sat > 4 * k) ? LIGHT.AMBER : LIGHT.GREEN;
     case 'lacteos': {
       // Sugar has to be checked too, or dulce de leche passes on fat alone.
       const bySugar = band(sug, 12, 25);
@@ -364,7 +374,7 @@ function main() {
       alias: { es: e.alias || [] },
       nutrition,
       units: buildPortions(portionsByFood.get(food.fdc_id) || [], food.description),
-      light: trafficLight(e.cat, nutrition),
+      light: trafficLight(e.cat, nutrition, COOKED_RE.test(food.description)),
     });
   }
 

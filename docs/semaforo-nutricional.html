@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semáforo Nutricional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  --paper:#F6F7F5; --surface:#FFFFFF; --ink:#141C1B; --muted:#5D6E6C;
+  --accent:#0E4F4B; --accent-soft:#E2EDEB; --rule:#D5DCDA; --rule-hard:#141C1B;
+  --ok:#2F7D3A; --warn:#A8760C; --bad:#B33A2B;
+  --shadow:0 1px 2px rgba(20,28,27,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0E1514; --surface:#141E1D; --ink:#E4EBE9; --muted:#93A5A2;
+    --accent:#5BB8B2; --accent-soft:#172A28; --rule:#243230; --rule-hard:#4A605D;
+    --ok:#5DBE6B; --warn:#D9A62E; --bad:#E4705C;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0E1514; --surface:#141E1D; --ink:#E4EBE9; --muted:#93A5A2;
+  --accent:#5BB8B2; --accent-soft:#172A28; --rule:#243230; --rule-hard:#4A605D;
+  --ok:#5DBE6B; --warn:#D9A62E; --bad:#E4705C;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,serif; font-size:17px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:78rem; margin:0 auto; padding:0 1.5rem 6rem; }
+.col { max-width:38rem; }
+h1,h2,h3,.lbl,th,.dat { font-family:Archivo,"Helvetica Neue",Arial,sans-serif; }
+h1 { font-size:clamp(2.1rem,5vw,3.1rem); font-weight:700; letter-spacing:-.02em; line-height:1.05;
+     margin:0 0 .6rem; text-wrap:balance; }
+h2 { font-size:1.5rem; font-weight:700; letter-spacing:-.01em; margin:0 0 1.1rem;
+     padding-bottom:.5rem; border-bottom:3px solid var(--rule-hard); text-wrap:balance; }
+h3 { font-size:1.05rem; font-weight:600; letter-spacing:.01em; margin:2.4rem 0 .7rem; }
+p { margin:0 0 1.05rem; }
+a { color:var(--accent); }
+strong { font-weight:600; }
+.lbl { font-size:.72rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
+
+header { padding:4rem 0 2.4rem; border-bottom:1px solid var(--rule); margin-bottom:2.8rem; }
+.sub { font-size:1.13rem; color:var(--muted); max-width:34rem; margin:.9rem 0 0; }
+.meta { display:flex; flex-wrap:wrap; gap:1.6rem; margin-top:2rem; }
+.meta div { display:flex; flex-direction:column; gap:.15rem; }
+.meta .v { font-family:Archivo,sans-serif; font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums; }
+
+section { margin:0 0 4rem; }
+.toc { background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+        padding:1.3rem 1.5rem; margin:0 0 3.5rem; box-shadow:var(--shadow); max-width:38rem; }
+.toc ol { margin:.7rem 0 0; padding-left:1.2rem; columns:2; column-gap:2rem; font-size:.95rem; }
+.toc li { margin:.25rem 0; break-inside:avoid; }
+
+.note { border-left:3px solid var(--accent); background:var(--accent-soft);
+         padding:.9rem 1.2rem; margin:1.4rem 0; border-radius:0 3px 3px 0; max-width:38rem; }
+.note p:last-child { margin-bottom:0; }
+
+.scroll { overflow-x:auto; margin:1.2rem 0 .6rem; border:1px solid var(--rule);
+           border-radius:3px; background:var(--surface); }
+table { border-collapse:collapse; width:100%; font-size:.87rem; }
+th { font-size:.68rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--muted); text-align:right; padding:.7rem .7rem; white-space:nowrap;
+      border-bottom:2px solid var(--rule-hard); background:var(--surface);
+      position:sticky; top:0; }
+th.l { text-align:left; }
+td { padding:.42rem .7rem; border-bottom:1px solid var(--rule); }
+tr:last-child td { border-bottom:0; }
+.nm { font-family:Archivo,sans-serif; font-weight:500; white-space:nowrap; }
+.num { font-family:Archivo,sans-serif; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+.lt { width:1.6rem; padding-left:.8rem; }
+.dot { display:inline-block; width:.62rem; height:.62rem; border-radius:50%; vertical-align:middle; }
+.dot.g { background:var(--ok); } .dot.a { background:var(--warn); } .dot.r { background:var(--bad); }
+caption { caption-side:top; text-align:left; font-family:Archivo,sans-serif; font-size:.8rem;
+           color:var(--muted); padding:.7rem .8rem; border-bottom:1px solid var(--rule); }
+
+.crit { width:100%; border-collapse:collapse; font-size:.9rem; margin:1.2rem 0; }
+.crit th { position:static; text-align:left; }
+.crit td { vertical-align:top; padding:.6rem .7rem; }
+.crit td:first-child { font-family:Archivo,sans-serif; font-weight:600; white-space:nowrap; }
+
+.fam { display:grid; gap:1rem; margin:1.4rem 0; }
+@media (min-width:52rem) { .fam { grid-template-columns:repeat(2,1fr); } }
+.fam article { background:var(--surface); border:1px solid var(--rule); border-top:3px solid var(--rule-hard);
+                border-radius:0 0 3px 3px; padding:1.1rem 1.2rem; box-shadow:var(--shadow); }
+.fam article.t-bad { border-top-color:var(--bad); }
+.fam article.t-warn { border-top-color:var(--warn); }
+.fam article.t-ok { border-top-color:var(--ok); }
+.fam h4 { font-family:Archivo,sans-serif; font-size:.95rem; font-weight:700; margin:0 0 .45rem; }
+.fam p { font-size:.92rem; margin:0; color:var(--muted); }
+
+ol.pri { counter-reset:p; list-style:none; padding:0; margin:1.3rem 0; max-width:38rem; }
+ol.pri li { counter-increment:p; position:relative; padding-left:2.4rem; margin:0 0 .95rem; }
+ol.pri li::before { content:counter(p); position:absolute; left:0; top:.12rem;
+  font-family:Archivo,sans-serif; font-size:.75rem; font-weight:700; color:var(--accent);
+  border:1.5px solid var(--accent); border-radius:50%; width:1.5rem; height:1.5rem;
+  display:grid; place-items:center; }
+ul.plain { max-width:38rem; padding-left:1.15rem; }
+ul.plain li { margin:.45rem 0; }
+footer { border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--muted); font-size:.88rem; }
+code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
+        background:var(--accent-soft); padding:.1em .35em; border-radius:2px; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <p class="lbl">Catálogo de ingredientes base · NutriTrace</p>
+  <h1>Semáforo Nutricional</h1>
+  <p class="sub">Cómo se clasifican los 457 alimentos del catálogo, y el razonamiento nutricional
+  que hay detrás. Todos los valores son por 100&nbsp;g y salen de USDA FoodData Central.</p>
+  <div class="meta">
+    <div><span class="lbl">Alimentos</span><span class="v">457</span></div>
+    <div><span class="lbl">Verde</span><span class="v" style="color:var(--ok)">357</span></div>
+    <div><span class="lbl">Ámbar</span><span class="v" style="color:var(--warn)">44</span></div>
+    <div><span class="lbl">Rojo</span><span class="v" style="color:var(--bad)">56</span></div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contenidos">
+  <span class="lbl">Contenidos</span>
+  <ol>
+    <li><a href="#contexto">Contexto</a></li>
+    <li><a href="#grasas">Los tipos de grasa</a></li>
+    <li><a href="#hdl">Sobre subir el HDL</a></li>
+    <li><a href="#comparacion">Comparación de alimentos</a></li>
+    <li><a href="#arroz">Arroz: cuál es cuál</a></li>
+    <li><a href="#semaforo">Cómo funciona el semáforo</a></li>
+    <li><a href="#ejercicio">Ejercicio</a></li>
+    <li><a href="#prioridades">Prioridades</a></li>
+    <li><a href="#limites">Limitaciones</a></li>
+  </ol>
+</nav>
+
+<section id="contexto" class="col">
+  <h2>Contexto</h2>
+  <p>Dos objetivos simultáneos: <strong>colesterol</strong> ligeramente por encima del máximo
+  sin medicación, e <strong>hígado graso</strong> leve. Empujan casi siempre en la misma
+  dirección, con una diferencia que importa.</p>
+  <p><strong>Para el hígado, el azúcar y las harinas refinadas pesan tanto como la grasa.</strong>
+  La fructosa se metaboliza mayoritariamente en el hígado y estimula ahí mismo la producción
+  de grasa. Bebidas azucaradas y jugos son el blanco número uno.</p>
+  <div class="note"><p>Material educativo y herramienta de seguimiento personal.
+  <strong>No sustituye indicación médica.</strong></p></div>
+</section>
+
+<section id="grasas">
+  <div class="col"><h2>Los tipos de grasa</h2></div>
+  <div class="fam">
+    <article class="t-bad">
+      <h4>Trans industriales — las únicas inequívocamente dañinas</h4>
+      <p>Suben el LDL <em>y</em> bajan el HDL a la vez; ningún otro tipo hace ambas cosas.
+      La margarina tiene 14,89&nbsp;g/100&nbsp;g, órdenes de magnitud sobre todo lo demás.
+      Las trans naturales de rumiantes no muestran el mismo efecto.</p>
+    </article>
+    <article class="t-warn">
+      <h4>Saturadas — suben el LDL</h4>
+      <p>También suben algo el HDL, y la evidencia sobre desenlaces duros es más discutida
+      de lo que sugiere la versión popular. Lo establecido es el efecto de <em>reemplazo</em>:
+      importa por qué las reemplazás, no solo cuánto las bajás.</p>
+    </article>
+    <article class="t-ok">
+      <h4>Monoinsaturadas — el pilar seguro</h4>
+      <p>Bajan el LDL cuando desplazan saturadas y no perjudican el HDL. La familia con
+      mejor perfil riesgo-beneficio.</p>
+    </article>
+    <article class="t-ok">
+      <h4>Poliinsaturadas — las que más bajan el LDL</h4>
+      <p><strong>Omega-6:</strong> las más eficaces para bajar LDL; el planteo real es de
+      proporción, no de toxicidad. <strong>Omega-3:</strong> los marinos (EPA/DHA) tienen la
+      evidencia más sólida. El vegetal (ALA, lino y chía) se convierte muy mal y no reemplaza
+      al pescado.</p>
+    </article>
+  </div>
+</section>
+
+<section id="hdl" class="col">
+  <h2>Sobre «subir el colesterol bueno»</h2>
+  <p><strong>Subir el HDL resultó ser un mal objetivo.</strong> Los fármacos diseñados
+  específicamente para elevarlo —niacina, inhibidores de CETP— lo lograron y
+  <strong>no redujeron los eventos cardiovasculares</strong>. El HDL alto parece ser más un
+  <em>marcador</em> de buena salud metabólica que una causa de ella.</p>
+  <p>El objetivo con evidencia es <strong>bajar el LDL</strong>. Y lo único que mueve el HDL
+  de forma consistente es el <strong>ejercicio</strong>, no la dieta.</p>
+</section>
+
+<section id="comparacion">
+  <div class="col">
+    <h2>Comparación de alimentos</h2>
+    <p>Ordenados por el eje con que se los juzga. El punto de color es el semáforo.</p>
+  </div>
+
+  <h3>Aceites y grasas</h3>
+  <div class="col"><p>Todos son ~100&nbsp;g de grasa y ~884&nbsp;kcal: la energía no los
+  diferencia, <strong>la composición sí</strong>.</p></div>
+  <div class="scroll"><table>
+    <caption>Ordenado por proporción de saturada · gramos por 100 g</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>Grasa</th><th>Sat</th><th>Mono</th><th>Poli</th><th>% Sat</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de canola</td><td class="num">100.0</td><td class="num">7.4</td><td class="num">63.3</td><td class="num">28.1</td><td class="num">7%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de almendra</td><td class="num">100.0</td><td class="num">8.2</td><td class="num">69.9</td><td class="num">17.4</td><td class="num">9%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de lino</td><td class="num">100.0</td><td class="num">9.0</td><td class="num">18.4</td><td class="num">67.8</td><td class="num">9%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de nuez</td><td class="num">100.0</td><td class="num">9.1</td><td class="num">22.8</td><td class="num">63.3</td><td class="num">10%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de pepita de uva</td><td class="num">100.0</td><td class="num">9.6</td><td class="num">16.1</td><td class="num">69.9</td><td class="num">10%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de girasol alto oleico</td><td class="num">100.0</td><td class="num">9.9</td><td class="num">83.7</td><td class="num">3.8</td><td class="num">10%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de girasol</td><td class="num">100.0</td><td class="num">10.3</td><td class="num">19.5</td><td class="num">65.7</td><td class="num">11%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de palta</td><td class="num">100.0</td><td class="num">11.6</td><td class="num">70.6</td><td class="num">13.5</td><td class="num">12%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de maíz</td><td class="num">100.0</td><td class="num">12.9</td><td class="num">27.6</td><td class="num">54.7</td><td class="num">14%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de oliva</td><td class="num">100.0</td><td class="num">13.8</td><td class="num">73.0</td><td class="num">10.5</td><td class="num">14%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de sésamo</td><td class="num">100.0</td><td class="num">14.2</td><td class="num">39.7</td><td class="num">41.7</td><td class="num">15%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Mayonesa</td><td class="num">74.8</td><td class="num">11.7</td><td class="num">16.8</td><td class="num">44.7</td><td class="num">16%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Mayonesa light</td><td class="num">22.2</td><td class="num">3.4</td><td class="num">5.0</td><td class="num">13.0</td><td class="num">16%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de soja</td><td class="num">100.0</td><td class="num">15.7</td><td class="num">22.8</td><td class="num">57.7</td><td class="num">16%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de maní</td><td class="num">100.0</td><td class="num">16.9</td><td class="num">46.2</td><td class="num">32.0</td><td class="num">18%</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aderezo de aceite y vinagre</td><td class="num">50.1</td><td class="num">9.1</td><td class="num">14.8</td><td class="num">24.1</td><td class="num">19%</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Margarina</td><td class="num">80.7</td><td class="num">15.2</td><td class="num">38.9</td><td class="num">24.3</td><td class="num">19%</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Aceite de salvado de arroz</td><td class="num">100.0</td><td class="num">19.7</td><td class="num">39.3</td><td class="num">35.0</td><td class="num">21%</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Grasa de cerdo</td><td class="num">100.0</td><td class="num">39.2</td><td class="num">45.1</td><td class="num">11.2</td><td class="num">41%</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Aceite de palma</td><td class="num">100.0</td><td class="num">49.3</td><td class="num">37.0</td><td class="num">9.3</td><td class="num">52%</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Grasa vacuna</td><td class="num">100.0</td><td class="num">49.8</td><td class="num">41.8</td><td class="num">4.0</td><td class="num">52%</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Aceite de coco</td><td class="num">99.1</td><td class="num">82.5</td><td class="num">6.3</td><td class="num">1.7</td><td class="num">91%</td></tr></tbody>
+  </table></div>
+  <div class="col"><p>El <strong>girasol alto oleico</strong> es 86&nbsp;% monoinsaturado, más
+  que el propio oliva. Lo que no tiene son los polifenoles del virgen extra, que
+  <strong>ningún dato de USDA captura</strong>.</p></div>
+
+<div class="note"><p><strong>Crudo y cocido llevan el mismo color.</strong> Cocinar
+  evapora agua y concentra: el mismo lomo pasa de 21,9&nbsp;g de proteína y 1,96 de saturada
+  a 30,7 y 3,30. No se volvió menos sano — perdió agua. Los umbrales de carnes y pescados se
+  escalan para las entradas cocidas, así el mismo corte cae en el mismo color se anote como
+  se anote. <strong>Anotá lo que comés:</strong> si lo hacés a la parrilla, la entrada a la
+  parrilla.</p></div>
+
+  <h3>Carnes</h3>
+  <div class="col"><p>El sodio explica por qué las curadas quedan en rojo aunque su grasa
+  sea baja: el jamón magro pasa la prueba de grasa con 1&nbsp;203&nbsp;mg de sodio.</p></div>
+  <div class="scroll"><table>
+    <caption>Ordenado por grasa saturada · gramos por 100 g, sodio en mg</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Insat</th><th>Prot</th><th>Na</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pavo cruda</td><td class="num">114</td><td class="num">1.5</td><td class="num">0.3</td><td class="num">0.5</td><td class="num">23.7</td><td class="num">113</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pollo cruda (sin piel)</td><td class="num">120</td><td class="num">2.6</td><td class="num">0.6</td><td class="num">1.1</td><td class="num">22.5</td><td class="num">45</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Solomillo de cerdo crudo (magro)</td><td class="num">109</td><td class="num">2.2</td><td class="num">0.7</td><td class="num">1.2</td><td class="num">20.9</td><td class="num">53</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pollo al horno (sin piel)</td><td class="num">165</td><td class="num">3.6</td><td class="num">1.0</td><td class="num">2.0</td><td class="num">31.0</td><td class="num">74</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pata de pollo cruda (sin piel)</td><td class="num">120</td><td class="num">4.2</td><td class="num">1.1</td><td class="num">2.4</td><td class="num">19.2</td><td class="num">96</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Nalga cruda (magra)</td><td class="num">121</td><td class="num">2.9</td><td class="num">1.1</td><td class="num">1.5</td><td class="num">23.6</td><td class="num">54</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Hígado de ternera crudo</td><td class="num">135</td><td class="num">3.6</td><td class="num">1.2</td><td class="num">0.9</td><td class="num">20.4</td><td class="num">69</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Nalga al horno (magra)</td><td class="num">162</td><td class="num">3.8</td><td class="num">1.4</td><td class="num">1.9</td><td class="num">30.1</td><td class="num">67</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Hígado de pollo crudo</td><td class="num">119</td><td class="num">4.8</td><td class="num">1.6</td><td class="num">2.6</td><td class="num">16.9</td><td class="num">71</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Conejo crudo</td><td class="num">136</td><td class="num">5.5</td><td class="num">1.7</td><td class="num">2.6</td><td class="num">20.1</td><td class="num">41</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Jamón cocido magro</td><td class="num">145</td><td class="num">5.5</td><td class="num">1.8</td><td class="num">3.2</td><td class="num">20.9</td><td class="num">1203</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lomo de ternera crudo (magro)</td><td class="num">139</td><td class="num">5.7</td><td class="num">2.0</td><td class="num">2.5</td><td class="num">21.9</td><td class="num">44</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pavo picado</td><td class="num">148</td><td class="num">7.7</td><td class="num">2.0</td><td class="num">4.8</td><td class="num">19.7</td><td class="num">58</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Vacío crudo (magro)</td><td class="num">141</td><td class="num">5.5</td><td class="num">2.1</td><td class="num">2.1</td><td class="num">21.6</td><td class="num">55</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Carne picada magra (95/5)</td><td class="num">137</td><td class="num">5.0</td><td class="num">2.2</td><td class="num">2.3</td><td class="num">21.4</td><td class="num">66</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pollo al horno (con piel)</td><td class="num">197</td><td class="num">7.8</td><td class="num">2.2</td><td class="num">4.7</td><td class="num">29.8</td><td class="num">71</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pollo picado</td><td class="num">143</td><td class="num">8.1</td><td class="num">2.3</td><td class="num">5.1</td><td class="num">17.4</td><td class="num">60</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Muslo de pollo al horno (sin piel)</td><td class="num">179</td><td class="num">8.2</td><td class="num">2.3</td><td class="num">5.1</td><td class="num">24.8</td><td class="num">106</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pato sin piel crudo</td><td class="num">135</td><td class="num">6.0</td><td class="num">2.3</td><td class="num">2.3</td><td class="num">18.3</td><td class="num">74</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Bife angosto crudo (magro)</td><td class="num">143</td><td class="num">5.7</td><td class="num">2.3</td><td class="num">3.1</td><td class="num">23.1</td><td class="num">46</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pecho de ternera crudo (magro)</td><td class="num">157</td><td class="num">7.4</td><td class="num">2.6</td><td class="num">3.7</td><td class="num">20.7</td><td class="num">79</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pollo con piel</td><td class="num">172</td><td class="num">9.2</td><td class="num">2.7</td><td class="num">5.8</td><td class="num">20.9</td><td class="num">63</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Peceto crudo (con grasa)</td><td class="num">166</td><td class="num">8.2</td><td class="num">3.2</td><td class="num">3.9</td><td class="num">21.5</td><td class="num">58</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lomo de ternera a la parrilla (magro)</td><td class="num">198</td><td class="num">8.3</td><td class="num">3.3</td><td class="num">4.3</td><td class="num">30.7</td><td class="num">59</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Carne picada (90/10)</td><td class="num">176</td><td class="num">10.0</td><td class="num">3.9</td><td class="num">4.5</td><td class="num">20.0</td><td class="num">66</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Muslo de pollo al horno (con piel)</td><td class="num">232</td><td class="num">14.7</td><td class="num">4.1</td><td class="num">9.2</td><td class="num">23.3</td><td class="num">102</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Chuleta de cerdo cruda (con grasa)</td><td class="num">198</td><td class="num">12.6</td><td class="num">4.4</td><td class="num">7.0</td><td class="num">19.7</td><td class="num">50</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Muslo de pollo con piel crudo</td><td class="num">221</td><td class="num">16.6</td><td class="num">4.5</td><td class="num">10.4</td><td class="num">16.5</td><td class="num">81</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Ternera picada</td><td class="num">197</td><td class="num">13.1</td><td class="num">5.1</td><td class="num">6.9</td><td class="num">18.6</td><td class="num">103</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Entraña cruda (con grasa)</td><td class="num">238</td><td class="num">18.4</td><td class="num">7.4</td><td class="num">9.0</td><td class="num">17.7</td><td class="num">65</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Carne picada común (80/20)</td><td class="num">254</td><td class="num">20.0</td><td class="num">7.6</td><td class="num">9.4</td><td class="num">17.2</td><td class="num">66</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Carne de cerdo picada</td><td class="num">263</td><td class="num">21.2</td><td class="num">7.9</td><td class="num">11.3</td><td class="num">16.9</td><td class="num">56</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Ojo de bife crudo (con grasa)</td><td class="num">241</td><td class="num">18.4</td><td class="num">8.1</td><td class="num">9.5</td><td class="num">18.7</td><td class="num">51</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Cordero picado</td><td class="num">282</td><td class="num">23.4</td><td class="num">10.2</td><td class="num">11.4</td><td class="num">16.6</td><td class="num">59</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Panceta cocida</td><td class="num">548</td><td class="num">43.3</td><td class="num">14.2</td><td class="num">23.9</td><td class="num">35.7</td><td class="num">2193</td></tr></tbody>
+  </table></div>
+
+  <h3>Pescados y mariscos</h3>
+  <div class="col"><p><strong>Ninguno supera los 3,5&nbsp;g de saturada.</strong> La grasa no
+  los diferencia: la salazón y el ahumado, sí.</p></div>
+  <div class="scroll"><table>
+    <caption>Ordenado por grasa saturada · gramos por 100 g, sodio en mg</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Insat</th><th>Prot</th><th>Na</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Camarón cocido</td><td class="num">99</td><td class="num">0.3</td><td class="num">0.1</td><td class="num">0.1</td><td class="num">24.0</td><td class="num">111</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Camarón crudo</td><td class="num">85</td><td class="num">0.5</td><td class="num">0.1</td><td class="num">0.2</td><td class="num">20.1</td><td class="num">119</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Vieira cruda</td><td class="num">69</td><td class="num">0.5</td><td class="num">0.1</td><td class="num">0.2</td><td class="num">12.1</td><td class="num">392</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Bacalao crudo</td><td class="num">82</td><td class="num">0.7</td><td class="num">0.1</td><td class="num">0.3</td><td class="num">17.8</td><td class="num">54</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Abadejo crudo</td><td class="num">76</td><td class="num">0.8</td><td class="num">0.1</td><td class="num">0.4</td><td class="num">17.2</td><td class="num">159</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Atún crudo</td><td class="num">109</td><td class="num">0.5</td><td class="num">0.2</td><td class="num">0.3</td><td class="num">24.4</td><td class="num">45</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Langosta cruda</td><td class="num">77</td><td class="num">0.8</td><td class="num">0.2</td><td class="num">0.5</td><td class="num">16.5</td><td class="num">423</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Almeja cruda</td><td class="num">86</td><td class="num">1.0</td><td class="num">0.2</td><td class="num">0.3</td><td class="num">14.7</td><td class="num">601</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Surimi</td><td class="num">99</td><td class="num">0.9</td><td class="num">0.2</td><td class="num">0.6</td><td class="num">15.2</td><td class="num">143</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Cangrejo crudo</td><td class="num">87</td><td class="num">1.1</td><td class="num">0.2</td><td class="num">0.6</td><td class="num">18.1</td><td class="num">293</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pulpo crudo</td><td class="num">82</td><td class="num">1.0</td><td class="num">0.2</td><td class="num">0.4</td><td class="num">14.9</td><td class="num">230</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Mero crudo</td><td class="num">92</td><td class="num">1.0</td><td class="num">0.2</td><td class="num">0.5</td><td class="num">19.4</td><td class="num">53</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Merluza cruda</td><td class="num">90</td><td class="num">1.3</td><td class="num">0.2</td><td class="num">0.7</td><td class="num">18.3</td><td class="num">72</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pargo crudo</td><td class="num">100</td><td class="num">1.3</td><td class="num">0.3</td><td class="num">0.7</td><td class="num">20.5</td><td class="num">64</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Halibut crudo</td><td class="num">91</td><td class="num">1.3</td><td class="num">0.3</td><td class="num">0.8</td><td class="num">18.6</td><td class="num">68</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Calamar crudo</td><td class="num">92</td><td class="num">1.4</td><td class="num">0.4</td><td class="num">0.6</td><td class="num">15.6</td><td class="num">44</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Mejillón crudo</td><td class="num">86</td><td class="num">2.2</td><td class="num">0.4</td><td class="num">1.1</td><td class="num">11.9</td><td class="num">286</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lenguado crudo</td><td class="num">70</td><td class="num">1.9</td><td class="num">0.4</td><td class="num">0.9</td><td class="num">12.4</td><td class="num">296</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Bacalao salado</td><td class="num">290</td><td class="num">2.4</td><td class="num">0.5</td><td class="num">1.1</td><td class="num">62.8</td><td class="num">7027</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Ostra cruda</td><td class="num">81</td><td class="num">2.3</td><td class="num">0.5</td><td class="num">1.3</td><td class="num">9.4</td><td class="num">106</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lubina cruda</td><td class="num">97</td><td class="num">2.0</td><td class="num">0.5</td><td class="num">1.2</td><td class="num">18.4</td><td class="num">68</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Tilapia cruda</td><td class="num">96</td><td class="num">1.7</td><td class="num">0.6</td><td class="num">0.9</td><td class="num">20.1</td><td class="num">52</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Salmón ahumado</td><td class="num">117</td><td class="num">4.3</td><td class="num">0.9</td><td class="num">3.0</td><td class="num">18.3</td><td class="num">672</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Corvina cruda</td><td class="num">104</td><td class="num">3.2</td><td class="num">1.1</td><td class="num">1.6</td><td class="num">17.8</td><td class="num">56</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Trucha cruda</td><td class="num">148</td><td class="num">6.6</td><td class="num">1.1</td><td class="num">4.8</td><td class="num">20.8</td><td class="num">52</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Anchoa cruda</td><td class="num">131</td><td class="num">4.8</td><td class="num">1.3</td><td class="num">2.8</td><td class="num">20.4</td><td class="num">104</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Sardina en aceite</td><td class="num">208</td><td class="num">11.4</td><td class="num">1.5</td><td class="num">9.0</td><td class="num">24.6</td><td class="num">307</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pez espada crudo</td><td class="num">144</td><td class="num">6.7</td><td class="num">1.6</td><td class="num">4.2</td><td class="num">19.7</td><td class="num">81</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Arenque crudo</td><td class="num">158</td><td class="num">9.0</td><td class="num">2.0</td><td class="num">5.9</td><td class="num">18.0</td><td class="num">90</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Salmón cocido</td><td class="num">206</td><td class="num">12.3</td><td class="num">2.4</td><td class="num">8.7</td><td class="num">22.1</td><td class="num">61</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Salmón crudo</td><td class="num">208</td><td class="num">13.4</td><td class="num">3.0</td><td class="num">7.7</td><td class="num">20.4</td><td class="num">59</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Caballa cruda</td><td class="num">205</td><td class="num">13.9</td><td class="num">3.3</td><td class="num">8.8</td><td class="num">18.6</td><td class="num">90</td></tr></tbody>
+  </table></div>
+
+  <h3>Cereales y panes</h3>
+  <div class="col"><p>Ordenados por <strong>fibra sobre carbohidratos</strong>, que es la señal
+  de integral vs refinado y sobrevive a la cocción — la fibra absoluta no, porque un grano
+  cocido es mayormente agua.</p></div>
+  <div class="scroll"><table>
+    <caption>Ordenado por fibra sobre carbohidratos · gramos por 100 g</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Carb</th><th>Fibra</th><th>Fibra/Carb</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Salvado de trigo</td><td class="num">216</td><td class="num">64.5</td><td class="num">42.8</td><td class="num">0.663</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Germen de trigo</td><td class="num">360</td><td class="num">51.8</td><td class="num">13.2</td><td class="num">0.255</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Trigo burgol cocido</td><td class="num">83</td><td class="num">18.6</td><td class="num">4.5</td><td class="num">0.242</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Cebada integral</td><td class="num">354</td><td class="num">73.5</td><td class="num">17.3</td><td class="num">0.235</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Salvado de avena</td><td class="num">246</td><td class="num">66.2</td><td class="num">15.4</td><td class="num">0.233</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Centeno en grano</td><td class="num">338</td><td class="num">75.9</td><td class="num">15.1</td><td class="num">0.199</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina integral de trigo</td><td class="num">332</td><td class="num">74.5</td><td class="num">13.1</td><td class="num">0.176</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Trigo burgol crudo</td><td class="num">342</td><td class="num">75.9</td><td class="num">12.5</td><td class="num">0.165</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina de centeno</td><td class="num">349</td><td class="num">75.4</td><td class="num">11.8</td><td class="num">0.156</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Avena arrollada</td><td class="num">379</td><td class="num">67.7</td><td class="num">10.1</td><td class="num">0.149</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Espelta cocida</td><td class="num">127</td><td class="num">26.4</td><td class="num">3.9</td><td class="num">0.148</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Avena cocida</td><td class="num">71</td><td class="num">12.0</td><td class="num">1.7</td><td class="num">0.142</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Teff cocido</td><td class="num">101</td><td class="num">19.9</td><td class="num">2.8</td><td class="num">0.141</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pan integral</td><td class="num">252</td><td class="num">42.7</td><td class="num">6.0</td><td class="num">0.140</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Trigo sarraceno</td><td class="num">343</td><td class="num">71.5</td><td class="num">10.0</td><td class="num">0.140</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Cebada perlada cocida</td><td class="num">123</td><td class="num">28.2</td><td class="num">3.8</td><td class="num">0.135</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Quinoa cocida</td><td class="num">120</td><td class="num">21.3</td><td class="num">2.8</td><td class="num">0.131</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pan de centeno</td><td class="num">259</td><td class="num">48.3</td><td class="num">5.8</td><td class="num">0.120</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Amaranto cocido</td><td class="num">102</td><td class="num">18.7</td><td class="num">2.1</td><td class="num">0.112</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Quinoa cruda</td><td class="num">368</td><td class="num">64.2</td><td class="num">7.0</td><td class="num">0.109</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Amaranto crudo</td><td class="num">371</td><td class="num">65.2</td><td class="num">6.7</td><td class="num">0.103</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina de maíz blanca</td><td class="num">361</td><td class="num">76.8</td><td class="num">7.3</td><td class="num">0.095</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina de maíz</td><td class="num">362</td><td class="num">76.9</td><td class="num">7.3</td><td class="num">0.095</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Sorgo</td><td class="num">329</td><td class="num">72.1</td><td class="num">6.7</td><td class="num">0.093</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Arroz salvaje cocido</td><td class="num">101</td><td class="num">21.3</td><td class="num">1.8</td><td class="num">0.084</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Arroz integral cocido</td><td class="num">123</td><td class="num">25.6</td><td class="num">1.6</td><td class="num">0.063</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Cuscús cocido</td><td class="num">112</td><td class="num">23.2</td><td class="num">1.4</td><td class="num">0.060</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina de arroz integral</td><td class="num">363</td><td class="num">76.5</td><td class="num">4.6</td><td class="num">0.060</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Mijo cocido</td><td class="num">119</td><td class="num">23.7</td><td class="num">1.3</td><td class="num">0.055</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pan blanco de molde</td><td class="num">266</td><td class="num">49.4</td><td class="num">2.7</td><td class="num">0.055</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Arroz glutinoso</td><td class="num">97</td><td class="num">21.1</td><td class="num">1.0</td><td class="num">0.047</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Arroz integral crudo</td><td class="num">367</td><td class="num">76.2</td><td class="num">3.6</td><td class="num">0.047</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pan italiano</td><td class="num">259</td><td class="num">48.1</td><td class="num">2.1</td><td class="num">0.044</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Gluten de trigo</td><td class="num">370</td><td class="num">13.8</td><td class="num">0.6</td><td class="num">0.044</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pan francés (de panadería)</td><td class="num">272</td><td class="num">51.9</td><td class="num">2.2</td><td class="num">0.042</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Fideos de arroz cocidos</td><td class="num">108</td><td class="num">24.0</td><td class="num">1.0</td><td class="num">0.042</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Pan pita</td><td class="num">275</td><td class="num">55.7</td><td class="num">2.2</td><td class="num">0.039</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Arroz blanco crudo</td><td class="num">365</td><td class="num">80.0</td><td class="num">1.3</td><td class="num">0.016</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Arroz blanco cocido</td><td class="num">130</td><td class="num">28.2</td><td class="num">0.4</td><td class="num">0.014</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Tapioca</td><td class="num">358</td><td class="num">88.7</td><td class="num">0.9</td><td class="num">0.010</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Almidón de maíz</td><td class="num">381</td><td class="num">91.3</td><td class="num">0.9</td><td class="num">0.010</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Arroz blanco de grano corto cocido</td><td class="num">130</td><td class="num">28.7</td><td class="num">0.0</td><td class="num">0.000</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Arroz blanco de grano corto crudo</td><td class="num">358</td><td class="num">79.2</td><td class="num">0.0</td><td class="num">0.000</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Fideos soba cocidos</td><td class="num">99</td><td class="num">21.4</td><td class="num">0.0</td><td class="num">0.000</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Pasta casera al huevo</td><td class="num">130</td><td class="num">23.5</td><td class="num">0.0</td><td class="num">0.000</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Pasta fresca cocida</td><td class="num">131</td><td class="num">24.9</td><td class="num">0.0</td><td class="num">0.000</td></tr></tbody>
+  </table></div>
+
+  <h3>Lácteos y huevos</h3>
+  <div class="scroll"><table>
+    <caption>Ordenado por grasa saturada · gramos por 100 g</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Azúcar</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Clara de huevo</td><td class="num">52</td><td class="num">0.2</td><td class="num">0.0</td><td class="num">0.7</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche descremada</td><td class="num">34</td><td class="num">0.1</td><td class="num">0.1</td><td class="num">5.1</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Yogur natural descremado</td><td class="num">56</td><td class="num">0.2</td><td class="num">0.1</td><td class="num">7.7</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Yogur griego descremado</td><td class="num">59</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">3.2</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche parcialmente descremada</td><td class="num">42</td><td class="num">1.0</td><td class="num">0.6</td><td class="num">5.2</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Queso cottage light</td><td class="num">81</td><td class="num">2.3</td><td class="num">1.2</td><td class="num">4.0</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Queso cottage</td><td class="num">98</td><td class="num">4.3</td><td class="num">1.7</td><td class="num">2.7</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche entera</td><td class="num">61</td><td class="num">3.2</td><td class="num">1.9</td><td class="num">5.0</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yogur natural entero</td><td class="num">61</td><td class="num">3.2</td><td class="num">2.1</td><td class="num">4.7</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yogur griego natural</td><td class="num">97</td><td class="num">5.0</td><td class="num">2.4</td><td class="num">4.0</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Leche de cabra</td><td class="num">69</td><td class="num">4.1</td><td class="num">2.7</td><td class="num">4.5</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Huevo crudo</td><td class="num">143</td><td class="num">9.5</td><td class="num">3.1</td><td class="num">0.4</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Huevo duro</td><td class="num">155</td><td class="num">10.6</td><td class="num">3.3</td><td class="num">1.1</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Huevo revuelto</td><td class="num">149</td><td class="num">11.0</td><td class="num">3.3</td><td class="num">1.4</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Huevo frito</td><td class="num">196</td><td class="num">14.8</td><td class="num">4.3</td><td class="num">0.4</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Dulce de leche</td><td class="num">315</td><td class="num">7.3</td><td class="num">4.5</td><td class="num">49.7</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Ricota descremada</td><td class="num">138</td><td class="num">7.9</td><td class="num">4.9</td><td class="num">0.3</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Ricota</td><td class="num">150</td><td class="num">10.2</td><td class="num">6.4</td><td class="num">0.3</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yema de huevo</td><td class="num">322</td><td class="num">26.5</td><td class="num">9.6</td><td class="num">0.6</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Mozzarella descremada</td><td class="num">254</td><td class="num">15.9</td><td class="num">10.1</td><td class="num">1.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Crema agria</td><td class="num">198</td><td class="num">19.4</td><td class="num">10.1</td><td class="num">3.4</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Crema liviana</td><td class="num">195</td><td class="num">19.1</td><td class="num">10.2</td><td class="num">3.7</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso fresco</td><td class="num">299</td><td class="num">23.8</td><td class="num">12.9</td><td class="num">2.3</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso feta</td><td class="num">265</td><td class="num">21.5</td><td class="num">13.3</td><td class="num">0.0</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso blanco</td><td class="num">310</td><td class="num">24.3</td><td class="num">13.7</td><td class="num">1.8</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso mozzarella</td><td class="num">299</td><td class="num">22.1</td><td class="num">13.9</td><td class="num">0.0</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso parmesano</td><td class="num">392</td><td class="num">25.0</td><td class="num">14.8</td><td class="num">0.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso camembert</td><td class="num">300</td><td class="num">24.3</td><td class="num">15.3</td><td class="num">0.5</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Leche en polvo entera</td><td class="num">496</td><td class="num">26.7</td><td class="num">16.7</td><td class="num">38.4</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso provolone</td><td class="num">351</td><td class="num">26.6</td><td class="num">17.1</td><td class="num">0.6</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso brie</td><td class="num">334</td><td class="num">27.7</td><td class="num">17.4</td><td class="num">0.5</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso gouda</td><td class="num">356</td><td class="num">27.4</td><td class="num">17.6</td><td class="num">2.2</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso suizo</td><td class="num">393</td><td class="num">31.0</td><td class="num">18.2</td><td class="num">0.0</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso azul</td><td class="num">353</td><td class="num">28.7</td><td class="num">18.7</td><td class="num">0.5</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso cheddar</td><td class="num">403</td><td class="num">33.3</td><td class="num">18.9</td><td class="num">0.5</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso gruyere</td><td class="num">413</td><td class="num">32.3</td><td class="num">18.9</td><td class="num">0.4</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso cremoso</td><td class="num">373</td><td class="num">30.3</td><td class="num">19.1</td><td class="num">0.5</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso crema</td><td class="num">350</td><td class="num">34.4</td><td class="num">20.2</td><td class="num">3.8</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso de cabra</td><td class="num">364</td><td class="num">29.8</td><td class="num">20.6</td><td class="num">0.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Crema de leche</td><td class="num">340</td><td class="num">36.1</td><td class="num">23.0</td><td class="num">2.9</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Manteca</td><td class="num">717</td><td class="num">81.1</td><td class="num">50.5</td><td class="num">0.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Manteca con sal</td><td class="num">717</td><td class="num">81.1</td><td class="num">51.4</td><td class="num">0.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Ghee</td><td class="num">900</td><td class="num">100.0</td><td class="num">60.0</td><td class="num">0.0</td></tr></tbody>
+  </table></div>
+</section>
+
+<section id="arroz" class="col">
+  <h2>Arroz: cuál es cuál</h2>
+  <p>Tres cosas distintas que se confunden fácil:</p>
+  <table class="crit">
+    <tbody>
+      <tr><td>Grano largo</td><td>El arroz suelto de uso diario. <span class="dat">🔴</span></td></tr>
+      <tr><td>Grano corto<br><span class="lbl">japónica</span></td><td>El de sushi.
+        <strong>Koshihikari es este.</strong> Se pega por su almidón, no por ser «glutinoso».
+        <span class="dat">🔴</span></td></tr>
+      <tr><td>Glutinoso<br><span class="lbl">mochigome</span></td><td>Variedad <strong>distinta</strong>,
+        para mochi y postres. No se usa para sushi. <span class="dat">🟡</span></td></tr>
+    </tbody>
+  </table>
+  <p><strong>El arroz de sushi no es arroz glutinoso.</strong> Son variedades diferentes pese
+  a que ambos queden pegajosos. Nutricionalmente los tres son arroz blanco refinado: la
+  diferencia entre ellos es de textura, no de salud. El salto real es a
+  <strong>integral</strong>, que triplica la fibra.</p>
+  <div class="note"><p>El ámbar del glutinoso es un <strong>falso positivo conocido</strong>
+  del criterio: su fibra declarada en USDA (1,0&nbsp;g) lo sube apenas por encima del blanco
+  común. Sigue siendo refinado.</p></div>
+</section>
+
+<section id="semaforo">
+  <div class="col">
+    <h2>Cómo funciona el semáforo</h2>
+    <p><strong>Es</strong> una ayuda para <em>sustituir</em>: responde «dentro de esta
+    categoría, ¿es mejor o peor que sus vecinos?». Esa es la comparación que se traduce en
+    cambiar lo que comés.</p>
+    <p><strong>No es</strong> un veredicto de salud sobre el alimento aislado, ni un estándar
+    validado. Los umbrales son criterio propio, calibrados contra la dispersión real de
+    este catálogo.</p>
+
+    <h3>Por qué no se usó Nutri-Score ni el sistema FSA</h3>
+    <p>Ambos se evaluaron y se descartaron: están diseñados para <strong>productos
+    envasados</strong>. Aplicados a alimentos enteros castigan por densidad energética —
+    frutos secos y aceite de oliva quedan mal parados, justo los que conviene comer.</p>
+
+    <h3>El intento que falló</h3>
+    <p>La primera versión usaba <strong>una sola fórmula para todas las categorías</strong>.
+    Resultado: aceite de oliva peor que el de girasol, caballa en rojo, almidón de maíz en
+    verde y cebolla en rojo.</p>
+    <p>La causa: <strong>el eje que separa un buen aceite no es el que separa un buen
+    cereal.</strong> Un aceite se juzga por su composición grasa; un cereal por su fibra;
+    un pescado por su sal.</p>
+  </div>
+
+  <h3>Criterios por categoría</h3>
+  <div class="scroll"><table class="crit">
+    <thead><tr><th class="l">Categoría</th><th class="l">Eje</th><th class="l">Umbrales</th><th class="l">Por qué ese eje</th></tr></thead>
+    <tbody>
+      <tr><td>Aceites</td><td>% saturada sobre grasa total</td><td>🟢 ≤20% · 🟡 ≤45%<br>trans &gt;2 g → 🔴</td><td>Todos son ~100 g de grasa; solo la composición los distingue</td></tr>
+      <tr><td>Carnes</td><td>Saturada + sodio</td><td>🟢 ≤3 · 🟡 ≤7<br>Na &gt;900 → 🔴</td><td>El curado separa un corte fresco de un fiambre</td></tr>
+      <tr><td>Pescados</td><td>Sodio</td><td>Na &gt;1500 → 🔴<br>Na &gt;600 o sat &gt;4 → 🟡</td><td>Ninguno pasa 3,5 g de saturada: la salazón sí los separa</td></tr>
+      <tr><td>Lácteos</td><td>Saturada y azúcar,<br>la peor de las dos</td><td>sat 🟢 ≤2 · 🟡 ≤10<br>azúcar 🟢 ≤12 · 🟡 ≤25</td><td>Sin el azúcar, el dulce de leche pasaba por la grasa sola</td></tr>
+      <tr><td>Cereales</td><td>Fibra / carbohidratos<br>con piso de fibra</td><td>🟢 ≥0,04 y ≥1,5 g<br>🟡 ≥0,02 y ≥0,8 g</td><td>El ratio solo no basta: el glutinoso también llega a 0,047 siendo refinado</td></tr>
+      <tr><td>Frutas</td><td>Azúcar</td><td>🟡 si &gt;40 g</td><td>Solo las desecadas concentran azúcar; la fruta entera no es el problema</td></tr>
+      <tr><td>Verduras</td><td>—</td><td>Siempre 🟢</td><td>No hay diferencias relevantes para estos objetivos</td></tr>
+      <tr><td>Legumbres</td><td>Sodio</td><td>🟡 si &gt;600</td><td>Distingue el grano del miso y la salsa de soja</td></tr>
+      <tr><td>Frutos secos</td><td>Sodio</td><td>🟡 si &gt;300</td><td>Distingue el natural del salado</td></tr>
+      <tr><td>Dulces</td><td>Azúcar</td><td>🟢 ≤10 · 🟡 ≤40</td><td>Es el eje, sin vueltas</td></tr>
+      <tr><td>Condimentos</td><td>Sodio</td><td>🟢 ≤800 · 🟡 ≤3000</td><td>Aísla la sal del resto de las especias</td></tr>
+      <tr><td>Bebidas</td><td>Azúcar + alcohol</td><td>🟢 ≤4 · 🟡 ≤10<br>alcohol → 🟡</td><td>El azúcar no ve las calorías del alcohol</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+    <h3>Dónde vive y cómo se recalibra</h3>
+    <p>El color se <strong>precomputa</strong> en <code>scripts/build-base-foods.mjs</code>
+    (función <code>trafficLight</code>) y se commitea dentro de
+    <code>src/lib/base-foods.json</code>. Es deliberado: los criterios quedan
+    <strong>auditables en el diff</strong>, no escondidos en código de runtime.</p>
+    <p>Para ajustar un umbral: editar <code>trafficLight</code>, correr el script, revisar
+    el diff del JSON.</p>
+  </div>
+</section>
+
+<section id="ejercicio" class="col">
+  <h2>Ejercicio</h2>
+  <p><strong>Fuerza, 2-3 veces por semana</strong> es lo de mayor impacto para hígado graso.
+  El motor del hígado graso es la resistencia a la insulina, y el músculo es el principal
+  consumidor de glucosa del cuerpo.</p>
+  <p>El dato que más motiva: <strong>el ejercicio reduce la grasa hepática incluso sin bajar
+  de peso.</strong> No dependés de la balanza para que el hígado mejore.</p>
+  <p>No hace falta gimnasio: peso corporal, bandas o mancuernas. Lo que importa es la
+  <strong>progresión</strong>. Complemento: agregarle intensidad a la caminata que ya se
+  hace — cuestas o tramos rápidos de 1-2 minutos, más eficiente que caminar más despacio
+  durante más rato.</p>
+</section>
+
+<section id="prioridades" class="col">
+  <h2>Prioridades del día a día</h2>
+  <ol class="pri">
+    <li><strong>Sacar la margarina.</strong> Único ítem con trans industriales en cantidad
+    relevante. Reemplazar por oliva o palta.</li>
+    <li><strong>Reemplazar, no solo restar.</strong> Manteca → aceite de oliva baja el LDL.
+    Manteca → pan blanco, no.</li>
+    <li><strong>Pescado graso 2 veces por semana.</strong> Salmón, sardina, caballa.
+    No se reemplaza con chía ni lino.</li>
+    <li><strong>Un puñado de frutos secos.</strong> Nuez (omega-6 y ALA) o almendra
+    (monoinsaturada).</li>
+    <li><strong>Fibra soluble.</strong> Avena, cebada y legumbres bajan el LDL y sacian.</li>
+    <li><strong>Cuidado con el coco.</strong> 91&nbsp;% saturada, más que la manteca.</li>
+    <li><strong>Jugos y bebidas azucaradas primero.</strong> Para el hígado son la palanca
+    más grande.</li>
+  </ol>
+</section>
+
+<section id="limites" class="col">
+  <h2>Limitaciones conocidas</h2>
+  <ul class="plain">
+    <li><strong>Los datos son de USDA</strong>, con alimentos y variedades de EE.UU. Un corte
+    argentino puede diferir del equivalente de la tabla.</li>
+    <li><strong>El virgen extra y el refinado figuran igual.</strong> USDA no mide polifenoles,
+    que son parte de por qué el virgen extra se considera mejor.</li>
+    <li><strong>El azúcar declarado es total, no libre.</strong> Por eso las frutas enteras se
+    eximen explícitamente en el criterio.</li>
+    <li><strong>No hay café en grano ni capuchino</strong> en SR Legacy. Para espresso la
+    entrada correcta es <em>Café espresso</em>: el grano queda casi todo en la pastilla.</li>
+    <li><strong>El semáforo compara dentro de la categoría.</strong> Un 🟢 en dulces no
+    equivale a un 🟢 en verduras.</li>
+  </ul>
+</section>
+
+<footer class="col">
+  <p>Generado a partir del catálogo de 457 ingredientes base de NutriTrace.
+  Datos: USDA FoodData Central, SR Legacy (dominio público).
+  Se regenera con <code>node scripts/build-base-foods.mjs</code>.</p>
+</footer>
+</div>
+</body>
+</html>

@@ -3043,7 +3043,8 @@
     font-weight: 600;
     line-height: 1.5;
     color: var(--text-2);
-    background: color-mix(in srgb, var(--text-2) 12%, transparent);
+    background: var(--surface-3);
+    border: 1px solid var(--border);
     white-space: nowrap;
   }
 
@@ -3051,9 +3052,9 @@
      a left edge plus a wash so it reads at a glance without fighting the
      card's own colours or the source badges. */
   .nl-green, .nl-amber, .nl-red { border-left: 4px solid transparent; }
-  .nl-green { border-left-color: rgb(34, 197, 94);  background: color-mix(in srgb, rgb(34, 197, 94) 6%, var(--surface, transparent)); }
-  .nl-amber { border-left-color: rgb(234, 179, 8);  background: color-mix(in srgb, rgb(234, 179, 8) 7%, var(--surface, transparent)); }
-  .nl-red   { border-left-color: rgb(239, 68, 68);  background: color-mix(in srgb, rgb(239, 68, 68) 7%, var(--surface, transparent)); }
+  .nl-green { border-left-color: rgb(34, 197, 94);  background: color-mix(in srgb, rgb(34, 197, 94) 9%, var(--surface-1)); }
+  .nl-amber { border-left-color: rgb(234, 179, 8);  background: color-mix(in srgb, rgb(234, 179, 8) 11%, var(--surface-1)); }
+  .nl-red   { border-left-color: rgb(239, 68, 68);  background: color-mix(in srgb, rgb(239, 68, 68) 11%, var(--surface-1)); }
 
   .source-badge-base   { background: rgba(16, 185, 129, 0.14); color: rgb(13, 148, 105); }
   .source-badge-usda   { background: rgba(59, 130, 246, 0.14); color: rgb(59, 130, 246); }
