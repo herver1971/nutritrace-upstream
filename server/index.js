@@ -97,6 +97,14 @@ router.use('/api/ai/chat',     express.json({ limit: '12mb' }));
 // heavy logger or someone with photo URLs easily clears 1 MB. Bumped to
 // 5 MB after a user hit PayloadTooLargeError on 2026-06-10.
 router.use('/api/diary',       express.json({ limit: '5mb' }));
+// Foods and meals carry a photo inline as a data URL when the user attaches
+// one from the camera or gallery. fitImageDataUrl caps the image at 1920 px
+// and JPEG q0.92, which its own comment puts at 600-900 KB — and base64
+// inflates that by a third, so a single photo clears the 1 MB global cap on
+// its own and the save fails with PayloadTooLargeError. Same reason the diary
+// needed headroom, same limit.
+router.use('/api/foods',       express.json({ limit: '5mb' }));
+router.use('/api/meals',       express.json({ limit: '5mb' }));
 // Global cap: 1 MB. Prevents a single authed user from filling memory with
 // repeated large requests. Anything above belongs on a per-route opt-in.
 router.use(express.json({ limit: '1mb' }));
