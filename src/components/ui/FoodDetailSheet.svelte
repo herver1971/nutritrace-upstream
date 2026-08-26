@@ -38,7 +38,7 @@
    */
   import { createEventDispatcher, tick } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { _ } from 'svelte-i18n';
+  import { _, locale } from 'svelte-i18n';
   import Sheet from './Sheet.svelte';
   import ActionSheet from './ActionSheet.svelte';
   import NutritionFactsBox from './NutritionFactsBox.svelte';
@@ -60,6 +60,82 @@
   export let onDismiss = null;
 
   const dispatch = createEventDispatcher();
+
+  // ── Refresh from the catalogue ────────────────────────────────────────────
+  // Saving a food copies it, so later corrections to the bundled catalogue —
+  // a clearer name, a fixed nutrient — never reach the saved row. The user's
+  // own additions (their photo, their notes, their category) are exactly what
+  // must NOT be overwritten, so only the fields the catalogue owns are pulled
+  // across, and only when the user asks.
+  let _catMatch = null;
+  let _catDiff = [];
+  let _refreshing = false;
+
+  $: _lookUpCatalogue(_displayFood, $locale);
+  async function _lookUpCatalogue(f, loc) {
+    _catMatch = null; _catDiff = [];
+    if (!f || typeof f.id !== 'number' || !f.barcode) return;
+    let hit = null;
+    try {
+      const { BaseFoods } = await import('../../lib/base-foods.js');
+      hit = await BaseFoods.findByBarcode(f.barcode, loc);
+    } catch { return; }
+    if (!hit || _displayFood?.id !== f.id) return;   // raced with a switch
+    const diff = [];
+    if ((f.name || '') !== hit.name) diff.push($_('foods.detail.refresh_name'));
+    // A saved food stores its nutrition for ITS portion, not per 100 g — the
+    // user's onion sits at 150 g, their carrot at 20 g. Comparing those
+    // against the catalogue's per-100 g figures reports every nutrient as
+    // different, and writing the catalogue's numbers in unscaled would quietly
+    // rewrite a 150 g row as if it were 100 g.
+    const factor = (Number(f.portion) > 0 ? Number(f.portion) : 100) / 100;
+    // Only nutrients the catalogue actually carries. A saved row also holds
+    // fields the app derives for itself (salt, _derived) that the catalogue
+    // has no opinion on and must not lose.
+    let n = 0;
+    for (const k of Object.keys(hit.nutrition || {})) {
+      const a = Number(f.nutrition?.[k]);
+      const b = Number(hit.nutrition[k]) * factor;
+      const both = Number.isFinite(a) && Number.isFinite(b);
+      if (both ? Math.abs(a - b) > Math.max(0.01, Math.abs(b) * 0.005)
+               : Number.isFinite(a) !== Number.isFinite(b)) n++;
+    }
+    if (n) diff.push($_('foods.detail.refresh_nutrients', { values: { n } }));
+    if (JSON.stringify(f.alt_units || []) !== JSON.stringify(hit.alt_units || [])) {
+      diff.push($_('foods.detail.refresh_units'));
+    }
+    if (diff.length) { _catMatch = hit; _catDiff = diff; }
+  }
+
+  async function onRefreshFromCatalogue() {
+    if (!_catMatch || !_displayFood) return;
+    _refreshing = true;
+    try {
+      // Spread the saved row first: everything the user owns survives, and
+      // only the catalogue's own fields are replaced.
+      // Scale back to the portion this food is stored at, and merge rather
+      // than replace so anything the catalogue does not carry survives.
+      const factor = (Number(_displayFood.portion) > 0 ? Number(_displayFood.portion) : 100) / 100;
+      const nutrition = { ...(_displayFood.nutrition || {}) };
+      for (const [k, v] of Object.entries(_catMatch.nutrition || {})) {
+        nutrition[k] = Math.round(Number(v) * factor * 10000) / 10000;
+      }
+      const updated = await NtApi.updateFood(_displayFood.id, {
+        ..._displayFood,
+        name: _catMatch.name,
+        nutrition,
+        alt_units: _catMatch.alt_units,
+      });
+      _displayFood = { ..._displayFood, ...updated };
+      _catMatch = null; _catDiff = [];
+      const { showSuccess } = await import('../../stores/toast.js');
+      showSuccess($_('foods.detail.refresh_done'));
+      dispatch('updated', { food: _displayFood });
+    } catch (e) {
+      const { showError } = await import('../../stores/toast.js');
+      showError($_('foods.detail.refresh_failed', { values: { error: e.message } }));
+    } finally { _refreshing = false; }
+  }
 
   // Local copy that survives the parent setting food=null on close.
   // Without this, the sheet's content flickers blank during the slide-down
@@ -251,6 +327,18 @@
       </div>
     </div>
 
+    {#if _catMatch}
+      <div class="cat-refresh">
+        <div>
+          <strong>{$_('foods.detail.refresh_title')}</strong>
+          <span>{_catDiff.join(' · ')}</span>
+        </div>
+        <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
+          <span class="material-symbols-rounded">sync</span>
+          {$_('foods.detail.refresh_action')}
+        </button>
+      </div>
+    {/if}
     <div class="actions">
       <button class="btn btn-secondary danger-btn"
               on:click={onDeleteTap}
@@ -329,6 +417,18 @@
         </button>
       </div>
     </div>
+    {#if _catMatch}
+      <div class="cat-refresh">
+        <div>
+          <strong>{$_('foods.detail.refresh_title')}</strong>
+          <span>{_catDiff.join(' · ')}</span>
+        </div>
+        <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
+          <span class="material-symbols-rounded">sync</span>
+          {$_('foods.detail.refresh_action')}
+        </button>
+      </div>
+    {/if}
     <div class="actions">
       <button class="btn btn-secondary danger-btn"
               on:click={onDeleteTap}
@@ -402,6 +502,16 @@
     gap: 10px;
   }
   .brand { color: var(--text-3); font-size: 13px; font-weight: 500; }
+  .cat-refresh {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 12px; margin: 0 0 10px;
+    background: var(--accent-dim);
+    border-radius: var(--radius-md, 10px);
+    font-size: 13px;
+  }
+  .cat-refresh > div { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px; }
+  .cat-refresh span { color: var(--text-2); font-size: 12px; }
+
   .food-note {
     margin: 4px 0 6px;
     font-size: 12px;

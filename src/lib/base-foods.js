@@ -165,6 +165,23 @@ function toResult(food, locale) {
 }
 
 /**
+ * The catalogue entry a saved food came from, found by the barcode it kept
+ * when it was saved, or null when it did not come from the catalogue.
+ *
+ * Saving a food copies it: from then on it is the user's own row, and later
+ * corrections to the catalogue — a clearer name, a fixed nutrient — never
+ * reach it. This is what lets the Foods screen offer to pull them across.
+ */
+export async function findByBarcode(barcode, locale = 'es') {
+  if (!barcode) return null;
+  await load();
+  const code = String(barcode);
+  const food = _catalogue.foods.find(f =>
+    code === (f.light !== undefined && f.approx ? 'ntBase_' + f.id : 'fdcId_' + f.fdc));
+  return food ? toResult(food, locale) : null;
+}
+
+/**
  * Search the catalogue. Mirrors the (query, page, pageSize) contract of
  * API.searchByNameWithMeta / USDA.searchByNameWithMeta so Foods.svelte can
  * treat every source the same way.
@@ -219,5 +236,5 @@ export async function browse(category, locale = 'es') {
 }
 
 export const BaseFoods = {
-  normalize, catalogueInfo, categories, categoryLabel, searchByName, searchByNameWithMeta, browse,
+  normalize, catalogueInfo, categories, categoryLabel, findByBarcode, searchByName, searchByNameWithMeta, browse,
 };

@@ -542,7 +542,14 @@
       "delete_aria": "Supprimer l'aliment",
       "delete_confirm_title": "Supprimer cet aliment ?",
       "delete_confirm_body": "\"{name}\" sera retiré de vos aliments. Les entrées existantes du journal qui font référence à cet aliment sont conservées.",
-      "deleted": "Aliment supprimé"
+      "deleted": "Aliment supprimé",
+      "refresh_title": "Catalogue mis à jour",
+      "refresh_action": "Actualiser",
+      "refresh_name": "nom",
+      "refresh_nutrients": "{n} valeurs nutritionnelles",
+      "refresh_units": "unités de portion",
+      "refresh_done": "Actualisé depuis le catalogue",
+      "refresh_failed": "Échec : {error}"
     },
     "sources": {
       "local": "Local",

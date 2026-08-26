@@ -765,7 +765,14 @@
       "delete_aria": "Delete food",
       "delete_confirm_title": "Delete this food?",
       "delete_confirm_body": "\"{name}\" will be removed from your foods. Existing diary entries that reference this food are kept.",
-      "deleted": "Food deleted"
+      "deleted": "Food deleted",
+      "refresh_title": "Catalogue updated",
+      "refresh_action": "Refresh",
+      "refresh_name": "name",
+      "refresh_nutrients": "{n} nutrient values",
+      "refresh_units": "serving units",
+      "refresh_done": "Refreshed from the catalogue",
+      "refresh_failed": "Could not refresh: {error}"
     },
     "sources": {
       "local": "Local",

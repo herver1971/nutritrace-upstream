@@ -317,7 +317,14 @@
       "delete_aria": "Eliminar alimento",
       "delete_confirm_title": "¿Eliminar este alimento?",
       "delete_confirm_body": "«{name}» se va a quitar de tus alimentos. Las entradas del diario que ya lo usan se conservan.",
-      "deleted": "Alimento eliminado"
+      "deleted": "Alimento eliminado",
+      "refresh_title": "El catálogo cambió",
+      "refresh_action": "Actualizar",
+      "refresh_name": "nombre",
+      "refresh_nutrients": "{n} valores nutricionales",
+      "refresh_units": "unidades de porción",
+      "refresh_done": "Actualizado desde el catálogo",
+      "refresh_failed": "No se pudo actualizar: {error}"
     },
     "sources": {
       "local": "Local",
