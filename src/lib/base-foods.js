@@ -154,6 +154,9 @@ function toResult(food, locale) {
     // Substitution hint, precomputed by scripts/build-base-foods.mjs and
     // committed with the catalogue so the criteria stay auditable.
     _light:    food.light,
+    // Provenance caveat, when the entry has one (an approximation, or a
+    // measured row whose cooking method differs from local practice).
+    _note:     food.note || null,
     _source:   'base',
     _baseId:   food.id,
     _baseCategory: food.cat,

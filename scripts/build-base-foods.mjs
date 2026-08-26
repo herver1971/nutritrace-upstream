@@ -437,7 +437,11 @@ function main() {
       nutrition,
       units: buildPortions(portionsByFood.get(food.fdc_id) || [], food.description),
       light: trafficLight(e.cat, nutrition, COOKED_RE.test(food.description)),
-      ...(approxOf ? { approx: true, approx_note: e.note || null } : {}),
+      // A note travels with any entry that needs one — an approximation
+      // explaining where its numbers came from, or a measured entry whose
+      // cooking method differs from how the cut is actually used here.
+      ...(e.note ? { note: e.note } : {}),
+      ...(approxOf ? { approx: true } : {}),
     });
   }
 

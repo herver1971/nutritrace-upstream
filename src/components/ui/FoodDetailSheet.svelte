@@ -210,6 +210,9 @@
           {#if _displayFood.brand}
             <div class="brand">{_displayFood.brand}</div>
           {/if}
+          {#if _displayFood._note}
+            <p class="food-note">{_displayFood._note}</p>
+          {/if}
           <div class="meta-pills">
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
                  is the only thing identifying where it sits. -->
@@ -290,6 +293,9 @@
         <div class="identity-info">
           {#if _displayFood.brand}
             <div class="brand">{_displayFood.brand}</div>
+          {/if}
+          {#if _displayFood._note}
+            <p class="food-note">{_displayFood._note}</p>
           {/if}
           <div class="meta-pills">
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
@@ -396,6 +402,15 @@
     gap: 10px;
   }
   .brand { color: var(--text-3); font-size: 13px; font-weight: 500; }
+  .food-note {
+    margin: 4px 0 6px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text-2);
+    border-left: 2px solid var(--border-strong);
+    padding-left: 8px;
+  }
+
   .pill-cat {
     --h: var(--cat-h, 220); --s: var(--cat-s, 42%);
     color: hsl(var(--h) var(--s) 30%);
