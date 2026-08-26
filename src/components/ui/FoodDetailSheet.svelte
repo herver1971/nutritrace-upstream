@@ -89,13 +89,21 @@
     // different, and writing the catalogue's numbers in unscaled would quietly
     // rewrite a 150 g row as if it were 100 g.
     const factor = (Number(f.portion) > 0 ? Number(f.portion) : 100) / 100;
+    // A food's portion drifts: logging one for the first time creates it with
+    // whatever was eaten that day, so a tomato ends up stored as "165 g" with
+    // its nutrition scaled to match. That is a diary fact living in the food
+    // template. Refreshing puts the template back on the catalogue's basis and
+    // says so, since it changes the amount the food defaults to.
+    if (Math.abs(factor - 1) > 0.001) {
+      diff.push($_('foods.detail.refresh_portion', { values: { from: f.portion, to: 100 } }));
+    }
     // Only nutrients the catalogue actually carries. A saved row also holds
     // fields the app derives for itself (salt, _derived) that the catalogue
     // has no opinion on and must not lose.
     let n = 0;
     for (const k of Object.keys(hit.nutrition || {})) {
-      const a = Number(f.nutrition?.[k]);
-      const b = Number(hit.nutrition[k]) * factor;
+      const a = Number(f.nutrition?.[k]) / factor;
+      const b = Number(hit.nutrition[k]);
       const both = Number.isFinite(a) && Number.isFinite(b);
       if (both ? Math.abs(a - b) > Math.max(0.01, Math.abs(b) * 0.005)
                : Number.isFinite(a) !== Number.isFinite(b)) n++;
@@ -115,14 +123,21 @@
       // only the catalogue's own fields are replaced.
       // Scale back to the portion this food is stored at, and merge rather
       // than replace so anything the catalogue does not carry survives.
+      // Back to the catalogue's own basis: 100 g with unscaled values.
+      // Anything the catalogue does not carry (salt, derived-value flags) is
+      // rescaled off the old portion so it stays consistent with the rest.
       const factor = (Number(_displayFood.portion) > 0 ? Number(_displayFood.portion) : 100) / 100;
-      const nutrition = { ...(_displayFood.nutrition || {}) };
-      for (const [k, v] of Object.entries(_catMatch.nutrition || {})) {
-        nutrition[k] = Math.round(Number(v) * factor * 10000) / 10000;
+      const nutrition = {};
+      for (const [k, v] of Object.entries(_displayFood.nutrition || {})) {
+        const n = Number(v);
+        nutrition[k] = Number.isFinite(n) ? Math.round((n / factor) * 10000) / 10000 : v;
       }
+      for (const [k, v] of Object.entries(_catMatch.nutrition || {})) nutrition[k] = v;
       const updated = await NtApi.updateFood(_displayFood.id, {
         ..._displayFood,
         name: _catMatch.name,
+        portion: _catMatch.portion || 100,
+        unit: _catMatch.unit || 'g',
         nutrition,
         alt_units: _catMatch.alt_units,
       });

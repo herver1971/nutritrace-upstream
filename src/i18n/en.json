@@ -772,7 +772,8 @@
       "refresh_nutrients": "{n} nutrient values",
       "refresh_units": "serving units",
       "refresh_done": "Refreshed from the catalogue",
-      "refresh_failed": "Could not refresh: {error}"
+      "refresh_failed": "Could not refresh: {error}",
+      "refresh_portion": "portion {from} g → {to} g"
     },
     "sources": {
       "local": "Local",
@@ -796,6 +797,15 @@
     "toast": {
       "deleted": "Deleted",
       "cloned": "Cloned"
+    },
+    "stale": {
+      "title": "{n} foods have catalogue updates",
+      "hint": "Nutrition fixes and clearer names from the bundled catalogue.",
+      "review": "Review",
+      "show_all": "Show all",
+      "update_all": "Update all",
+      "done": "{n} foods updated",
+      "failed": "{n} could not be updated"
     }
   },
   "trace": {

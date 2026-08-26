@@ -549,7 +549,8 @@
       "refresh_nutrients": "{n} valeurs nutritionnelles",
       "refresh_units": "unités de portion",
       "refresh_done": "Actualisé depuis le catalogue",
-      "refresh_failed": "Échec : {error}"
+      "refresh_failed": "Échec : {error}",
+      "refresh_portion": "portion {from} g → {to} g"
     },
     "sources": {
       "local": "Local",
@@ -559,6 +560,15 @@
     "toast": {
       "deleted": "Supprimé",
       "cloned": "Cloné"
+    },
+    "stale": {
+      "title": "{n} aliments ont des mises à jour",
+      "hint": "Corrections et noms plus clairs du catalogue.",
+      "review": "Examiner",
+      "show_all": "Tout afficher",
+      "update_all": "Tout mettre à jour",
+      "done": "{n} aliments mis à jour",
+      "failed": "{n} en échec"
     }
   },
   "trace": {

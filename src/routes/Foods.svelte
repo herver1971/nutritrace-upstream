@@ -421,6 +421,77 @@
   let apiResults = [];
   let baseResults = [];
 
+  // ── Foods needing a refresh from the catalogue ───────────────────────────
+  // A saved food is a copy, so catalogue corrections never reach it. The
+  // detail sheet offers to pull them across one at a time, which is the right
+  // granularity when a food was edited on purpose — and the wrong one when
+  // seventeen of them are simply carrying a fixed nutrient. This surfaces the
+  // set and can apply it in one go.
+  let _staleIds = new Set();
+  let _staleOnly = false;
+  let _bulkRefreshing = false;
+
+  $: if ($baseFoodsEnabled && activeTab === 0 && localFoods.length) _scanStale(localFoods);
+  async function _scanStale(list) {
+    let mod;
+    try { mod = await import('../lib/base-foods.js'); } catch { return; }
+    const found = new Set();
+    for (const f of list) {
+      if (typeof f.id !== 'number' || !f.barcode) continue;
+      const hit = await mod.BaseFoods.findByBarcode(f.barcode, $locale);
+      if (!hit) continue;
+      if (_catalogueDiffers(f, hit)) found.add(f.id);
+    }
+    _staleIds = found;
+  }
+
+  // Same comparison the detail sheet makes: both sides brought to the
+  // catalogue's per-100 g basis, and only nutrients the catalogue carries.
+  function _catalogueDiffers(f, hit) {
+    if ((f.name || '') !== hit.name) return true;
+    const factor = (Number(f.portion) > 0 ? Number(f.portion) : 100) / 100;
+    if (Math.abs(factor - 1) > 0.001) return true;
+    for (const k of Object.keys(hit.nutrition || {})) {
+      const a = Number(f.nutrition?.[k]) / factor;
+      const b = Number(hit.nutrition[k]);
+      const both = Number.isFinite(a) && Number.isFinite(b);
+      if (both ? Math.abs(a - b) > Math.max(0.01, Math.abs(b) * 0.005)
+               : Number.isFinite(a) !== Number.isFinite(b)) return true;
+    }
+    return false;
+  }
+
+  async function refreshAllStale() {
+    if (_bulkRefreshing || _staleIds.size === 0) return;
+    _bulkRefreshing = true;
+    const { BaseFoods } = await import('../lib/base-foods.js');
+    let ok = 0, failed = 0;
+    for (const f of localFoods.filter(x => _staleIds.has(x.id))) {
+      try {
+        const hit = await BaseFoods.findByBarcode(f.barcode, $locale);
+        if (!hit) continue;
+        const factor = (Number(f.portion) > 0 ? Number(f.portion) : 100) / 100;
+        const nutrition = {};
+        for (const [k, v] of Object.entries(f.nutrition || {})) {
+          const n = Number(v);
+          nutrition[k] = Number.isFinite(n) ? Math.round((n / factor) * 10000) / 10000 : v;
+        }
+        for (const [k, v] of Object.entries(hit.nutrition || {})) nutrition[k] = v;
+        await NtApi.updateFood(f.id, {
+          ...f, name: hit.name, portion: hit.portion || 100, unit: hit.unit || 'g',
+          nutrition, alt_units: hit.alt_units,
+        });
+        ok++;
+      } catch { failed++; }
+    }
+    _bulkRefreshing = false;
+    _staleOnly = false;
+    await load();
+    const { showSuccess, showError } = await import('../stores/toast.js');
+    if (ok) showSuccess($_('foods.stale.done', { values: { n: ok } }));
+    if (failed) showError($_('foods.stale.failed', { values: { n: failed } }));
+  }
+
   // What fills the screen with an empty search box depends on the source:
   // 'local' / 'shared' (and the Meals / Recipes tabs) list the user's own
   // library, 'all' does too since it merges the library in, 'base' browses the
@@ -788,6 +859,7 @@
 
   $: filteredBySearch = search
     ? displayList.filter(f => _fuzzyMatch(f, search))
+    : _staleOnly ? displayList.filter(f => _staleIds.has(f.id))
     : displayList;
   $: filteredList = activeCategoryFilter
     ? filteredBySearch.filter(f => (f.categories||[]).includes(activeCategoryFilter))
@@ -2170,6 +2242,21 @@
       {/if}
 
     {:else if _showingLibrary}
+      {#if activeTab === 0 && _staleIds.size > 0 && !search.trim()}
+        <div class="stale-banner">
+          <div>
+            <strong>{$_('foods.stale.title', { values: { n: _staleIds.size } })}</strong>
+            <span>{$_('foods.stale.hint')}</span>
+          </div>
+          <button class="btn btn-ghost" on:click={() => _staleOnly = !_staleOnly}>
+            {_staleOnly ? $_('foods.stale.show_all') : $_('foods.stale.review')}
+          </button>
+          <button class="btn btn-secondary" on:click={refreshAllStale} disabled={_bulkRefreshing}>
+            <span class="material-symbols-rounded">sync</span>
+            {$_('foods.stale.update_all')}
+          </button>
+        </div>
+      {/if}
       <!-- ── Local list ─────────────────────────────────────────────────────── -->
       {#if filteredList.length === 0 && !search && !loadError}
         <div class="empty-state">
@@ -3143,6 +3230,16 @@
   /* Catalogue category tag. Rendered as a chip rather than muted text so it
      reads as a label at a glance; sits in the slot a branded product would
      use for its brand, which a raw ingredient leaves empty. */
+  .stale-banner {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 12px; margin: 0 0 10px;
+    background: var(--accent-dim);
+    border-radius: var(--radius-lg, 12px);
+    font-size: 13px;
+  }
+  .stale-banner > div { flex: 1; min-width: 190px; display: flex; flex-direction: column; gap: 2px; }
+  .stale-banner span { color: var(--text-2); font-size: 12px; }
+
   .cat-swatch { background: hsl(var(--cat-h, 220) var(--cat-s, 42%) 55%); }
   :global(.tier-only) {
     margin-left: auto;
