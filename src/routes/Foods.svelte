@@ -1225,12 +1225,28 @@
     }
   }
 
-  async function _addFoodToDiaryNoNav(food, qty) {
+  /**
+   * `food` is what goes in the diary — already scaled to the amount being
+   * logged. `template` is what goes in the library when the food is not saved
+   * yet: the same food at its own basis, unscaled.
+   *
+   * They are separated because a library entry is a reference, not a record of
+   * a meal. Creating it from the logged amount stored "165 g of tomato, with
+   * 165 g of nutrition" as the food itself, so the template changed every time
+   * the same food was eaten at a different weight. What was eaten belongs to
+   * the diary entry, which keeps its own copy either way.
+   *
+   * Meals are deliberately not treated this way: a meal IS a recipe the user
+   * defined, so its quantities are the point.
+   */
+  async function _addFoodToDiaryNoNav(food, qty, template = null) {
     const { addDiaryItem } = await import('../stores/diary.js');
     let savedFood = food;
     if (!isSavedRecord(food)) {
-      const { id: _drop, ...rest } = food;
-      savedFood = await NtApi.createFood({ ...rest, created_at: food.dateTime || new Date().toISOString() });
+      const { id: _drop, ...rest } = template || food;
+      const created = await NtApi.createFood({ ...rest, created_at: food.dateTime || new Date().toISOString() });
+      // Keep the logged amount for the diary item; take only the new id.
+      savedFood = { ...food, id: created.id };
     }
     const item = {
       ...savedFood,
@@ -1242,11 +1258,11 @@
     await addDiaryItem(item, Number(pickMeal) || 0, pickDate || undefined);
   }
 
-  async function _addFoodToDiary(food, qty) {
+  async function _addFoodToDiary(food, qty, template = null) {
     if (_addingToDiary) return;
     _addingToDiary = true;
     try {
-      await _addFoodToDiaryNoNav(food, qty);
+      await _addFoodToDiaryNoNav(food, qty, template);
       import('../stores/toast.js').then(m => m.showSuccess('Added to diary'));
       editorState.lastMealAdded = Number(pickMeal) || 0;
       history.back();
@@ -1344,7 +1360,7 @@
       unit: newUnit,
       nutrition: scaledNutrition
     };
-    await _addFoodToDiary(food, parseDecimal(promptServings) || 1);
+    await _addFoodToDiary(food, parseDecimal(promptServings) || 1, promptFood);
   }
 
   async function deleteItem(item) {
