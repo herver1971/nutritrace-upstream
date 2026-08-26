@@ -170,7 +170,12 @@
   // lives on editorState.foodPrefill.id. Without this, every session
   // shares one 'new' draft key and typing while editing food A leaks
   // into a subsequent "add new food" (Wildenhaus, #157).
-  $: _draftKey = _mkDraftKey('food', params?.id ?? editorState.foodPrefill?.id ?? null);
+  // A catalogue food has no database id — that is what marks it unsaved — so
+  // it falls back to its barcode, which is unique per catalogue entry. Without
+  // it every food opened from Básicos shared the 'new' key and restored the
+  // previously opened one's draft.
+  $: _draftKey = _mkDraftKey('food',
+    params?.id ?? editorState.foodPrefill?.id ?? editorState.foodPrefill?.barcode ?? null);
   let _draftReady = false;      // gate: don't persist before onMount overlays the draft
   let _persistDraft = null;
   $: if (_draftKey) _persistDraft = makeDebouncedPersist(_draftKey, 400);

@@ -37,10 +37,18 @@ const TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 function _now() { return Date.now(); }
 
-/** Build a namespaced draft key. `kind` = 'food' | 'meal'. `id` = the
- *  edited row's id, or null / undefined for a new (create) draft. */
+/** Build a namespaced draft key. `kind` = 'food' | 'meal'. `id` is the edited
+ *  row's identity — its database id, or any other stable handle when it has
+ *  none yet.
+ *
+ *  The 'new' fallback assumes one unsaved entity at a time, which stopped
+ *  being true once foods could be opened straight from the bundled catalogue:
+ *  those carry no database id, so every one of them landed on the same key and
+ *  each opened food restored the previous one's draft. Callers now pass a
+ *  fallback handle (the barcode) so unsaved entities stay separate, and 'new'
+ *  is left for a genuinely blank form. */
 export function draftKey(kind, id) {
-  if (id != null) return `nt:${kind}:draft:edit:${id}`;
+  if (id != null && id !== '') return `nt:${kind}:draft:edit:${id}`;
   return `nt:${kind}:draft:new`;
 }
 

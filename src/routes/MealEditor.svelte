@@ -65,7 +65,11 @@
   // editorState.mealPrefill.id. Without this, editing meal A leaks
   // into the next "add new meal" (same class of bug as FoodEditor,
   // fixed together for Wildenhaus's #157 feedback).
-  $: _draftKey = _mkDraftKey('meal', params?.id ?? editorState.mealPrefill?.id ?? null);
+  // Same fallback as the food editor: a meal picked from Mealie has no local
+  // id yet, and without a handle of its own every such meal would share the
+  // 'new' key and restore the previously opened one's draft.
+  $: _draftKey = _mkDraftKey('meal',
+    params?.id ?? editorState.mealPrefill?.id ?? editorState.mealPrefill?.slug ?? null);
   let _draftReady = false;
   let _persistDraft = null;
   $: if (_draftKey) _persistDraft = makeDebouncedPersist(_draftKey, 400);
