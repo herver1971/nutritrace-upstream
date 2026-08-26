@@ -130,7 +130,13 @@ function toResult(food, locale) {
     brand:     '',
     // Mirrors the fdcId_ convention the USDA source uses, so a saved food
     // keeps a traceable pointer back to the SR Legacy row it came from.
-    barcode:   'fdcId_' + food.fdc,
+    //
+    // An approximated entry borrows another food's row but is NOT that food,
+    // so it must not claim its barcode: two results sharing one would collide
+    // in the keyed {#each} that renders them, and Svelte throws on duplicate
+    // keys — the failure that took the whole search view down once already.
+    // It would also make the library swap replace both with one saved copy.
+    barcode:   food.approx ? 'ntBase_' + food.id : 'fdcId_' + food.fdc,
     unit:      'g',
     portion:   100,
     quantity:  1,

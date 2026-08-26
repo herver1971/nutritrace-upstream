@@ -369,13 +369,30 @@ function main() {
   const out = [];
 
   for (const e of curated) {
-    for (const field of ['id', 'cat', 'es', 'en', 'src']) {
+    for (const field of ['id', 'cat', 'es', 'en']) {
       if (!e[field]) problems.push(`${e._file}: entry ${e.id || '(no id)'} is missing "${field}"`);
+    }
+    // One of the two has to name a row: `src` for a food measured in its own
+    // right, `approx_of` for one that openly borrows another's composition.
+    if (!e.src && !e.approx_of) {
+      problems.push(`${e._file}: entry ${e.id || '(no id)'} needs either "src" or "approx_of"`);
     }
     if (seenIds.has(e.id)) problems.push(`${e._file}: duplicate id "${e.id}"`);
     seenIds.add(e.id);
 
-    const matches = byDescription.get(String(e.src).trim().toLowerCase());
+    // `approx_of` marks an entry that has no measured row of its own and
+    // borrows the composition of the nearest one. Matambre is the case this
+    // exists for: the cut is the cutaneous trunci — "rose meat" in US
+    // butchery — which is trimmed into grind there, so neither FoodData
+    // Central (checked live, not just this dump) nor Argenfoods tabulates it.
+    // The alternative was inventing numbers, which is worse than borrowing
+    // traceable ones and saying so.
+    //
+    // Such entries are exempt from the one-entry-per-row check below: sharing
+    // a row is the whole point, and the guard exists to catch two names
+    // claiming to BE the same food, not one openly standing in for another.
+    const approxOf = e.approx_of || null;
+    const matches = byDescription.get(String(approxOf || e.src).trim().toLowerCase());
     if (!matches) { problems.push(`${e._file}: "${e.id}" → no SR Legacy row matches src ${JSON.stringify(e.src)}`); continue; }
     if (matches.length > 1) {
       problems.push(`${e._file}: "${e.id}" → src ${JSON.stringify(e.src)} matches ${matches.length} rows (${matches.map(m => m.fdc_id).join(', ')})`);
@@ -397,6 +414,7 @@ function main() {
       nutrition,
       units: buildPortions(portionsByFood.get(food.fdc_id) || [], food.description),
       light: trafficLight(e.cat, nutrition, COOKED_RE.test(food.description)),
+      ...(approxOf ? { approx: true, approx_note: e.note || null } : {}),
     });
   }
 
@@ -408,7 +426,7 @@ function main() {
   // and did exactly that.) If two names should share nutrition, one of them
   // belongs in the other's `alias` list, not in a second entry.
   const byFdc = new Map();
-  for (const f of out) {
+  for (const f of out.filter(f => !f.approx)) {
     if (!byFdc.has(f.fdc)) byFdc.set(f.fdc, []);
     byFdc.get(f.fdc).push(f.id);
   }
