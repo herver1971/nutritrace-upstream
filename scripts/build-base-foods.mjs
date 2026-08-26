@@ -219,10 +219,17 @@ const LIGHT = { GREEN: 'green', AMBER: 'amber', RED: 'red' };
 // thresholds are scaled by that concentration for cooked entries so the same
 // cut lands on the same colour whichever way it is logged.
 const COOKED_RE = /\b(cooked|roasted|grilled|broiled|braised|boiled|baked|fried|stewed|microwaved|smoked)\b/i;
-const COOKED_FACTOR = 1.4;
 
 function trafficLight(cat, n, cooked = false) {
-  const k = cooked ? COOKED_FACTOR : 1;
+  // How much this particular food concentrated, read off its own protein
+  // rather than assumed. Water loss varies by cut — shank gains 1.55x, top
+  // sirloin cap only 1.31x — and a single constant made a cut's colour depend
+  // on whether it was logged raw or cooked. Raw beef sits near 21.5 g protein,
+  // so the ratio to that is the concentration. Clamped so an unusually lean or
+  // protein-dense entry cannot move the threshold absurdly.
+  const k = cooked
+    ? Math.min(1.6, Math.max(1, Number(n.proteins || 0) / 21.5))
+    : 1;
   const v    = k => Number(n[k] || 0);
   const sat  = v('saturated-fat'), sug = v('sugars'), na = v('sodium');
   const fib  = v('fiber'), carb = v('carbohydrates'), kcal = v('calories');
@@ -245,7 +252,13 @@ function trafficLight(cat, n, cooked = false) {
       // Sodium matters here for the same reason it does for fish: curing is
       // what separates a fresh cut from ham or bacon, and lean ham passes the
       // fat test on its own (1.8 g saturated) while carrying 1200 mg sodium.
-      const byFat = band(sat, 3 * k, 7 * k);
+      // Only the green boundary moves. Cooking concentrates a lean cut's small
+      // amount of saturated fat sharply (tenderloin 1.7x), which is what the
+      // scaling is for; but a fatty cut renders fat OUT, so its saturated
+      // barely rises (matambre 1.04x) while a scaled red boundary would let it
+      // through. Raising both made grilled matambre amber where the raw cut is
+      // red — cooking cannot make a cut healthier than it is.
+      const byFat = band(sat, 3 * k, 7);
       if (na > 900) return LIGHT.RED;
       if (na > 400 && byFat === LIGHT.GREEN) return LIGHT.AMBER;
       return byFat;
@@ -402,6 +415,16 @@ function main() {
     const nutrition = nutrientsByFood.get(food.fdc_id);
     if (!nutrition || nutrition.calories == null) {
       problems.push(`${e._file}: "${e.id}" → fdc ${food.fdc_id} has no energy value`);
+      continue;
+    }
+    // A category judged on saturated fat cannot be judged at all when the row
+    // does not report it, and a missing value reads as zero — which scores
+    // green. That is exactly how cooked tri-tip (fdc 169558, saturated blank
+    // in SR Legacy) came out greener than the raw cut. Fail loudly and pick a
+    // row that carries the figure.
+    const JUDGED_ON_SAT = new Set(['carnes', 'pescados', 'lacteos', 'aceites']);
+    if (JUDGED_ON_SAT.has(e.cat) && nutrition.fat > 1 && nutrition['saturated-fat'] == null) {
+      problems.push(`${e._file}: "${e.id}" → fdc ${food.fdc_id} reports ${nutrition.fat} g fat but no saturated-fat; the traffic light would read that as zero and score it green`);
       continue;
     }
 
