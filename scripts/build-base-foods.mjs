@@ -463,6 +463,25 @@ function main() {
     }
   }
 
+  // A cut does not become healthier or worse by being cooked, so a cooked
+  // entry takes the colour of the raw one it is linked to. The threshold
+  // scaling gets most pairs to agree on its own, but borderline cuts sat
+  // within half a gram of a boundary and flipped bands either way — noise the
+  // reader would read as a real difference. The link is declared explicitly
+  // in the data (`cooked_of`) rather than guessed from ids: pollo-muslo is
+  // "con piel" and pollo-muslo-cocido is "sin piel", genuinely different foods
+  // that an id-shaped guess would have tied together.
+  const lightById = new Map(out.map(f => [f.id, f.light]));
+  for (const f of out) {
+    const rawId = curated.find(e => e.id === f.id)?.cooked_of;
+    if (!rawId) continue;
+    if (!lightById.has(rawId)) {
+      problems.push(`"${f.id}" declares cooked_of "${rawId}", which is not in the catalogue`);
+      continue;
+    }
+    f.light = lightById.get(rawId);
+  }
+
   if (problems.length) {
     console.error(`\n✗ ${problems.length} problem(s) — nothing written:\n`);
     for (const p of problems) console.error('  ' + p);
