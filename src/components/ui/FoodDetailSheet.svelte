@@ -289,6 +289,18 @@
           {#if _displayFood._note}
             <p class="food-note">{_displayFood._note}</p>
           {/if}
+          {#if _catMatch}
+            <div class="cat-refresh">
+              <div>
+                <strong>{$_('foods.detail.refresh_title')}</strong>
+                <span>{_catDiff.join(' · ')}</span>
+              </div>
+              <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
+                <span class="material-symbols-rounded">sync</span>
+                {$_('foods.detail.refresh_action')}
+              </button>
+            </div>
+          {/if}
           <div class="meta-pills">
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
                  is the only thing identifying where it sits. -->
@@ -327,18 +339,6 @@
       </div>
     </div>
 
-    {#if _catMatch}
-      <div class="cat-refresh">
-        <div>
-          <strong>{$_('foods.detail.refresh_title')}</strong>
-          <span>{_catDiff.join(' · ')}</span>
-        </div>
-        <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
-          <span class="material-symbols-rounded">sync</span>
-          {$_('foods.detail.refresh_action')}
-        </button>
-      </div>
-    {/if}
     <div class="actions">
       <button class="btn btn-secondary danger-btn"
               on:click={onDeleteTap}
@@ -385,6 +385,18 @@
           {#if _displayFood._note}
             <p class="food-note">{_displayFood._note}</p>
           {/if}
+          {#if _catMatch}
+            <div class="cat-refresh">
+              <div>
+                <strong>{$_('foods.detail.refresh_title')}</strong>
+                <span>{_catDiff.join(' · ')}</span>
+              </div>
+              <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
+                <span class="material-symbols-rounded">sync</span>
+                {$_('foods.detail.refresh_action')}
+              </button>
+            </div>
+          {/if}
           <div class="meta-pills">
             <!-- Catalogue category. A base-catalogue entry has no brand, so this
                  is the only thing identifying where it sits. -->
@@ -417,18 +429,6 @@
         </button>
       </div>
     </div>
-    {#if _catMatch}
-      <div class="cat-refresh">
-        <div>
-          <strong>{$_('foods.detail.refresh_title')}</strong>
-          <span>{_catDiff.join(' · ')}</span>
-        </div>
-        <button class="btn btn-secondary" on:click={onRefreshFromCatalogue} disabled={_refreshing}>
-          <span class="material-symbols-rounded">sync</span>
-          {$_('foods.detail.refresh_action')}
-        </button>
-      </div>
-    {/if}
     <div class="actions">
       <button class="btn btn-secondary danger-btn"
               on:click={onDeleteTap}
