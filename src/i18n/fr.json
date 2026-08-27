@@ -569,6 +569,9 @@
       "update_all": "Tout mettre à jour",
       "done": "{n} aliments mis à jour",
       "failed": "{n} en échec"
+    },
+    "mealie": {
+      "mass_note": "Pour 100 g, calculé sur {grams} g d'ingrédients crus ({servings} portions). Pesez le plat fini si nécessaire. {missing} ingrédients non pesés."
     }
   },
   "trace": {

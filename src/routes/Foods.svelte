@@ -1025,6 +1025,31 @@
       const full = await Mealie.getRecipe(summary.slug);
       if (!full) { showError('Could not load recipe from Mealie'); return; }
       const mapped = Mealie.mapRecipe(full);
+      // Mealie states nutrition per serving. Weighing out a portion needs it
+      // per 100 g, which only takes the dish's mass — estimated from the
+      // ingredient list. Left as-is when the mass cannot be worked out, so a
+      // recipe with an unreadable ingredient list still imports.
+      try {
+        const { estimateRecipeMass } = await import('../lib/mealieApi.js');
+        const est = await estimateRecipeMass(full);
+        const servings = Number(full.recipeServings) || Number(full.recipeYield) || 1;
+        if (est.grams > 0 && mapped.nutrition?.calories > 0) {
+          const factor = (servings * 100) / est.grams;
+          mapped.nutrition = Object.fromEntries(Object.entries(mapped.nutrition)
+            .map(([k, v]) => [k, Math.round((Number(v) || 0) * factor * 10000) / 10000]));
+          mapped.portion = 100;
+          mapped.unit = 'g';
+          mapped._massEstimate = est;
+          // The estimate is of raw ingredients, so a dish that soaked up water
+          // or cooked down is not this heavy. Say so where the user will see
+          // it, with the number to correct if they weighed the finished dish.
+          const note = $_('foods.mealie.mass_note', {
+            values: { grams: est.grams, servings,
+                      missing: est.unresolved.length ? est.unresolved.length : 0 },
+          });
+          mapped.notes = mapped.notes ? mapped.notes + '\n' + note : note;
+        }
+      } catch { /* keep Mealie's per-serving figures */ }
       openEditor(mapped, 'foodList');
     } catch(e) {
       showError('Failed to import from Mealie');

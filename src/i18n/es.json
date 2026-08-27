@@ -358,6 +358,9 @@
       "update_all": "Actualizar todos",
       "done": "{n} alimentos actualizados",
       "failed": "{n} no se pudieron actualizar"
+    },
+    "mealie": {
+      "mass_note": "Por 100 g, calculado sobre {grams} g de ingredientes crudos ({servings} porciones). Si el plato se redujo o absorbió agua, pesalo terminado y corregí la porción. {missing} ingredientes no se pudieron pesar."
     }
   },
   "food_editor": {

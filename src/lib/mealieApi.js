@@ -33,6 +33,76 @@ async function _proxy(path) {
   return res.json();
 }
 
+
+// ── Per-100 g nutrition from the ingredient list ──────────────────────────
+//
+// Mealie states a recipe's nutrition per serving, which is fine for eating a
+// serving and useless for weighing out a portion. Converting to per 100 g only
+// needs one more number: the dish's mass.
+//
+// That mass comes from the ingredient list rather than from the catalogue's
+// nutrition, and the distinction matters. Summing each ingredient's nutrition
+// requires recognising every ingredient — miss the 1.5 kg of pork in a braise
+// and the total is nonsense. Summing mass mostly does not: most quantities are
+// already stated in grams, so the catalogue is only consulted for the ones
+// counted in spoons or units, and a missed spoonful of paprika changes
+// nothing. Across this user's recipes that took usable coverage from 3-of-7
+// to every recipe.
+//
+// The mass is of the RAW ingredients. Dishes that absorb water while cooking
+// (pasta, rice, pulses) end up heavier than this, so their per-100 g figure
+// reads high; roasts and braises lose water and read low. Weighing the
+// finished dish and correcting the portion is the way out, which is why the
+// estimate is reported rather than silently applied.
+
+const _MASS_UNITS = {
+  gramo: 1, gramos: 1, g: 1, gr: 1, kilogramo: 1000, kilogramos: 1000, kg: 1000,
+  mililitro: 1, mililitros: 1, ml: 1, cc: 1, litro: 1000, litros: 1000, l: 1000,
+  gram: 1, grams: 1, kilogram: 1000, milliliter: 1, milliliters: 1, liter: 1000,
+};
+// Mealie unit name → the alt_units label the base catalogue stores.
+const _COUNT_UNITS = {
+  cucharada: 'cucharada', cucharadas: 'cucharada', tablespoon: 'cucharada', tbsp: 'cucharada',
+  cucharadita: 'cucharadita', cucharaditas: 'cucharadita', teaspoon: 'cucharadita', tsp: 'cucharadita',
+  taza: 'taza', tazas: 'taza', cup: 'taza', cups: 'taza',
+  diente: 'diente', dientes: 'diente', clove: 'diente', cloves: 'diente',
+  unidad: 'unidad', unidades: 'unidad', rodaja: 'rodaja', rodajas: 'rodaja',
+  filete: 'filete', filetes: 'filete',
+};
+
+/**
+ * Estimated mass in grams of everything a recipe is made of.
+ * Returns { grams, resolved, total, unresolved } so a caller can judge whether
+ * to trust it — a recipe whose big items did not resolve should not be used.
+ */
+export async function estimateRecipeMass(recipe) {
+  const ings = recipe?.recipeIngredient || [];
+  let grams = 0, resolved = 0;
+  const unresolved = [];
+  let BaseFoods = null;
+  for (const ing of ings) {
+    const q = parseFloat(ing.quantity) || 0;
+    if (!q) { continue; }                       // "sal a gusto" has no mass to add
+    const unit = String(ing.unit?.name || '').toLowerCase().trim();
+    let g = null;
+    if (_MASS_UNITS[unit] != null) {
+      g = q * _MASS_UNITS[unit];
+    } else {
+      // Counted in spoons or pieces: the catalogue knows what one weighs.
+      const label = unit ? _COUNT_UNITS[unit] : 'unidad';
+      if (label && ing.food?.name) {
+        if (!BaseFoods) ({ BaseFoods } = await import('./base-foods.js'));
+        const hit = (await BaseFoods.searchByNameWithMeta(ing.food.name, 1, 1)).items[0];
+        const au = hit?.alt_units?.find(a => a.abbr === label || (label === 'unidad' && /^unidad/.test(a.abbr)));
+        if (au) g = q * au.grams;
+      }
+    }
+    if (g == null) unresolved.push(ing.display || ing.food?.name || '?');
+    else { grams += g; resolved++; }
+  }
+  return { grams: Math.round(grams), resolved, total: ings.length, unresolved };
+}
+
 const Mealie = {
   isConfigured() {
     const { baseUrl, token } = _cfg();

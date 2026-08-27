@@ -806,6 +806,9 @@
       "update_all": "Update all",
       "done": "{n} foods updated",
       "failed": "{n} could not be updated"
+    },
+    "mealie": {
+      "mass_note": "Per 100 g, computed from {grams} g of raw ingredients ({servings} servings). Weigh the finished dish and correct the portion if it cooked down or soaked up water. {missing} ingredients could not be weighed."
     }
   },
   "trace": {
