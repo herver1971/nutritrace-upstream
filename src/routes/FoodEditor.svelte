@@ -658,6 +658,16 @@
     saving = false;
   }
 
+  /** Restate a nutrition object measured for `from` grams as one for `to`. */
+  function _rescale(nutrition, from, to) {
+    if (!(from > 0) || !(to > 0) || from === to) return nutrition;
+    const f = to / from;
+    return Object.fromEntries(Object.entries(nutrition || {}).map(([k, v]) => {
+      const n = Number(v);
+      return [k, Number.isFinite(n) ? Math.round(n * f * 10000) / 10000 : v];
+    }));
+  }
+
   async function save() {
     if (!food.name.trim()) {
       showError($_('food_editor.errors.name_required'));
@@ -683,9 +693,22 @@
         if (Object.keys(flags).length) _nutrition._derived = flags;
       }
       const item = { ...food, nutrition: _nutrition };
+      // Opening the editor as part of logging (there is a diary context) means
+      // the amount typed into Portion is what is being eaten, not a redefinition
+      // of the food. Keep the food on the basis it arrived with and let only the
+      // diary entry carry the amount — a recipe imported per 100 g stays per
+      // 100 g however much of it was served.
+      const _loggingOnly = !!editorState.foodDiaryCtx
+        && _serverBaseline
+        && Number(_serverBaseline.portion) > 0
+        && Number(_serverBaseline.portion) !== Number(food.portion);
+      const _toStore = _loggingOnly
+        ? { ...item, portion: _serverBaseline.portion, unit: _serverBaseline.unit || item.unit,
+            nutrition: _rescale(_nutrition, Number(food.portion), Number(_serverBaseline.portion)) }
+        : item;
       const saved = isSavedRecord(food)
-        ? await NtApi.updateFood(food.id, item)
-        : await NtApi.createFood(item);
+        ? await NtApi.updateFood(food.id, _toStore)
+        : await NtApi.createFood(_toStore);
       item.id = saved.id;
       // If called from diary pick mode, also add to diary
       const ctx = editorState.foodDiaryCtx;
