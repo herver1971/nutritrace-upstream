@@ -117,8 +117,9 @@ en la tabla ambos figuran como "aceite" aunque uno sea refinado y el otro no.
 
 ### Carnes
 
-Ordenadas por grasa saturada. El sodio explica por qué las curadas
-(jamón, panceta) quedan en rojo aunque su grasa sea baja.
+Ordenadas por grasa saturada. Incluye los cortes argentinos mapeados a su
+equivalente USDA y, para casi todos, su versión cocida. El sodio explica por
+qué las curadas (jamón, panceta) quedan en rojo aunque su grasa sea baja.
 
 | | Alimento | kcal | Grasa | Sat | Insat | Prot | Na (mg) |
 |---|---|---|---|---|---|---|---|
@@ -128,39 +129,76 @@ Ordenadas por grasa saturada. El sodio explica por qué las curadas
 | 🟢 | Pechuga de pollo al horno (sin piel) | 165 | 3.6 | 1.0 | 2.0 | 31.0 | 74 |
 | 🟢 | Pata de pollo cruda (sin piel) | 120 | 4.2 | 1.1 | 2.4 | 19.2 | 96 |
 | 🟢 | Nalga cruda (magra) | 121 | 2.9 | 1.1 | 1.5 | 23.6 | 54 |
+| 🟢 | Solomillo de cerdo al horno (magro) | 143 | 3.5 | 1.2 | 1.8 | 26.2 | 57 |
 | 🟢 | Hígado de ternera crudo | 135 | 3.6 | 1.2 | 0.9 | 20.4 | 69 |
+| 🟢 | Osobuco crudo (magro) | 128 | 3.9 | 1.3 | 1.9 | 21.8 | 63 |
 | 🟢 | Nalga al horno (magra) | 162 | 3.8 | 1.4 | 1.9 | 30.1 | 67 |
+| 🟢 | Bola de lomo cruda (magra) | 128 | 4.3 | 1.5 | 2.0 | 22.2 | 59 |
+| 🟢 | Cuadril crudo (magro) | 131 | 4.1 | 1.5 | 1.8 | 22.1 | 56 |
 | 🟢 | Hígado de pollo crudo | 119 | 4.8 | 1.6 | 2.6 | 16.9 | 71 |
+| 🟢 | Paleta cruda (magra) | 123 | 4.1 | 1.7 | 2.4 | 21.6 | 73 |
 | 🟢 | Conejo crudo | 136 | 5.5 | 1.7 | 2.6 | 20.1 | 41 |
 | 🔴 | Jamón cocido magro | 145 | 5.5 | 1.8 | 3.2 | 20.9 | 1203 |
 | 🟢 | Lomo de ternera crudo (magro) | 139 | 5.7 | 2.0 | 2.5 | 21.9 | 44 |
 | 🟢 | Pavo picado | 148 | 7.7 | 2.0 | 4.8 | 19.7 | 58 |
 | 🟢 | Vacío crudo (magro) | 141 | 5.5 | 2.1 | 2.1 | 21.6 | 55 |
+| 🟢 | Hígado de pollo estofado | 167 | 6.5 | 2.1 | 3.4 | 24.5 | 76 |
+| 🟢 | Pata de pollo al horno (sin piel) | 174 | 7.8 | 2.1 | 4.7 | 24.2 | 99 |
 | 🟢 | Carne picada magra (95/5) | 137 | 5.0 | 2.2 | 2.3 | 21.4 | 66 |
 | 🟢 | Pechuga de pollo al horno (con piel) | 197 | 7.8 | 2.2 | 4.7 | 29.8 | 71 |
+| 🟢 | Cuadril a la plancha (magro) | 183 | 5.8 | 2.2 | 2.5 | 30.6 | 64 |
+| 🟢 | Bola de lomo al horno (magra) | 177 | 6.5 | 2.3 | 3.0 | 27.8 | 36 |
+| 🟢 | Osobuco estofado (magro) | 201 | 6.4 | 2.3 | 3.1 | 33.7 | 64 |
 | 🟢 | Pollo picado | 143 | 8.1 | 2.3 | 5.1 | 17.4 | 60 |
 | 🟢 | Muslo de pollo al horno (sin piel) | 179 | 8.2 | 2.3 | 5.1 | 24.8 | 106 |
 | 🟢 | Pato sin piel crudo | 135 | 6.0 | 2.3 | 2.3 | 18.3 | 74 |
 | 🟢 | Bife angosto crudo (magro) | 143 | 5.7 | 2.3 | 3.1 | 23.1 | 46 |
+| 🟢 | Conejo al horno | 197 | 8.1 | 2.4 | 3.7 | 29.1 | 47 |
+| 🟢 | Aguja / Roast beef cruda (magra) | 137 | 6.0 | 2.5 | 3.4 | 20.6 | 85 |
 | 🟢 | Pecho de ternera crudo (magro) | 157 | 7.4 | 2.6 | 3.7 | 20.7 | 79 |
+| 🟢 | Paleta estofada (magra) | 196 | 7.8 | 2.6 | 3.8 | 31.5 | 61 |
 | 🟢 | Pechuga de pollo con piel | 172 | 9.3 | 2.7 | 5.8 | 20.9 | 63 |
+| 🟢 | Marucha cruda (magra) | 139 | 6.4 | 2.7 | 3.6 | 20.4 | 83 |
+| 🟢 | Hígado de ternera estofado | 191 | 5.3 | 2.9 | 2.2 | 29.1 | 79 |
+| 🟡 | Ternera picada a la plancha | 172 | 7.6 | 3.0 | 3.4 | 24.4 | 83 |
+| 🟢 | Vacío a la plancha (magro) | 186 | 7.4 | 3.1 | 3.2 | 27.9 | 57 |
+| 🟡 | Colita de cuadril cruda (con grasa) | 165 | 8.6 | 3.1 | 4.6 | 20.6 | 52 |
 | 🟡 | Peceto crudo (con grasa) | 166 | 8.2 | 3.2 | 3.9 | 21.5 | 58 |
 | 🟢 | Lomo de ternera a la parrilla (magro) | 198 | 8.3 | 3.3 | 4.3 | 30.7 | 59 |
+| 🟢 | Aguja / Roast beef al horno (magra) | 183 | 8.5 | 3.4 | 4.6 | 26.6 | 80 |
+| 🟢 | Bife angosto a la parrilla (magro) | 198 | 9.1 | 3.4 | 4.5 | 29.1 | 54 |
+| 🟡 | Peceto al horno (con grasa) | 208 | 9.7 | 3.7 | 4.5 | 28.3 | 37 |
+| 🟢 | Marucha a la parrilla (magra) | 196 | 9.2 | 3.8 | 5.0 | 28.1 | 87 |
 | 🟡 | Carne picada (90/10) | 176 | 10.0 | 3.9 | 4.5 | 20.0 | 66 |
-| 🟢 | Muslo de pollo al horno (con piel) | 232 | 14.7 | 4.1 | 9.3 | 23.3 | 102 |
+| 🟢 | Pato sin piel al horno | 201 | 11.2 | 4.0 | 5.3 | 23.5 | 65 |
+| 🟡 | Tapa de asado cruda (magra) | 180 | 10.6 | 4.1 | 5.1 | 19.7 | 88 |
+| 🟡 | Muslo de pollo al horno (con piel) | 232 | 14.7 | 4.1 | 9.3 | 23.3 | 102 |
 | 🟡 | Chuleta de cerdo cruda (con grasa) | 198 | 12.6 | 4.4 | 7.0 | 19.7 | 50 |
 | 🟡 | Muslo de pollo con piel crudo | 221 | 16.6 | 4.5 | 10.4 | 16.5 | 81 |
+| 🟡 | Colita de cuadril al horno (con grasa) | 221 | 12.4 | 4.5 | 6.5 | 25.7 | 50 |
+| 🟡 | Tapa de cuadril / Picanha cruda (con grasa) | 191 | 12.4 | 4.6 | 6.9 | 19.9 | 80 |
 | 🟡 | Ternera picada | 197 | 13.1 | 5.1 | 6.9 | 18.6 | 103 |
+| 🟡 | Tapa de cuadril / Picanha a la parrilla (con grasa) | 242 | 15.0 | 5.3 | 8.1 | 26.0 | 89 |
+| 🟡 | Chuleta de cerdo al horno (con grasa) | 248 | 14.7 | 5.4 | 7.7 | 27.1 | 59 |
+| 🟡 | Tapa de asado a la parrilla (magra) | 246 | 15.7 | 5.6 | 7.4 | 24.7 | 86 |
 | 🔴 | Entraña cruda (con grasa) | 238 | 18.4 | 7.4 | 9.0 | 17.7 | 65 |
+| 🔴 | Matambre crudo (aprox.) | 238 | 18.4 | 7.4 | 9.0 | 17.7 | 65 |
 | 🔴 | Carne picada común (80/20) | 254 | 20.0 | 7.6 | 9.4 | 17.2 | 66 |
+| 🔴 | Entraña a la parrilla (con grasa) | 300 | 21.6 | 7.7 | 9.9 | 26.5 | 70 |
+| 🔴 | Matambre a la parrilla (aprox.) | 300 | 21.6 | 7.7 | 9.9 | 26.5 | 70 |
 | 🔴 | Carne de cerdo picada | 263 | 21.2 | 7.9 | 11.3 | 16.9 | 56 |
+| 🔴 | Asado de tira crudo (con grasa) | 235 | 18.3 | 8.0 | 9.9 | 17.5 | 78 |
 | 🔴 | Ojo de bife crudo (con grasa) | 241 | 18.4 | 8.1 | 9.5 | 18.7 | 51 |
+| 🔴 | Cordero picado a la plancha | 283 | 19.6 | 8.1 | 9.7 | 24.8 | 81 |
+| 🔴 | Ojo de bife a la parrilla (con grasa) | 285 | 21.1 | 9.2 | 11.0 | 23.9 | 58 |
+| 🔴 | Asado de tira cocido (con grasa) | 305 | 22.6 | 10.0 | 12.4 | 25.5 | 70 |
 | 🔴 | Cordero picado | 282 | 23.4 | 10.2 | 11.4 | 16.6 | 59 |
 | 🔴 | Panceta cocida | 548 | 43.3 | 14.2 | 23.9 | 35.7 | 2193 |
 
 ### Pescados y mariscos
 
-**Ninguno supera los 3,5 g de saturada.** La grasa no los diferencia:
+**El más graso apenas llega a 4,2 g de saturada** (caballa cocida).
+La grasa no los diferencia:
 la salazón y el ahumado, sí.
 
 | | Alimento | kcal | Grasa | Sat | Insat | Prot | Na (mg) |
@@ -170,34 +208,51 @@ la salazón y el ahumado, sí.
 | 🟢 | Vieira cruda | 69 | 0.5 | 0.1 | 0.2 | 12.1 | 392 |
 | 🟢 | Bacalao crudo | 82 | 0.7 | 0.1 | 0.3 | 17.8 | 54 |
 | 🟢 | Abadejo crudo | 76 | 0.8 | 0.1 | 0.4 | 17.2 | 159 |
+| 🟢 | Bacalao cocido | 105 | 0.9 | 0.2 | 0.4 | 22.8 | 78 |
 | 🟢 | Atún crudo | 109 | 0.5 | 0.2 | 0.3 | 24.4 | 45 |
 | 🟢 | Langosta cruda | 77 | 0.8 | 0.2 | 0.5 | 16.5 | 423 |
 | 🟡 | Almeja cruda | 86 | 1.0 | 0.2 | 0.3 | 14.7 | 601 |
+| 🟡 | Almeja cocida | 148 | 1.9 | 0.2 | 0.7 | 25.6 | 1202 |
 | 🟢 | Surimi | 99 | 0.9 | 0.2 | 0.6 | 15.2 | 143 |
+| 🟢 | Cangrejo cocido | 83 | 0.7 | 0.2 | 0.4 | 17.9 | 395 |
+| 🟢 | Langosta cocida | 89 | 0.9 | 0.2 | 0.6 | 19.0 | 486 |
 | 🟢 | Cangrejo crudo | 87 | 1.1 | 0.2 | 0.6 | 18.1 | 293 |
 | 🟢 | Pulpo crudo | 82 | 1.0 | 0.2 | 0.4 | 14.9 | 230 |
 | 🟢 | Mero crudo | 92 | 1.0 | 0.2 | 0.5 | 19.4 | 53 |
 | 🟢 | Merluza cruda | 90 | 1.3 | 0.2 | 0.7 | 18.3 | 72 |
 | 🟢 | Pargo crudo | 100 | 1.3 | 0.3 | 0.7 | 20.5 | 64 |
 | 🟢 | Halibut crudo | 91 | 1.3 | 0.3 | 0.8 | 18.6 | 68 |
+| 🟢 | Mero cocido | 118 | 1.3 | 0.3 | 0.7 | 24.8 | 53 |
+| 🟢 | Halibut cocido | 111 | 1.6 | 0.4 | 0.9 | 22.5 | 82 |
 | 🟢 | Calamar crudo | 92 | 1.4 | 0.4 | 0.6 | 15.6 | 44 |
+| 🟢 | Pargo cocido | 128 | 1.7 | 0.4 | 0.9 | 26.3 | 57 |
+| 🟢 | Merluza cocida | 116 | 1.7 | 0.4 | 1.0 | 23.5 | 132 |
 | 🟢 | Mejillón crudo | 86 | 2.2 | 0.4 | 1.1 | 11.9 | 286 |
 | 🟢 | Lenguado crudo | 70 | 1.9 | 0.4 | 0.9 | 12.4 | 296 |
+| 🟢 | Pulpo cocido | 164 | 2.1 | 0.5 | 0.8 | 29.8 | 460 |
 | 🔴 | Bacalao salado | 290 | 2.4 | 0.5 | 1.1 | 62.8 | 7027 |
 | 🟢 | Ostra cruda | 81 | 2.3 | 0.5 | 1.3 | 9.4 | 106 |
 | 🟢 | Lubina cruda | 97 | 2.0 | 0.5 | 1.2 | 18.4 | 68 |
+| 🟢 | Lenguado cocido | 86 | 2.4 | 0.5 | 1.1 | 15.2 | 363 |
 | 🟢 | Tilapia cruda | 96 | 1.7 | 0.6 | 0.9 | 20.1 | 52 |
+| 🟢 | Lubina cocida | 124 | 2.6 | 0.7 | 1.5 | 23.6 | 87 |
+| 🟢 | Mejillón cocido | 172 | 4.5 | 0.8 | 2.2 | 23.8 | 369 |
 | 🟡 | Salmón ahumado | 117 | 4.3 | 0.9 | 3.0 | 18.3 | 672 |
+| 🟢 | Tilapia cocida | 128 | 2.6 | 0.9 | 1.6 | 26.1 | 56 |
+| 🟢 | Ostra cocida | 163 | 4.6 | 1.0 | 2.6 | 18.9 | 212 |
 | 🟢 | Corvina cruda | 104 | 3.2 | 1.1 | 1.6 | 17.8 | 56 |
 | 🟢 | Trucha cruda | 148 | 6.6 | 1.1 | 4.8 | 20.8 | 52 |
 | 🟢 | Anchoa cruda | 131 | 4.8 | 1.3 | 2.8 | 20.4 | 104 |
 | 🟢 | Trucha cocida | 190 | 8.5 | 1.5 | 6.1 | 26.6 | 67 |
 | 🟢 | Sardina en aceite | 208 | 11.4 | 1.5 | 9.0 | 24.6 | 307 |
 | 🟢 | Pez espada crudo | 144 | 6.7 | 1.6 | 4.2 | 19.7 | 81 |
+| 🟢 | Pez espada cocido | 172 | 7.9 | 1.9 | 4.9 | 23.4 | 97 |
 | 🟢 | Arenque crudo | 158 | 9.0 | 2.0 | 5.9 | 18.0 | 90 |
 | 🟢 | Salmón cocido | 206 | 12.3 | 2.4 | 8.7 | 22.1 | 61 |
+| 🟢 | Arenque cocido | 203 | 11.6 | 2.6 | 7.5 | 23.0 | 115 |
 | 🟢 | Salmón crudo | 208 | 13.4 | 3.0 | 7.7 | 20.4 | 59 |
 | 🟢 | Caballa cruda | 205 | 13.9 | 3.3 | 8.8 | 18.6 | 90 |
+| 🟢 | Caballa cocida | 262 | 17.8 | 4.2 | 11.3 | 23.9 | 83 |
 
 ### Cereales y panes
 
@@ -365,7 +420,7 @@ un pescado por su sal. Una fórmula única no puede capturar eso.
 |---|---|---|---|
 | **Aceites** | % de saturada sobre grasa total | 🟢 ≤20% · 🟡 ≤45% · 🔴 >45%<br>trans >2 g → 🔴 | Todos son ~100 g de grasa; solo la composición los distingue |
 | **Carnes** | Saturada g/100 g **+ sodio** | 🟢 ≤3 · 🟡 ≤7 · 🔴 >7<br>Na >900 → 🔴 · Na >400 → 🟡 | El curado separa un corte fresco de un fiambre: el jamón magro pasa la prueba de grasa (1,8 g) con 1203 mg de sodio |
-| **Pescados** | **Sodio** | Na >1500 → 🔴 · Na >600 o sat >4 → 🟡 | Ninguno pasa 3,5 g de saturada: la grasa no los separa, la salazón sí |
+| **Pescados** | **Sodio** | Na >1500 → 🔴 · Na >600 o sat >4 → 🟡 | Solo la caballa pasa los 4 g: la grasa no los separa, la salazón sí |
 | **Lácteos** | Saturada **y** azúcar, la peor de las dos | sat: 🟢 ≤2 · 🟡 ≤10<br>azúcar: 🟢 ≤12 · 🟡 ≤25 | Sin el azúcar, el dulce de leche pasaba por la grasa sola |
 | **Cereales** | Fibra / carbohidratos | 🟢 ≥0,04 · 🟡 ≥0,02 · 🔴 <0,02 | Sobrevive a la cocción. Arroz integral 0,047 vs blanco 0,016 |
 | **Frutas** | Azúcar | 🟡 si >40 g | Solo las desecadas concentran azúcar; la fruta entera no es el problema |
@@ -384,6 +439,34 @@ un pescado por su sal. Una fórmula única no puede capturar eso.
 > rojo sería empujar a evitar alimentos magros y ricos en proteína por un
 > número que no predice lo que importa.
 
+### El ajuste por cocción
+
+Casi todos los cortes y pescados tienen hoy su versión cocida, y cocinar
+**concentra**: el agua se va y todo lo demás sube por cada 100 g. El lomo de
+ternera pasa de 1,96 a 3,30 g de saturada (×1,69) sin haber dejado de ser el
+mismo alimento. Sin corregirlo, la versión cocida de un corte magro quedaba
+peor que la cruda por el solo hecho de haberse cocinado.
+
+La corrección usa la proteína como medida de cuánta agua se perdió:
+
+```
+k = proteínas / 21,5     acotado entre 1 y 1,6
+```
+
+(21,5 g es la proteína típica de la carne vacuna cruda.) En carnes se aplica
+al límite del verde, y en pescados al umbral de saturada del amarillo.
+
+**Solo se mueve el límite del verde, nunca el del rojo.** Un corte magro
+concentra su poca saturada de forma marcada, y para eso está el factor. Pero
+un corte graso *suelta* grasa al cocinarse: su saturada casi no sube —el
+matambre va de 7,43 a 7,73, apenas ×1,04— y un límite de rojo escalado lo
+dejaría pasar. Al subir los dos, el matambre a la parrilla daba amarillo
+donde el crudo da rojo. **Cocinar no puede hacer que un corte sea más sano de
+lo que es.**
+
+El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
+adivinado por el nombre: los **49 pares** del catálogo coinciden hoy en color.
+
 ### Dónde vive y cómo se recalibra
 
 El color se **precomputa** en `scripts/build-base-foods.mjs`
@@ -394,7 +477,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **356 🟢 · 44 🟡 · 58 🔴** sobre 458 alimentos.
+Reparto actual: **391 🟢 · 55 🟡 · 65 🔴** sobre 511 alimentos.
 
 ---
 

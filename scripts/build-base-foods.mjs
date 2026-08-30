@@ -263,7 +263,7 @@ function trafficLight(cat, n, cooked = false) {
       if (na > 400 && byFat === LIGHT.GREEN) return LIGHT.AMBER;
       return byFat;
     }
-    // Every fish here sits under 3.5 g saturated, so fat cannot separate them.
+    // Only cooked mackerel clears 4 g saturated here, so fat cannot separate them.
     // Salting and smoking can, and that is the real difference between a
     // fresh fillet and salt cod.
     case 'pescados': return na > 1500 ? LIGHT.RED
