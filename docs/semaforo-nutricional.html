@@ -116,7 +116,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <header>
   <p class="lbl">Catálogo de ingredientes base · NutriTrace</p>
   <h1>Semáforo Nutricional</h1>
-  <p class="sub">Cómo se clasifican los 511 alimentos del catálogo, y el razonamiento nutricional
+  <p class="sub">Cómo se clasifican los 512 alimentos del catálogo, y el razonamiento nutricional
   que hay detrás. Todos los valores son por 100&nbsp;g y salen de USDA FoodData Central.</p>
   <div class="meta">
     <div><span class="lbl">Alimentos</span><span class="v">458</span></div>
@@ -444,8 +444,8 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche parcialmente descremada</td><td class="num">42</td><td class="num">1.0</td><td class="num">0.6</td><td class="num">5.2</td></tr>
 <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Queso cottage light</td><td class="num">81</td><td class="num">2.3</td><td class="num">1.2</td><td class="num">4.0</td></tr>
 <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Queso cottage</td><td class="num">98</td><td class="num">4.3</td><td class="num">1.7</td><td class="num">2.7</td></tr>
-<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche entera</td><td class="num">61</td><td class="num">3.2</td><td class="num">1.9</td><td class="num">5.0</td></tr>
-<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yogur natural entero</td><td class="num">61</td><td class="num">3.2</td><td class="num">2.1</td><td class="num">4.7</td></tr>
+<tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche entera</td><td class="num">61</td><td class="num">3.3</td><td class="num">1.9</td><td class="num">5.0</td></tr>
+<tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yogur natural entero</td><td class="num">61</td><td class="num">3.3</td><td class="num">2.1</td><td class="num">4.7</td></tr>
 <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Yogur griego natural</td><td class="num">97</td><td class="num">5.0</td><td class="num">2.4</td><td class="num">4.0</td></tr>
 <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Leche de cabra</td><td class="num">69</td><td class="num">4.1</td><td class="num">2.7</td><td class="num">4.5</td></tr>
 <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Huevo crudo</td><td class="num">143</td><td class="num">9.5</td><td class="num">3.1</td><td class="num">0.4</td></tr>
@@ -464,6 +464,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso blanco</td><td class="num">310</td><td class="num">24.3</td><td class="num">13.7</td><td class="num">1.8</td></tr>
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso mozzarella</td><td class="num">299</td><td class="num">22.1</td><td class="num">13.9</td><td class="num">0.0</td></tr>
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso parmesano</td><td class="num">392</td><td class="num">25.0</td><td class="num">14.8</td><td class="num">0.1</td></tr>
+<tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso Port Salut San Francisco</td><td class="num">307</td><td class="num">24.7</td><td class="num">15.0</td><td class="num">0.0</td></tr>
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso camembert</td><td class="num">300</td><td class="num">24.3</td><td class="num">15.3</td><td class="num">0.5</td></tr>
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Leche en polvo entera</td><td class="num">496</td><td class="num">26.7</td><td class="num">16.7</td><td class="num">38.4</td></tr>
 <tr><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Queso provolone</td><td class="num">351</td><td class="num">26.6</td><td class="num">17.1</td><td class="num">0.6</td></tr>
@@ -575,6 +576,25 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
     <p>El vínculo crudo→cocido está declarado en los datos (<code>cooked_of</code>), no
     adivinado por el nombre: los <strong>49 pares</strong> del catálogo coinciden hoy en
     color.</p>
+
+    <h3>Productos de marca</h3>
+    <p>El catálogo es de ingredientes genéricos, y SR Legacy no tiene marcas argentinas.
+    Pero un producto que se come seguido merece su número real, no el del pariente
+    estadounidense más cercano: el <strong>Port Salut San Francisco</strong> declara
+    <strong>15&nbsp;g de saturada por 100&nbsp;g</strong>, contra los ~13&nbsp;g del port
+    salut genérico de USDA. Sobre una rebanada de 30&nbsp;g la diferencia es chica; sobre
+    el consumo de una semana, no.</p>
+    <p>Una entrada así lleva <code>label</code> en lugar de <code>src</code>, y se guarda
+    <strong>tal como está impresa en el paquete</strong> —por porción— para que el commit
+    se pueda cotejar contra el envase sin hacer cuentas. El script la lleva a 100&nbsp;g
+    multiplicando por <code>100 / gramos de la porción</code>.</p>
+    <div class="note"><p><strong>El rótulo argentino informa menos nutrientes que USDA.</strong>
+    Solo son obligatorios energía, carbohidratos, azúcares, proteínas, grasas totales,
+    saturadas, trans, fibra y sodio. No hay colesterol, ni calcio, ni el desglose mono/poli:
+    esas filas quedan <strong>vacías, no en cero</strong>, y la app las muestra como sin
+    dato.</p></div>
+    <p>Se marca con <code>source: "label"</code> y con la marca en <code>brand</code>, que la
+    app muestra junto al nombre. Hoy es la única del catálogo.</p>
 
     <h3>Dónde vive y cómo se recalibra</h3>
     <p>El color se <strong>precomputa</strong> en <code>scripts/build-base-foods.mjs</code>

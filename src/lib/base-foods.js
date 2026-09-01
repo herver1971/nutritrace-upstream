@@ -38,6 +38,23 @@ export function categoryLabel(slug, locale = 'es') {
   return String(locale || '').startsWith('es') ? e.es : e.en;
 }
 
+/**
+ * The stable key for one catalogue entry, and the `barcode` a saved food keeps
+ * as its pointer back here.
+ *
+ * `fdcId_` mirrors the convention the USDA source uses, so an entry measured in
+ * its own right stays traceable to its SR Legacy row. The other two kinds
+ * cannot use it: an approximated entry BORROWS another food's row without
+ * being that food, and a branded entry transcribed from its pack has no row at
+ * all. Two results sharing a barcode would collide in the keyed {#each} that
+ * renders them, and Svelte throws on duplicate keys — the failure that took the
+ * whole search view down once already. It would also make the library swap
+ * replace both with one saved copy.
+ */
+function entryBarcode(food) {
+  return (food.approx || !food.fdc) ? 'ntBase_' + food.id : 'fdcId_' + food.fdc;
+}
+
 let _catalogue = null;    // resolved JSON document
 let _index = null;        // [{ food, haystack: [normalised strings] }]
 let _loadPromise = null;  // single-flight guard
@@ -127,16 +144,10 @@ function toResult(food, locale) {
   const es = String(locale || '').startsWith('es');
   return {
     name:      es ? food.name.es : food.name.en,
-    brand:     '',
-    // Mirrors the fdcId_ convention the USDA source uses, so a saved food
-    // keeps a traceable pointer back to the SR Legacy row it came from.
-    //
-    // An approximated entry borrows another food's row but is NOT that food,
-    // so it must not claim its barcode: two results sharing one would collide
-    // in the keyed {#each} that renders them, and Svelte throws on duplicate
-    // keys — the failure that took the whole search view down once already.
-    // It would also make the library swap replace both with one saved copy.
-    barcode:   food.approx ? 'ntBase_' + food.id : 'fdcId_' + food.fdc,
+    // Empty for everything measured generically; only a branded entry carries
+    // one, and it is the brand whose label the numbers were read off.
+    brand:     food.brand || '',
+    barcode:   entryBarcode(food),
     unit:      'g',
     portion:   100,
     quantity:  1,
@@ -176,8 +187,7 @@ export async function findByBarcode(barcode, locale = 'es') {
   if (!barcode) return null;
   await load();
   const code = String(barcode);
-  const food = _catalogue.foods.find(f =>
-    code === (f.light !== undefined && f.approx ? 'ntBase_' + f.id : 'fdcId_' + f.fdc));
+  const food = _catalogue.foods.find(f => code === entryBarcode(f));
   return food ? toResult(food, locale) : null;
 }
 

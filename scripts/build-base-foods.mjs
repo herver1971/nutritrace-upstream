@@ -218,6 +218,11 @@ const LIGHT = { GREEN: 'green', AMBER: 'amber', RED: 'red' };
 // per-100 g threshold simply penalises it for having lost water. Meat and fish
 // thresholds are scaled by that concentration for cooked entries so the same
 // cut lands on the same colour whichever way it is logged.
+// A category judged on saturated fat cannot be judged at all when the figure
+// is missing, and an absent value reads as zero — which scores green. Used by
+// both the SR Legacy path and the label path below.
+const JUDGED_ON_SAT = new Set(['carnes', 'pescados', 'lacteos', 'aceites']);
+
 const COOKED_RE = /\b(cooked|roasted|grilled|broiled|braised|boiled|baked|fried|stewed|microwaved|smoked)\b/i;
 
 function trafficLight(cat, n, cooked = false) {
@@ -385,13 +390,73 @@ function main() {
     for (const field of ['id', 'cat', 'es', 'en']) {
       if (!e[field]) problems.push(`${e._file}: entry ${e.id || '(no id)'} is missing "${field}"`);
     }
-    // One of the two has to name a row: `src` for a food measured in its own
-    // right, `approx_of` for one that openly borrows another's composition.
-    if (!e.src && !e.approx_of) {
-      problems.push(`${e._file}: entry ${e.id || '(no id)'} needs either "src" or "approx_of"`);
+    // One of the three has to say where the numbers come from: `src` for a
+    // food measured in its own right, `approx_of` for one that openly borrows
+    // another's composition, `label` for a branded product transcribed from
+    // its own pack.
+    if (!e.src && !e.approx_of && !e.label) {
+      problems.push(`${e._file}: entry ${e.id || '(no id)'} needs one of "src", "approx_of" or "label"`);
     }
     if (seenIds.has(e.id)) problems.push(`${e._file}: duplicate id "${e.id}"`);
     seenIds.add(e.id);
+
+    // ── Branded products, transcribed from the pack ──────────────────────
+    // SR Legacy has no Argentine brands, and a generic "port salut" is not
+    // the same cheese: the local one carries 15 g of saturated fat per 100 g
+    // against the ~13 g of the French original. When a product is eaten often
+    // enough to be worth logging exactly, its own label is a better source
+    // than the nearest American approximation.
+    //
+    // The figures are stored AS PRINTED (per serving) and scaled here, so the
+    // committed entry can be checked against the pack without arithmetic.
+    // Everything else in the catalogue stays USDA; `source: 'label'` is what
+    // marks the difference, and the app shows the brand on the entry.
+    if (e.label) {
+      const L = e.label;
+      const serving = Number(L.serving_g);
+      const per = L.per_serving || {};
+      if (!Number.isFinite(serving) || serving <= 0) {
+        problems.push(`${e._file}: "${e.id}" → label.serving_g must be a positive number of grams`);
+        continue;
+      }
+      if (!Number.isFinite(Number(per.calories))) {
+        problems.push(`${e._file}: "${e.id}" → label.per_serving needs a numeric "calories"`);
+        continue;
+      }
+      // Argentine labels report per serving, NutriTrace stores per 100 g.
+      const k = 100 / serving;
+      const nutrition = {};
+      for (const [key, v] of Object.entries(per)) {
+        const n = Number(v);
+        if (!Number.isFinite(n)) {
+          problems.push(`${e._file}: "${e.id}" → label.per_serving.${key} is not a number`);
+          continue;
+        }
+        // Two decimals: the label itself only carries one, so anything more
+        // is arithmetic noise dressed up as precision.
+        nutrition[key] = Math.round(n * k * 100) / 100;
+      }
+      if (JUDGED_ON_SAT.has(e.cat) && nutrition.fat > 1 && nutrition['saturated-fat'] == null) {
+        problems.push(`${e._file}: "${e.id}" → label reports ${nutrition.fat} g fat but no saturated-fat; the traffic light would read that as zero and score it green`);
+        continue;
+      }
+      out.push({
+        id:   e.id,
+        cat:  e.cat,
+        name:  { es: e.es, en: e.en },
+        alias: { es: e.alias || [] },
+        nutrition,
+        // The serving IS the household portion here, and it is the one the
+        // pack names ("1 rebanada = 30 g").
+        units: L.serving_label ? [{ abbr: L.serving_label, grams: serving }] : [],
+        // A branded product is never a cooked/raw pair, so no scaling applies.
+        light: trafficLight(e.cat, nutrition, false),
+        ...(e.note ? { note: e.note } : {}),
+        ...(L.brand ? { brand: L.brand } : {}),
+        source: 'label',
+      });
+      continue;
+    }
 
     // `approx_of` marks an entry that has no measured row of its own and
     // borrows the composition of the nearest one. Matambre is the case this
@@ -422,7 +487,6 @@ function main() {
     // green. That is exactly how cooked tri-tip (fdc 169558, saturated blank
     // in SR Legacy) came out greener than the raw cut. Fail loudly and pick a
     // row that carries the figure.
-    const JUDGED_ON_SAT = new Set(['carnes', 'pescados', 'lacteos', 'aceites']);
     if (JUDGED_ON_SAT.has(e.cat) && nutrition.fat > 1 && nutrition['saturated-fat'] == null) {
       problems.push(`${e._file}: "${e.id}" → fdc ${food.fdc_id} reports ${nutrition.fat} g fat but no saturated-fat; the traffic light would read that as zero and score it green`);
       continue;

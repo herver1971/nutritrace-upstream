@@ -5,6 +5,8 @@ NutriTrace. Reúne el razonamiento nutricional detrás del semáforo, los datos
 que lo sustentan y los criterios exactos con que se calcula.
 
 Los valores salen de **USDA FoodData Central (SR Legacy)** y son **por 100 g**.
+La única excepción es el Port Salut San Francisco, transcripto de su propio
+rótulo — ver «Productos de marca».
 Todo lo que figura acá es reproducible: se regenera con
 `node scripts/build-base-foods.mjs`.
 
@@ -361,6 +363,7 @@ El salto real es a **integral** (🟢), que triplica la fibra.
 | 🔴 | Queso blanco | 310 | 24.3 | 13.7 | 1.8 |
 | 🔴 | Queso mozzarella | 299 | 22.1 | 13.9 | 0.0 |
 | 🔴 | Queso parmesano | 392 | 25.0 | 14.8 | 0.1 |
+| 🔴 | Queso Port Salut San Francisco | 307 | 24.7 | 15.0 | 0.0 |
 | 🔴 | Queso camembert | 300 | 24.3 | 15.3 | 0.5 |
 | 🔴 | Leche en polvo entera | 496 | 26.7 | 16.7 | 38.4 |
 | 🔴 | Queso provolone | 351 | 26.6 | 17.1 | 0.6 |
@@ -467,6 +470,36 @@ lo que es.**
 El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
 adivinado por el nombre: los **49 pares** del catálogo coinciden hoy en color.
 
+### Productos de marca
+
+El catálogo es de ingredientes genéricos, y SR Legacy no tiene marcas
+argentinas. Pero un producto que se come seguido merece su número real, no el
+del pariente estadounidense más cercano: el **Port Salut San Francisco**
+declara **15 g de saturada por 100 g**, contra los ~13 g del port salut
+genérico de USDA. Sobre una rebanada de 30 g la diferencia es chica; sobre el
+consumo de una semana, no.
+
+Una entrada así lleva `label` en lugar de `src`, y se guarda **tal como está
+impresa en el paquete** —por porción— para que el commit se pueda cotejar
+contra el envase sin hacer cuentas. El script la lleva a 100 g:
+
+```
+por 100 g = por porción × (100 / gramos de la porción)
+```
+
+Dos consecuencias que conviene tener presentes:
+
+- **El rótulo argentino informa menos nutrientes que USDA.** Solo son
+  obligatorios energía, carbohidratos, azúcares, proteínas, grasas totales,
+  saturadas, trans, fibra y sodio. No hay colesterol, ni calcio, ni el
+  desglose mono/poli. Esas filas quedan **vacías, no en cero** — la app las
+  muestra como sin dato.
+- **No lleva `fdc`**, así que su clave interna es `ntBase_<id>` en vez de
+  `fdcId_<n>`, igual que las entradas aproximadas.
+
+Se marca con `source: "label"` y con la marca en el campo `brand`, que la app
+muestra junto al nombre. Hoy es la única del catálogo.
+
 ### Dónde vive y cómo se recalibra
 
 El color se **precomputa** en `scripts/build-base-foods.mjs`
@@ -477,7 +510,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **391 🟢 · 55 🟡 · 65 🔴** sobre 511 alimentos.
+Reparto actual: **391 🟢 · 55 🟡 · 66 🔴** sobre 512 alimentos.
 
 ---
 
