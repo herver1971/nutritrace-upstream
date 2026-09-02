@@ -469,6 +469,328 @@ El salto real es a **integral** (🟢), que triplica la fibra.
 
 ---
 
+### Verduras
+
+Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el criterio de la categoría **no discrimina**, porque ninguna verdura tiene con qué salir mal parada. Estuvieron fuera de este documento por esa razón, y era un error: el color no las separa, pero los números sí, y para armar un plato la pregunta nunca es «¿es sana?» sino «¿cuál de estas me da más fibra por caloría?».
+
+| | Alimento | kcal | Carb | Fibra | Prot | K | Na |
+|---|---|---|---|---|---|---|---|
+| 🟢 | Tomate secado al sol | 258 | 55.8 | 12.3 | 14.1 | 3427 | 107 |
+| 🟢 | Alcaucil hervido | 53 | 12.0 | 5.7 | 2.9 | 286 | 60 |
+| 🟢 | Arvejas frescas | 81 | 14.5 | 5.7 | 5.4 | 244 | 5 |
+| 🟢 | Arvejas hervidas | 84 | 15.6 | 5.5 | 5.4 | 271 | 3 |
+| 🟢 | Alcaucil | 47 | 10.5 | 5.4 | 3.3 | 370 | 94 |
+| 🟢 | Jícama | 38 | 8.8 | 4.9 | 0.7 | 150 | 4 |
+| 🟢 | Habas frescas | 72 | 11.7 | 4.2 | 5.6 | 250 | 50 |
+| 🟢 | Kale | 35 | 4.4 | 4.1 | 2.9 | 348 | 53 |
+| 🟢 | Achicoria | 23 | 4.7 | 4.0 | 1.7 | 420 | 45 |
+| 🟢 | Kale hervido | 36 | 5.3 | 4.0 | 2.9 | 144 | 16 |
+| 🟢 | Repollitos de Bruselas | 43 | 9.0 | 3.8 | 3.4 | 389 | 25 |
+| 🟢 | Ají serrano | 32 | 6.7 | 3.7 | 1.7 | 305 | 10 |
+| 🟢 | Colinabo | 27 | 6.2 | 3.6 | 1.7 | 350 | 20 |
+| 🟢 | Espirulina seca | 290 | 23.9 | 3.6 | 57.5 | 1363 | 1048 |
+| 🟢 | Chaucha amarilla | 31 | 7.1 | 3.4 | 1.8 | 209 | 6 |
+| 🟢 | Brócoli hervido | 35 | 7.2 | 3.3 | 2.4 | 293 | 41 |
+| 🟢 | Perejil | 36 | 6.3 | 3.3 | 3.0 | 554 | 56 |
+| 🟢 | Chaucha hervida | 35 | 7.9 | 3.2 | 1.9 | 146 | 1 |
+| 🟢 | Okra | 33 | 7.5 | 3.2 | 1.9 | 299 | 7 |
+| 🟢 | Zapallo anco al horno | 40 | 10.5 | 3.2 | 0.9 | 284 | 4 |
+| 🟢 | Endivia | 17 | 3.4 | 3.1 | 1.3 | 314 | 22 |
+| 🟢 | Hinojo | 31 | 7.3 | 3.1 | 1.2 | 414 | 52 |
+| 🟢 | Batata | 86 | 20.1 | 3.0 | 1.6 | 337 | 55 |
+| 🟢 | Berenjena | 25 | 5.9 | 3.0 | 1.0 | 229 | 2 |
+| 🟢 | Zanahoria hervida | 35 | 8.2 | 3.0 | 0.8 | 235 | 58 |
+| 🟢 | Jalapeño | 29 | 6.5 | 2.8 | 0.9 | 248 | 3 |
+| 🟢 | Remolacha | 43 | 9.6 | 2.8 | 1.6 | 325 | 78 |
+| 🟢 | Zanahoria | 41 | 9.6 | 2.8 | 0.9 | 320 | 69 |
+| 🟢 | Chaucha | 31 | 7.0 | 2.7 | 1.8 | 211 | 6 |
+| 🟢 | Choclo blanco | 86 | 19.0 | 2.7 | 3.2 | 270 | 15 |
+| 🟢 | Arvejas en vaina | 42 | 7.6 | 2.6 | 2.8 | 200 | 4 |
+| 🟢 | Brócoli | 34 | 6.6 | 2.6 | 2.8 | 316 | 33 |
+| 🟢 | Cebolla de verdeo | 32 | 7.3 | 2.6 | 1.8 | 276 | 16 |
+| 🟢 | Repollitos de Bruselas hervidos | 36 | 7.1 | 2.6 | 2.6 | 317 | 21 |
+| 🟢 | Batata hervida (sin cáscara) | 76 | 17.7 | 2.5 | 1.4 | 230 | 27 |
+| 🟢 | Berenjena hervida | 35 | 8.7 | 2.5 | 0.8 | 123 | 1 |
+| 🟢 | Ciboulette | 30 | 4.4 | 2.5 | 3.3 | 296 | 3 |
+| 🟢 | Repollo | 25 | 5.8 | 2.5 | 1.3 | 170 | 18 |
+| 🟢 | Shiitake | 34 | 6.8 | 2.5 | 2.2 | 304 | 9 |
+| 🟢 | Choclo hervido | 96 | 21.0 | 2.4 | 3.4 | 218 | 1 |
+| 🟢 | Espinaca cocida | 23 | 3.8 | 2.4 | 3.0 | 466 | 70 |
+| 🟢 | Papa blanca | 69 | 15.7 | 2.4 | 1.7 | 407 | 16 |
+| 🟢 | Coliflor hervida | 23 | 4.1 | 2.3 | 1.8 | 142 | 15 |
+| 🟢 | Champiñón cocido | 28 | 5.3 | 2.2 | 2.2 | 356 | 2 |
+| 🟢 | Espinaca | 23 | 3.6 | 2.2 | 2.9 | 558 | 79 |
+| 🟢 | Nopal | 16 | 3.3 | 2.2 | 1.3 | 257 | 21 |
+| 🟢 | Papa al horno | 93 | 21.2 | 2.2 | 2.5 | 535 | 10 |
+| 🟢 | Acelga hervida | 20 | 4.1 | 2.1 | 1.9 | 549 | 179 |
+| 🟢 | Ajo | 149 | 33.1 | 2.1 | 6.4 | 401 | 17 |
+| 🟢 | Espárrago | 20 | 3.9 | 2.1 | 2.2 | 202 | 2 |
+| 🟢 | Lechuga romana | 17 | 3.3 | 2.1 | 1.2 | 247 | 8 |
+| 🟢 | Morrón rojo | 26 | 6.0 | 2.1 | 1.0 | 211 | 4 |
+| 🟢 | Papa | 77 | 17.5 | 2.1 | 2.1 | 425 | 6 |
+| 🟢 | Repollo colorado | 31 | 7.4 | 2.1 | 1.4 | 243 | 27 |
+| 🟢 | Choclo | 86 | 18.7 | 2.0 | 3.3 | 270 | 15 |
+| 🟢 | Coliflor | 25 | 5.0 | 2.0 | 1.9 | 299 | 30 |
+| 🟢 | Espárrago hervido | 22 | 4.1 | 2.0 | 2.4 | 224 | 14 |
+| 🟢 | Jengibre | 80 | 17.8 | 2.0 | 1.8 | 415 | 13 |
+| 🟢 | Remolacha hervida | 44 | 10.0 | 2.0 | 1.7 | 305 | 77 |
+| 🟢 | Zapallo anco | 45 | 11.7 | 2.0 | 1.0 | 352 | 4 |
+| 🟢 | Brotes de alfalfa | 23 | 2.1 | 1.9 | 4.0 | 79 | 6 |
+| 🟢 | Tomatillo | 32 | 5.8 | 1.9 | 1.0 | 268 | 1 |
+| 🟢 | Apio nabo | 42 | 9.2 | 1.8 | 1.5 | 300 | 100 |
+| 🟢 | Brotes de soja | 30 | 5.9 | 1.8 | 3.0 | 149 | 6 |
+| 🟢 | Mandioca | 160 | 38.1 | 1.8 | 1.4 | 271 | 14 |
+| 🟢 | Nabo | 28 | 6.4 | 1.8 | 0.9 | 191 | 67 |
+| 🟢 | Papa hervida (con cáscara) | 87 | 20.1 | 1.8 | 1.9 | 379 | 4 |
+| 🟢 | Puerro | 61 | 14.2 | 1.8 | 1.5 | 180 | 20 |
+| 🟢 | Cebolla | 40 | 9.3 | 1.7 | 1.1 | 146 | 4 |
+| 🟢 | Chayote | 19 | 4.5 | 1.7 | 0.8 | 125 | 2 |
+| 🟢 | Morrón verde | 20 | 4.6 | 1.7 | 0.9 | 175 | 3 |
+| 🟢 | Papa colorada | 70 | 15.9 | 1.7 | 1.9 | 455 | 18 |
+| 🟢 | Acelga | 19 | 3.7 | 1.6 | 1.8 | 379 | 213 |
+| 🟢 | Aguaturma | 73 | 17.4 | 1.6 | 2.0 | 429 | 4 |
+| 🟢 | Apio | 14 | 3.0 | 1.6 | 0.7 | 260 | 80 |
+| 🟢 | Cardo | 17 | 4.1 | 1.6 | 0.7 | 400 | 170 |
+| 🟢 | Daikon | 18 | 4.1 | 1.6 | 0.6 | 227 | 21 |
+| 🟢 | Kimchi | 15 | 2.4 | 1.6 | 1.1 | 151 | 498 |
+| 🟢 | Rabanito | 16 | 3.4 | 1.6 | 0.7 | 233 | 39 |
+| 🟢 | Rúcula | 25 | 3.7 | 1.6 | 2.6 | 369 | 27 |
+| 🟢 | Ají picante rojo | 40 | 8.8 | 1.5 | 1.9 | 322 | 9 |
+| 🟢 | Ají picante verde | 40 | 9.5 | 1.5 | 2.0 | 340 | 7 |
+| 🟢 | Palmito | 115 | 25.6 | 1.5 | 2.7 | 1806 | 14 |
+| 🟢 | Zapallo bellota | 40 | 10.4 | 1.5 | 0.8 | 347 | 3 |
+| 🟢 | Zapallo espagueti | 31 | 6.9 | 1.5 | 0.6 | 108 | 17 |
+| 🟢 | Cebolla cocida | 44 | 10.2 | 1.4 | 1.4 | 166 | 3 |
+| 🟢 | Zapallito hervido | 20 | 4.3 | 1.4 | 0.9 | 192 | 1 |
+| 🟢 | Alga kelp | 43 | 9.6 | 1.3 | 1.7 | 89 | 233 |
+| 🟢 | Lechuga criolla | 15 | 2.9 | 1.3 | 1.4 | 194 | 28 |
+| 🟢 | Portobello | 22 | 3.9 | 1.3 | 2.1 | 364 | 9 |
+| 🟢 | Lechuga repollada | 14 | 3.0 | 1.2 | 0.9 | 141 | 10 |
+| 🟢 | Morrón rojo cocido | 28 | 6.7 | 1.2 | 0.9 | 166 | 2 |
+| 🟢 | Repollo chino | 16 | 3.2 | 1.2 | 1.2 | 238 | 9 |
+| 🟢 | Tomate | 18 | 3.9 | 1.2 | 0.9 | 237 | 5 |
+| 🟢 | Calabaza hervida | 20 | 4.9 | 1.1 | 0.7 | 230 | 1 |
+| 🟢 | Lechuga mantecosa | 13 | 2.2 | 1.1 | 1.4 | 238 | 5 |
+| 🟢 | Tomate verde | 23 | 5.1 | 1.1 | 1.2 | 204 | 13 |
+| 🟢 | Zapallito | 16 | 3.4 | 1.1 | 1.2 | 262 | 2 |
+| 🟢 | Champiñón | 22 | 3.3 | 1.0 | 3.1 | 318 | 5 |
+| 🟢 | Pepinillo en vinagre | 12 | 2.4 | 1.0 | 0.5 | 117 | 809 |
+| 🟢 | Puerro hervido | 31 | 7.6 | 1.0 | 0.8 | 87 | 10 |
+| 🟢 | Cebolla dulce | 32 | 7.6 | 0.9 | 0.8 | 119 | 8 |
+| 🟢 | Lechuga morada | 13 | 2.3 | 0.9 | 1.3 | 187 | 25 |
+| 🟢 | Morrón amarillo | 27 | 6.3 | 0.9 | 1.0 | 212 | 2 |
+| 🟢 | Radicchio | 23 | 4.5 | 0.9 | 1.4 | 302 | 22 |
+| 🟢 | Pepino pelado | 10 | 2.2 | 0.7 | 0.6 | 136 | 2 |
+| 🟢 | Alga wakame | 45 | 9.1 | 0.5 | 3.0 | 50 | 872 |
+| 🟢 | Berro | 11 | 1.3 | 0.5 | 2.3 | 330 | 41 |
+| 🟢 | Calabaza | 26 | 6.5 | 0.5 | 1.0 | 340 | 1 |
+| 🟢 | Pepino | 15 | 3.6 | 0.5 | 0.7 | 147 | 2 |
+| 🟢 | Alga nori | 35 | 5.1 | 0.3 | 5.8 | 356 | 48 |
+
+La columna que decide casi siempre es la fibra. Entre 100 g de lechuga y 100 g de alcaucil hervido hay 1,3 contra 8,6 g: el mismo color, seis veces la fibra. El potasio está para el otro objetivo, y ahí la papa y la batata mandan pese a ser las más calóricas.
+
+### Frutas
+
+Ordenadas por **azúcar**, que es el criterio de la categoría: fruta fresca verde, y ámbar arriba de 40 g. Las siete ámbar son todas deshidratadas, y el ámbar no dice «no comas» sino «esto es fruta con el agua sacada»: 100 g de orejones no son una fruta, son cinco.
+
+| | Alimento | kcal | Carb | Azúcar | Fibra | K |
+|---|---|---|---|---|---|---|
+| 🟡 | Dátil Medjool | 277 | 75.0 | 66.5 | 6.7 | 696 |
+| 🟡 | Pasas de uva | 301 | 80.0 | 65.7 | 3.3 | 746 |
+| 🟡 | Dátil | 282 | 75.0 | 63.4 | 8.0 | 656 |
+| 🟡 | Orejón de damasco | 241 | 62.6 | 53.4 | 7.3 | 1162 |
+| 🟡 | Higo seco | 249 | 63.9 | 47.9 | 9.8 | 680 |
+| 🟡 | Bayas de goji | 349 | 77.1 | 45.6 | 13.0 | — |
+| 🟡 | Orejón de durazno | 239 | 61.3 | 41.7 | 8.2 | 996 |
+| 🟢 | Tamarindo | 239 | 62.5 | 38.8 | 5.1 | 628 |
+| 🟢 | Ciruela seca | 240 | 63.9 | 38.1 | 7.1 | 732 |
+| 🟢 | Yaca | 95 | 23.3 | 19.1 | 1.5 | 448 |
+| 🟢 | Plátano macho | 122 | 31.9 | 17.5 | 1.7 | 487 |
+| 🟢 | Higo | 74 | 19.2 | 16.3 | 2.9 | 232 |
+| 🟢 | Uva americana | 67 | 17.2 | 16.3 | 0.9 | 191 |
+| 🟢 | Uva | 69 | 18.1 | 15.5 | 0.9 | 191 |
+| 🟢 | Lichi | 66 | 16.5 | 15.2 | 1.3 | 171 |
+| 🟢 | Granada | 83 | 18.7 | 13.7 | 4.0 | 236 |
+| 🟢 | Mango | 60 | 15.0 | 13.7 | 1.6 | 168 |
+| 🟢 | Chirimoya | 75 | 17.7 | 12.9 | 3.0 | 287 |
+| 🟢 | Cereza | 63 | 16.0 | 12.8 | 2.1 | 222 |
+| 🟢 | Caqui | 70 | 18.6 | 12.5 | 3.6 | 161 |
+| 🟢 | Banana | 89 | 22.8 | 12.2 | 2.6 | 358 |
+| 🟢 | Maracuyá | 97 | 23.4 | 11.2 | 10.4 | 348 |
+| 🟢 | Mandarina | 53 | 13.3 | 10.6 | 1.8 | 166 |
+| 🟢 | Manzana | 52 | 13.8 | 10.4 | 2.4 | 107 |
+| 🟢 | Manzana pelada | 48 | 12.8 | 10.1 | 1.3 | 90 |
+| 🟢 | Arándano azul | 57 | 14.5 | 10.0 | 2.4 | 77 |
+| 🟢 | Ciruela | 46 | 11.4 | 9.9 | 1.4 | 157 |
+| 🟢 | Ananá | 50 | 13.1 | 9.9 | 1.4 | 109 |
+| 🟢 | Pera | 57 | 15.2 | 9.8 | 3.1 | 116 |
+| 🟢 | Kumquat | 71 | 15.9 | 9.4 | 6.5 | 186 |
+| 🟢 | Naranja | 47 | 11.8 | 9.4 | 2.4 | 181 |
+| 🟢 | Damasco | 48 | 11.1 | 9.2 | 2.0 | 259 |
+| 🟢 | Clementina | 47 | 12.0 | 9.2 | 1.7 | 177 |
+| 🟢 | Kiwi | 61 | 14.7 | 9.0 | 3.0 | 312 |
+| 🟢 | Guayaba | 68 | 14.3 | 8.9 | 5.4 | 417 |
+| 🟢 | Guinda | 50 | 12.2 | 8.5 | 1.6 | 173 |
+| 🟢 | Durazno | 39 | 9.5 | 8.4 | 1.5 | 190 |
+| 🟢 | Melón honeydew | 36 | 9.1 | 8.1 | 0.8 | 228 |
+| 🟢 | Morera | 43 | 9.8 | 8.1 | 1.7 | 194 |
+| 🟢 | Nectarina | 44 | 10.6 | 7.9 | 1.7 | 201 |
+| 🟢 | Melón | 34 | 8.2 | 7.9 | 0.9 | 267 |
+| 🟢 | Papaya | 43 | 10.8 | 7.8 | 1.7 | 182 |
+| 🟢 | Pera asiática | 42 | 10.7 | 7.1 | 3.6 | 121 |
+| 🟢 | Pomelo | 32 | 8.1 | 7.0 | 1.1 | 139 |
+| 🟢 | Coco | 354 | 15.2 | 6.2 | 9.0 | 356 |
+| 🟢 | Sandía | 30 | 7.6 | 6.2 | 0.4 | 112 |
+| 🟢 | Frutilla | 32 | 7.7 | 4.9 | 2.0 | 153 |
+| 🟢 | Mora | 43 | 9.6 | 4.9 | 5.3 | 162 |
+| 🟢 | Frambuesa | 52 | 11.9 | 4.4 | 6.5 | 151 |
+| 🟢 | Arándano rojo | 46 | 12.0 | 4.3 | 3.6 | 80 |
+| 🟢 | Carambola | 31 | 6.7 | 4.0 | 2.8 | 133 |
+| 🟢 | Agua de coco | 19 | 3.7 | 2.6 | 1.1 | 250 |
+| 🟢 | Jugo de limón | 22 | 6.9 | 2.5 | 0.3 | 103 |
+| 🟢 | Limón | 29 | 9.3 | 2.5 | 2.8 | 138 |
+| 🟢 | Lima | 30 | 10.5 | 1.7 | 2.8 | 102 |
+| 🟢 | Ruibarbo | 21 | 4.5 | 1.1 | 1.8 | 288 |
+| 🟢 | Palta | 160 | 8.5 | 0.7 | 6.7 | 485 |
+| 🟢 | Palta Hass | 167 | 8.6 | 0.3 | 6.8 | 507 |
+| 🟢 | Acerola | 32 | 7.7 | — | 1.1 | 146 |
+| 🟢 | Grosella negra | 63 | 15.4 | — | — | 322 |
+| 🟢 | Membrillo | 57 | 15.3 | — | 1.9 | 197 |
+| 🟢 | Níspero | 47 | 12.1 | — | 1.7 | 266 |
+| 🟢 | Physalis | 53 | 11.2 | — | — | — |
+| 🟢 | Pomelo chino | 38 | 9.6 | — | 1.0 | 216 |
+| 🟢 | Tuna | 41 | 9.6 | — | 3.6 | 220 |
+
+La fruta entera fresca no tiene techo práctico en este esquema. La fibra que la acompaña es la diferencia con el jugo, que está en Bebidas y sale peor parado justamente por eso.
+
+### Frutos secos y semillas
+
+Ordenados por **proporción de saturada** sobre la grasa total, no por gramos: son todos 50 % grasa o más, así que la cantidad no los separa y la composición sí. Es el mismo criterio que se usa con los aceites.
+
+| | Alimento | kcal | Grasa | Sat | % sat | Prot | Fibra | Na |
+|---|---|---|---|---|---|---|---|---|
+| 🔴 | Leche de coco | 230 | 23.8 | 21.1 | 94 | 2.3 | 2.2 | 15 |
+| 🔴 | Coco rallado | 660 | 64.5 | 57.2 | 94 | 6.9 | 16.3 | 37 |
+| 🟢 | Castaña de Brasil | 659 | 67.1 | 16.1 | 25 | 14.3 | 7.5 | 3 |
+| 🟢 | Castaña de cajú tostada | 574 | 46.4 | 9.2 | 21 | 15.3 | 3.0 | 16 |
+| 🟢 | Castaña | 245 | 2.2 | 0.4 | 20 | 3.2 | 5.1 | 2 |
+| 🟢 | Castaña de cajú | 553 | 43.9 | 7.8 | 20 | 18.2 | 3.3 | 12 |
+| 🟢 | Semillas de zapallo | 559 | 49.1 | 8.7 | 19 | 30.2 | 6.0 | 7 |
+| 🟢 | Macadamia | 718 | 75.8 | 12.1 | 17 | 7.9 | 8.6 | 5 |
+| 🟢 | Semillas de sésamo | 573 | 49.7 | 7.0 | 15 | 17.7 | 11.8 | 11 |
+| 🟢 | Tahini | 595 | 53.8 | 7.5 | 15 | 17.0 | 9.3 | 115 |
+| 🟢 | Pistacho | 560 | 45.3 | 5.9 | 14 | 20.2 | 10.6 | 1 |
+| 🟢 | Semillas de chía | 486 | 30.7 | 3.3 | 11 | 16.5 | 34.4 | 16 |
+| 🟢 | Nuez | 654 | 65.2 | 6.1 | 10 | 15.2 | 6.7 | 2 |
+| 🟢 | Semillas de girasol | 584 | 51.5 | 4.5 | 10 | 20.8 | 8.6 | 9 |
+| 🟢 | Semillas de cáñamo | 553 | 48.8 | 4.6 | 10 | 31.6 | 4.0 | 5 |
+| 🟢 | Semillas de lino | 534 | 42.2 | 3.7 | 9 | 18.3 | 27.3 | 30 |
+| 🟢 | Nuez pecán | 691 | 72.0 | 6.2 | 9 | 9.2 | 9.6 | 0 |
+| 🟢 | Piñón | 673 | 68.4 | 4.9 | 8 | 13.7 | 3.7 | 2 |
+| 🟢 | Manteca de almendras | 614 | 55.5 | 4.2 | 8 | 21.0 | 10.3 | 7 |
+| 🟢 | Almendra tostada | 598 | 52.5 | 4.1 | 8 | 21.0 | 10.9 | 3 |
+| 🟢 | Almendra | 579 | 49.9 | 3.8 | 8 | 21.2 | 12.5 | 1 |
+| 🟢 | Avellana | 628 | 60.8 | 4.5 | 8 | 15.0 | 9.7 | 0 |
+| 🟢 | Nuez negra | 619 | 59.3 | 3.5 | 6 | 24.1 | 6.8 | 2 |
+
+Los dos rojos son de coco, que es el único fruto seco cuya grasa es mayormente saturada (85 %). El resto son insaturados y quedan verdes pese a ser lo más calórico del catálogo: 100 g de nuez son 654 kcal. El semáforo dice **qué** comer, no **cuánto**, y acá esa distinción importa más que en ninguna otra categoría.
+
+### Condimentos y especias
+
+Ordenados por **sodio**. La categoría entera es un falso positivo esperando: se la juzga por 100 g y se usa por cucharaditas. Una cucharadita de sal son 6 g, o sea el 6 % de la fila.
+
+| | Alimento | kcal | Sodio | Azúcar | Fibra |
+|---|---|---|---|---|---|
+| 🔴 | Sal | 0 | 38758 | 0.0 | 0.0 |
+| 🟡 | Chile en polvo | 282 | 2867 | 7.2 | 34.8 |
+| 🟡 | Kétchup | 101 | 907 | 21.3 | 0.3 |
+| 🟢 | Clavo de olor | 274 | 277 | 2.4 | 33.9 |
+| 🟢 | Comino | 375 | 168 | 2.3 | 10.5 |
+| 🟢 | Azafrán | 310 | 148 | — | 3.9 |
+| 🟢 | Semilla de hinojo | 345 | 88 | — | 39.8 |
+| 🟢 | Pimienta de Jamaica | 263 | 77 | — | 21.6 |
+| 🟢 | Albahaca seca | 233 | 76 | 1.7 | 37.7 |
+| 🟢 | Cebolla en polvo | 341 | 73 | 6.6 | 15.2 |
+| 🟢 | Pimentón | 282 | 68 | 10.3 | 34.9 |
+| 🟢 | Estragón seco | 295 | 62 | — | 7.4 |
+| 🟢 | Eneldo fresco | 43 | 61 | — | 2.1 |
+| 🟢 | Ajo en polvo | 331 | 60 | 2.4 | 9.0 |
+| 🟢 | Tomillo seco | 276 | 55 | 1.7 | 37.0 |
+| 🟢 | Curry en polvo | 325 | 52 | 2.8 | 53.2 |
+| 🟢 | Romero seco | 331 | 50 | — | 42.6 |
+| 🟢 | Cilantro fresco | 23 | 46 | 0.9 | 2.8 |
+| 🟢 | Semilla de cilantro | 298 | 35 | — | 41.9 |
+| 🟢 | Menta piperita fresca | 70 | 31 | — | 8.0 |
+| 🟢 | Ají molido | 318 | 30 | 10.3 | 27.2 |
+| 🟢 | Menta fresca | 44 | 30 | — | 6.8 |
+| 🟢 | Cúrcuma | 312 | 27 | 3.2 | 22.7 |
+| 🟢 | Jengibre en polvo | 335 | 27 | 3.4 | 14.1 |
+| 🟢 | Romero fresco | 131 | 26 | — | 14.1 |
+| 🟢 | Orégano seco | 265 | 25 | 4.1 | 42.5 |
+| 🟢 | Laurel | 313 | 23 | — | 26.3 |
+| 🟢 | Vinagre balsámico | 88 | 23 | 15.0 | — |
+| 🟢 | Pimienta negra | 251 | 20 | 0.6 | 25.3 |
+| 🟢 | Cardamomo | 311 | 18 | — | 28.0 |
+| 🟢 | Anís en grano | 337 | 16 | — | 14.6 |
+| 🟢 | Nuez moscada | 525 | 16 | 3.0 | 20.8 |
+| 🟢 | Mostaza en polvo | 508 | 13 | 6.8 | 12.2 |
+| 🟢 | Salvia molida | 315 | 11 | 1.7 | 40.3 |
+| 🟢 | Canela molida | 247 | 10 | 2.2 | 53.1 |
+| 🟢 | Extracto de vainilla | 288 | 9 | 12.7 | 0.0 |
+| 🟢 | Tomillo fresco | 101 | 9 | — | 14.0 |
+| 🟢 | Vinagre de vino tinto | 19 | 8 | 0.0 | 0.0 |
+| 🟢 | Pimienta blanca | 296 | 5 | — | 26.2 |
+| 🟢 | Vinagre de manzana | 21 | 5 | 0.4 | 0.0 |
+| 🟢 | Albahaca fresca | 23 | 4 | 0.3 | 1.6 |
+| 🟢 | Vinagre de alcohol | 18 | 2 | 0.0 | 0.0 |
+
+Sirve para lo comparativo, no para el color: entre dos formas de dar sabor, el ajo en polvo aporta 73 mg de sodio por cucharadita y la salsa de soja 335. Esa es la pregunta útil acá, y por eso vale la pena que la tabla exista aunque el semáforo casi no hable.
+
+### Bebidas
+
+Ordenadas por **azúcar**. El criterio tiene una regla extra: arriba de 35 kcal con menos de 3 g de azúcar es ámbar, que es la forma de que el alcohol no pase por la ventanilla del azúcar — la cerveza tiene poca azúcar y calorías igual.
+
+| | Alimento | kcal | Azúcar | Carb | Na |
+|---|---|---|---|---|---|
+| 🟡 | Jugo de manzana | 46 | 9.6 | 11.3 | 4 |
+| 🟡 | Jugo de pomelo | 39 | 9.1 | 9.2 | 1 |
+| 🟡 | Jugo de naranja exprimido | 45 | 8.4 | 10.4 | 1 |
+| 🟢 | Jugo de tomate | 17 | 2.6 | 3.5 | 253 |
+| 🟡 | Vino blanco | 82 | 1.0 | 2.6 | 5 |
+| 🟡 | Vino tinto | 85 | 0.6 | 2.6 | 4 |
+| 🟢 | Cerveza light | 29 | 0.1 | 1.6 | 4 |
+| 🟢 | Agua | 0 | 0.0 | 0.0 | 4 |
+| 🟢 | Café | 1 | 0.0 | 0.0 | 2 |
+| 🟢 | Café descafeinado | 0 | 0.0 | 0.0 | 2 |
+| 🟢 | Café espresso | 9 | 0.0 | 1.7 | 14 |
+| 🟡 | Cerveza | 43 | 0.0 | 3.6 | 4 |
+| 🟢 | Té negro | 1 | 0.0 | 0.3 | 3 |
+| 🟢 | Té verde | 1 | 0.0 | 0.0 | 1 |
+| 🟢 | Agua mineral | 0 | — | 0.0 | 0 |
+
+Los jugos son el caso interesante. El de naranja exprimido es la misma fruta que en la tabla de arriba, pero sin la fibra que la acompañaba, y por eso acá pesa el azúcar solo.
+
+### Dulces y azúcares
+
+Ordenados por **azúcar**. Nueve de doce son rojos, y es la única categoría donde eso es el resultado correcto y no un problema del criterio.
+
+| | Alimento | kcal | Azúcar | Grasa | Sat | Fibra |
+|---|---|---|---|---|---|---|
+| 🔴 | Azúcar | 387 | 99.8 | 0.0 | 0.0 | 0.0 |
+| 🔴 | Azúcar impalpable | 389 | 97.8 | 0.0 | 0.0 | 0.0 |
+| 🔴 | Azúcar negra | 380 | 97.0 | 0.0 | 0.0 | 0.0 |
+| 🔴 | Miel | 304 | 82.1 | 0.0 | 0.0 | 0.2 |
+| 🔴 | Jarabe de arce | 260 | 60.5 | 0.1 | 0.0 | 0.0 |
+| 🔴 | Jalea | 266 | 51.2 | 0.0 | 0.0 | 1.0 |
+| 🔴 | Mermelada | 278 | 48.5 | 0.1 | 0.0 | 1.1 |
+| 🔴 | Chocolate 45-59% | 546 | 47.9 | 31.3 | 18.5 | 7.0 |
+| 🔴 | Melaza | 265 | 42.0 | 0.1 | 0.0 | 0.0 |
+| 🟡 | Chocolate semiamargo 60-69% | 579 | 36.7 | 38.3 | 22.0 | 8.0 |
+| 🟡 | Chocolate amargo 70-85% | 598 | 24.0 | 42.6 | 24.5 | 10.9 |
+| 🟢 | Cacao en polvo | 228 | 1.8 | 13.7 | 8.1 | 37.0 |
+
+El único verde es el cacao en polvo sin azucarar, que está en esta categoría por parentesco y no por composición. La escala de los chocolates es la información útil: del 70-85 % al 45-59 % el azúcar se duplica.
+
 ## 4. El semáforo nutricional
 
 ### Qué es y qué no es
