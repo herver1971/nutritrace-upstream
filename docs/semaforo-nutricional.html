@@ -63,13 +63,22 @@ section { margin:0 0 4rem; }
          padding:.9rem 1.2rem; margin:1.4rem 0; border-radius:0 3px 3px 0; max-width:38rem; }
 .note p:last-child { margin-bottom:0; }
 
-.scroll { overflow-x:auto; margin:1.2rem 0 .6rem; border:1px solid var(--rule);
-           border-radius:3px; background:var(--surface); }
+/* Sticky headers need a scroll box with a HEIGHT. `overflow-x:auto` alone
+   makes .scroll a scroll container on both axes, but with no height cap it
+   never scrolls vertically — so `position:sticky` on th had nothing to stick
+   inside and the header scrolled off with the page. Capping the height gives
+   every long table its own viewport, and short ones are unaffected. */
+.scroll { max-height:min(72vh,44rem); overflow:auto; margin:1.2rem 0 .6rem;
+           border:1px solid var(--rule); border-radius:3px; background:var(--surface); }
 table { border-collapse:collapse; width:100%; font-size:.87rem; }
 th { font-size:.68rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
       color:var(--muted); text-align:right; padding:.7rem .7rem; white-space:nowrap;
       border-bottom:2px solid var(--rule-hard); background:var(--surface);
-      position:sticky; top:0; }
+      position:sticky; top:0;position:sticky; top:0; z-index:2; }
+th.sortable { cursor:pointer; user-select:none; }
+th.sortable:hover, th[aria-sort] { color:var(--ink); }
+th .ind { display:inline-block; width:.8em; margin-left:.25em; opacity:.3; font-weight:400; }
+th[aria-sort] .ind { opacity:1; color:var(--accent); }
 th.l { text-align:left; }
 td { padding:.42rem .7rem; border-bottom:1px solid var(--rule); }
 tr:last-child td { border-bottom:0; }
@@ -80,6 +89,8 @@ tr:last-child td { border-bottom:0; }
 .dot.g { background:var(--ok); } .dot.a { background:var(--warn); } .dot.r { background:var(--bad); }
 caption { caption-side:top; text-align:left; font-family:Archivo,sans-serif; font-size:.8rem;
            color:var(--muted); padding:.7rem .8rem; border-bottom:1px solid var(--rule); }
+h4.sub-h { font-family:Archivo,sans-serif; font-size:.85rem; font-weight:600; letter-spacing:.06em;
+           text-transform:uppercase; color:var(--muted); margin:2rem 0 0; }
 
 .crit { width:100%; border-collapse:collapse; font-size:.9rem; margin:1.2rem 0; }
 .crit th { position:static; text-align:left; }
@@ -116,13 +127,13 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <header>
   <p class="lbl">Catálogo de ingredientes base · NutriTrace</p>
   <h1>Semáforo Nutricional</h1>
-  <p class="sub">Cómo se clasifican los 512 alimentos del catálogo, y el razonamiento nutricional
+  <p class="sub">Cómo se clasifican los 525 alimentos del catálogo, y el razonamiento nutricional
   que hay detrás. Todos los valores son por 100&nbsp;g y salen de USDA FoodData Central.</p>
   <div class="meta">
-    <div><span class="lbl">Alimentos</span><span class="v">458</span></div>
-    <div><span class="lbl">Verde</span><span class="v" style="color:var(--ok)">356</span></div>
-    <div><span class="lbl">Ámbar</span><span class="v" style="color:var(--warn)">44</span></div>
-    <div><span class="lbl">Rojo</span><span class="v" style="color:var(--bad)">58</span></div>
+    <div><span class="lbl">Alimentos</span><span class="v">525</span></div>
+    <div><span class="lbl">Verde</span><span class="v" style="color:var(--ok)">404</span></div>
+    <div><span class="lbl">Ámbar</span><span class="v" style="color:var(--warn)">55</span></div>
+    <div><span class="lbl">Rojo</span><span class="v" style="color:var(--bad)">66</span></div>
   </div>
 </header>
 
@@ -378,6 +389,87 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Caballa cocida</td><td class="num">262</td><td class="num">17.8</td><td class="num">4.2</td><td class="num">11.3</td><td class="num">23.9</td><td class="num">83</td></tr></tbody>
   </table></div>
 
+  <h3>Legumbres</h3>
+  <div class="col"><p>Ordenadas por <strong>proteína</strong>, no por grasa saturada como las carnes.
+  Acá la grasa casi no discrimina: ninguna legumbre hervida pasa los 0,3&nbsp;g de saturada salvo
+  la soja (1,3&nbsp;g), así que ordenarlas por ahí produce una lista plana. De una legumbre lo que
+  interesa es cuánta proteína y cuánta fibra aporta como acompañamiento.</p>
+  <p>Van en dos tablas porque <strong>el peso en seco y el peso cocido no se comparan</strong>: la
+  legumbre triplica su masa al hidratarse, y sus 24&nbsp;g de proteína en seco se vuelven 9&nbsp;g
+  en el plato. Comparar un garbanzo crudo contra una pechuga cocida da una ventaja imaginaria
+  de 2 a 1.</p></div>
+
+  <h4 class="sub-h">Cocidas, como llegan al plato</h4>
+  <div class="scroll"><table>
+    <caption>Ordenado por proteína · gramos por 100 g, sodio en mg</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Prot</th><th>Carb</th><th>Fibra</th><th>Grasa</th><th>Sat</th><th>Na</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Soja hervida</td><td class="num">172</td><td class="num">18.2</td><td class="num">8.4</td><td class="num">6.0</td><td class="num">9.0</td><td class="num">1.3</td><td class="num">1</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto blanco hervido</td><td class="num">139</td><td class="num">9.7</td><td class="num">25.1</td><td class="num">6.3</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">6</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto cranberry hervido</td><td class="num">136</td><td class="num">9.3</td><td class="num">24.5</td><td class="num">8.6</td><td class="num">0.5</td><td class="num">0.1</td><td class="num">1</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lenteja hervida</td><td class="num">116</td><td class="num">9.0</td><td class="num">20.1</td><td class="num">7.9</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">2</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto pinto hervido</td><td class="num">143</td><td class="num">9.0</td><td class="num">26.2</td><td class="num">9.0</td><td class="num">0.7</td><td class="num">0.1</td><td class="num">1</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Garbanzo hervido</td><td class="num">164</td><td class="num">8.9</td><td class="num">27.4</td><td class="num">7.6</td><td class="num">2.6</td><td class="num">0.3</td><td class="num">7</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto negro hervido</td><td class="num">132</td><td class="num">8.9</td><td class="num">23.7</td><td class="num">8.7</td><td class="num">0.5</td><td class="num">0.1</td><td class="num">1</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto colorado hervido</td><td class="num">127</td><td class="num">8.7</td><td class="num">22.8</td><td class="num">6.4</td><td class="num">0.5</td><td class="num">0.1</td><td class="num">1</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Arveja partida cocida</td><td class="num">118</td><td class="num">8.3</td><td class="num">21.1</td><td class="num">8.3</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">2</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto manteca hervido</td><td class="num">140</td><td class="num">8.2</td><td class="num">26.1</td><td class="num">10.5</td><td class="num">0.6</td><td class="num">0.1</td><td class="num">0</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto pallar hervido</td><td class="num">115</td><td class="num">7.8</td><td class="num">20.9</td><td class="num">7.0</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">2</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Haba seca hervida</td><td class="num">110</td><td class="num">7.6</td><td class="num">19.7</td><td class="num">5.4</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">5</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto adzuki hervido</td><td class="num">128</td><td class="num">7.5</td><td class="num">24.8</td><td class="num">7.3</td><td class="num">0.1</td><td class="num">0.0</td><td class="num">8</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Garbanzo en lata (escurrido)</td><td class="num">139</td><td class="num">7.1</td><td class="num">22.5</td><td class="num">6.4</td><td class="num">2.8</td><td class="num">0.2</td><td class="num">246</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto mung hervido</td><td class="num">105</td><td class="num">7.0</td><td class="num">19.2</td><td class="num">7.6</td><td class="num">0.4</td><td class="num">0.1</td><td class="num">2</td></tr></tbody>
+  </table></div>
+  <div class="col"><p>Para dimensionarlo: una porción de 200&nbsp;g de lentejas hervidas son
+  <strong>18&nbsp;g de proteína y 16&nbsp;g de fibra</strong> por 232&nbsp;kcal, con 0,2&nbsp;g de
+  saturada. Los mismos 18&nbsp;g de proteína en nalga al horno entran en 60&nbsp;g de carne
+  —bastante menos volumen— pero traen 0,8&nbsp;g de saturada y ninguna fibra. No son sustitutos:
+  el perfil de aminoácidos y la absorción del hierro no son los mismos. Pero como guarnición de
+  una proteína animal, una legumbre suma proteína y fibra en vez de solo almidón, que es lo que
+  aporta el arroz o la papa.</p>
+  <p>El <strong>garbanzo en lata</strong> está para poder comparar contra el hervido en casa:
+  mismo garbanzo, 246&nbsp;mg de sodio contra 7. Escurrir y enjuagar baja bastante esa cifra;
+  el valor de USDA ya es del sólido escurrido.</p></div>
+
+  <h4 class="sub-h">En seco y derivados</h4>
+  <div class="col"><p>Los valores en seco sirven para pesar antes de cocinar, no para comparar
+  con un plato servido.</p></div>
+  <div class="scroll"><table>
+    <caption>Ordenado por proteína · gramos por 100 g, sodio en mg</caption>
+    <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Prot</th><th>Carb</th><th>Fibra</th><th>Grasa</th><th>Sat</th><th>Na</th></tr></thead>
+    <tbody><tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Soja</td><td class="num">446</td><td class="num">36.5</td><td class="num">30.2</td><td class="num">9.3</td><td class="num">19.9</td><td class="num">2.9</td><td class="num">2</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Altramuz</td><td class="num">371</td><td class="num">36.2</td><td class="num">40.4</td><td class="num">18.9</td><td class="num">9.7</td><td class="num">1.2</td><td class="num">15</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Haba seca</td><td class="num">341</td><td class="num">26.1</td><td class="num">58.3</td><td class="num">25.0</td><td class="num">1.5</td><td class="num">0.3</td><td class="num">13</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Maní</td><td class="num">567</td><td class="num">25.8</td><td class="num">16.1</td><td class="num">8.5</td><td class="num">49.2</td><td class="num">6.3</td><td class="num">18</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lenteja</td><td class="num">352</td><td class="num">24.6</td><td class="num">63.4</td><td class="num">10.7</td><td class="num">1.1</td><td class="num">0.2</td><td class="num">6</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Maní tostado</td><td class="num">587</td><td class="num">24.4</td><td class="num">21.3</td><td class="num">8.4</td><td class="num">49.7</td><td class="num">7.7</td><td class="num">6</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Lenteja roja</td><td class="num">358</td><td class="num">23.9</td><td class="num">63.1</td><td class="num">10.8</td><td class="num">2.2</td><td class="num">0.4</td><td class="num">7</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto mung</td><td class="num">347</td><td class="num">23.9</td><td class="num">62.6</td><td class="num">16.3</td><td class="num">1.2</td><td class="num">0.3</td><td class="num">15</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto colorado</td><td class="num">333</td><td class="num">23.6</td><td class="num">60.0</td><td class="num">24.9</td><td class="num">0.8</td><td class="num">0.1</td><td class="num">24</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto blanco</td><td class="num">333</td><td class="num">23.4</td><td class="num">60.3</td><td class="num">15.2</td><td class="num">0.9</td><td class="num">0.2</td><td class="num">16</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto cranberry</td><td class="num">335</td><td class="num">23.0</td><td class="num">60.1</td><td class="num">24.7</td><td class="num">1.2</td><td class="num">0.3</td><td class="num">6</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Harina de garbanzo</td><td class="num">387</td><td class="num">22.4</td><td class="num">57.8</td><td class="num">10.8</td><td class="num">6.7</td><td class="num">0.7</td><td class="num">64</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto manteca</td><td class="num">337</td><td class="num">22.3</td><td class="num">60.8</td><td class="num">15.3</td><td class="num">1.5</td><td class="num">0.2</td><td class="num">5</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Manteca de maní</td><td class="num">598</td><td class="num">22.2</td><td class="num">22.3</td><td class="num">5.0</td><td class="num">51.4</td><td class="num">10.3</td><td class="num">17</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Gandul</td><td class="num">343</td><td class="num">21.7</td><td class="num">62.8</td><td class="num">15.0</td><td class="num">1.5</td><td class="num">0.3</td><td class="num">17</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto negro</td><td class="num">341</td><td class="num">21.6</td><td class="num">62.4</td><td class="num">15.5</td><td class="num">1.4</td><td class="num">0.4</td><td class="num">5</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto pallar</td><td class="num">338</td><td class="num">21.5</td><td class="num">63.4</td><td class="num">19.0</td><td class="num">0.7</td><td class="num">0.2</td><td class="num">18</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto pinto</td><td class="num">347</td><td class="num">21.4</td><td class="num">62.6</td><td class="num">15.5</td><td class="num">1.2</td><td class="num">0.2</td><td class="num">12</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Garbanzo</td><td class="num">378</td><td class="num">20.5</td><td class="num">63.0</td><td class="num">12.2</td><td class="num">6.0</td><td class="num">0.6</td><td class="num">24</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Tempeh</td><td class="num">192</td><td class="num">20.3</td><td class="num">7.6</td><td class="num">—</td><td class="num">10.8</td><td class="num">2.5</td><td class="num">9</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Poroto adzuki</td><td class="num">329</td><td class="num">19.9</td><td class="num">62.9</td><td class="num">12.7</td><td class="num">0.5</td><td class="num">0.2</td><td class="num">5</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Natto</td><td class="num">211</td><td class="num">19.4</td><td class="num">12.7</td><td class="num">5.4</td><td class="num">11.0</td><td class="num">1.6</td><td class="num">7</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Tofu</td><td class="num">144</td><td class="num">17.3</td><td class="num">2.8</td><td class="num">2.3</td><td class="num">8.7</td><td class="num">1.3</td><td class="num">14</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Edamame</td><td class="num">147</td><td class="num">13.0</td><td class="num">11.1</td><td class="num">4.2</td><td class="num">6.8</td><td class="num">0.8</td><td class="num">15</td></tr>
+    <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Miso</td><td class="num">198</td><td class="num">12.8</td><td class="num">25.4</td><td class="num">5.4</td><td class="num">6.0</td><td class="num">1.0</td><td class="num">3728</td></tr>
+    <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Tamari</td><td class="num">60</td><td class="num">10.5</td><td class="num">5.6</td><td class="num">0.8</td><td class="num">0.1</td><td class="num">0.0</td><td class="num">5586</td></tr>
+    <tr><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Salsa de soja</td><td class="num">53</td><td class="num">8.1</td><td class="num">4.9</td><td class="num">0.8</td><td class="num">0.6</td><td class="num">0.1</td><td class="num">5493</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Hummus</td><td class="num">177</td><td class="num">4.9</td><td class="num">20.1</td><td class="num">4.0</td><td class="num">8.6</td><td class="num">1.1</td><td class="num">242</td></tr>
+    <tr><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Leche de soja</td><td class="num">33</td><td class="num">2.9</td><td class="num">1.7</td><td class="num">0.5</td><td class="num">1.6</td><td class="num">0.2</td><td class="num">37</td></tr></tbody>
+  </table></div>
+  <div class="col"><p>Las tres entradas ámbar —miso, salsa de soja, tamari— lo son por sodio, y es
+  un falso positivo previsible: son condimentos que se usan de a cucharadas, no de a 100&nbsp;g.
+  El criterio de la categoría los mide como si fueran un plato.</p></div>
+
   <h3>Cereales y panes</h3>
   <div class="col"><p>Ordenados por <strong>fibra sobre carbohidratos</strong>, que es la señal
   de integral vs refinado y sobrevive a la cocción — la fibra absoluta no, porque un grano
@@ -574,7 +666,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
     dos, el matambre a la parrilla daba amarillo donde el crudo da rojo.
     <strong>Cocinar no puede hacer que un corte sea más sano de lo que es.</strong></p>
     <p>El vínculo crudo→cocido está declarado en los datos (<code>cooked_of</code>), no
-    adivinado por el nombre: los <strong>49 pares</strong> del catálogo coinciden hoy en
+    adivinado por el nombre: los <strong>62 pares</strong> del catálogo coinciden hoy en
     color.</p>
 
     <h3>Productos de marca</h3>
@@ -654,10 +746,111 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 </section>
 
 <footer class="col">
-  <p>Generado a partir del catálogo de 458 ingredientes base de NutriTrace.
+  <p>Generado a partir del catálogo de 525 ingredientes base de NutriTrace.
   Datos: USDA FoodData Central, SR Legacy (dominio público).
   Se regenera con <code>node scripts/build-base-foods.mjs</code>.</p>
 </footer>
 </div>
+<script>
+/* Sortable columns for the comparison tables.
+ *
+ * The document is a static, generated artifact: the rows ship in the order the
+ * category is judged by (saturated fat for meat, fibre/carb for grains). That
+ * order is the argument the text makes, so it stays the default — this only
+ * lets a reader re-ask the question from another column, and never rewrites
+ * the file. Everything degrades to a plain table with JS off. */
+(function () {
+  var collator = new Intl.Collator('es', { numeric: true, sensitivity: 'base' });
+  var LIGHT = { g: 0, a: 1, r: 2 };
+
+  /* What one cell is worth when sorting. Three kinds of column — the light
+   * dot, the food name, a number — and `null` for "sin dato", so a missing
+   * value parks at the bottom in BOTH directions instead of posing as a zero
+   * and topping the ascending sort. */
+  function value(td) {
+    if (!td) return null;
+    var dot = td.querySelector('.dot');
+    if (dot) {
+      for (var k in LIGHT) if (dot.classList.contains(k)) return LIGHT[k];
+      return null;
+    }
+    var txt = td.textContent.trim();
+    if (txt === '' || txt === '\u2014') return null;
+    if (td.classList.contains('num')) {
+      var n = parseFloat(txt.replace(',', '.'));
+      return isFinite(n) ? n : null;
+    }
+    return txt;
+  }
+
+  function sortBy(table, i, dir) {
+    var tbody = table.tBodies[0];
+    /* Carry the original index alongside each row: ties then keep the order
+     * the document shipped with, so clicking a column twice cannot shuffle
+     * rows that compare equal. */
+    var keyed = Array.prototype.map.call(tbody.rows, function (tr, n) {
+      return { v: value(tr.cells[i]), n: n, tr: tr };
+    });
+    keyed.sort(function (a, b) {
+      if (a.v === null || b.v === null) {
+        if (a.v === b.v) return a.n - b.n;
+        return a.v === null ? 1 : -1;      // missing data last, always
+      }
+      var c = typeof a.v === 'string' ? collator.compare(a.v, b.v) : a.v - b.v;
+      if (dir === 'descending') c = -c;
+      return c || a.n - b.n;
+    });
+    var frag = document.createDocumentFragment();
+    keyed.forEach(function (k) { frag.appendChild(k.tr); });
+    tbody.appendChild(frag);
+  }
+
+  var tables = document.querySelectorAll('.scroll table:not(.crit)');
+  Array.prototype.forEach.call(tables, function (table) {
+    var head = table.tHead && table.tHead.rows[0];
+    var body = table.tBodies[0];
+    if (!head || !body || !body.rows.length) return;
+
+    Array.prototype.forEach.call(head.cells, function (th, i) {
+      /* The light column's header is deliberately blank in the layout, so it
+       * needs a name spoken rather than shown. */
+      if (!th.textContent.trim()) th.setAttribute('aria-label', 'Semáforo');
+      th.classList.add('sortable');
+      th.tabIndex = 0;
+      th.setAttribute('role', 'button');
+      var ind = document.createElement('span');
+      ind.className = 'ind';
+      ind.setAttribute('aria-hidden', 'true');
+      ind.textContent = '\u2195';
+      th.appendChild(ind);
+
+      /* First click sorts the way that column is actually read: biggest first
+       * for a number, A→Z for the name, green first for the light. After that
+       * it just flips. */
+      var preferred = body.rows[0].cells[i]
+        && body.rows[0].cells[i].classList.contains('num') ? 'descending' : 'ascending';
+
+      function go() {
+        var cur = th.getAttribute('aria-sort');
+        var dir = cur === 'ascending' ? 'descending'
+                : cur === 'descending' ? 'ascending' : preferred;
+        Array.prototype.forEach.call(head.cells, function (o) {
+          o.removeAttribute('aria-sort');
+          var oi = o.querySelector('.ind');
+          if (oi) oi.textContent = '\u2195';
+        });
+        th.setAttribute('aria-sort', dir);
+        ind.textContent = dir === 'ascending' ? '\u2191' : '\u2193';
+        sortBy(table, i, dir);
+      }
+
+      th.addEventListener('click', go);
+      th.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+      });
+    });
+  });
+})();
+</script>
 </body>
 </html>

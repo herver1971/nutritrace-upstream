@@ -256,6 +256,92 @@ la salazón y el ahumado, sí.
 | 🟢 | Caballa cruda | 205 | 13.9 | 3.3 | 8.8 | 18.6 | 90 |
 | 🟢 | Caballa cocida | 262 | 17.8 | 4.2 | 11.3 | 23.9 | 83 |
 
+### Legumbres
+
+Ordenadas por **proteína**, no por grasa saturada como las carnes. Acá la
+grasa casi no discrimina: ninguna legumbre hervida pasa los 0,3 g de saturada
+salvo la soja (1,3 g), así que ordenarlas por ahí produce una lista plana. Lo
+que se quiere saber de una legumbre es cuánta proteína y cuánta fibra aporta
+como acompañamiento.
+
+Van en dos tablas porque **el peso en seco y el peso cocido no se comparan**:
+la legumbre triplica su masa al hidratarse, y sus 24 g de proteína en seco se
+vuelven 9 g en el plato. Comparar un garbanzo crudo contra una pechuga cocida
+da una ventaja imaginaria de 2 a 1.
+
+#### Cocidas, como llegan al plato
+
+| | Alimento | kcal | Prot | Carb | Fibra | Grasa | Sat | Sodio |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 | Soja hervida | 172 | 18.2 | 8.4 | 6.0 | 9.0 | 1.3 | 1 |
+| 🟢 | Poroto blanco hervido | 139 | 9.7 | 25.1 | 6.3 | 0.4 | 0.1 | 6 |
+| 🟢 | Poroto cranberry hervido | 136 | 9.3 | 24.5 | 8.6 | 0.5 | 0.1 | 1 |
+| 🟢 | Lenteja hervida | 116 | 9.0 | 20.1 | 7.9 | 0.4 | 0.1 | 2 |
+| 🟢 | Poroto pinto hervido | 143 | 9.0 | 26.2 | 9.0 | 0.7 | 0.1 | 1 |
+| 🟢 | Garbanzo hervido | 164 | 8.9 | 27.4 | 7.6 | 2.6 | 0.3 | 7 |
+| 🟢 | Poroto negro hervido | 132 | 8.9 | 23.7 | 8.7 | 0.5 | 0.1 | 1 |
+| 🟢 | Poroto colorado hervido | 127 | 8.7 | 22.8 | 6.4 | 0.5 | 0.1 | 1 |
+| 🟢 | Arveja partida cocida | 118 | 8.3 | 21.1 | 8.3 | 0.4 | 0.1 | 2 |
+| 🟢 | Poroto manteca hervido | 140 | 8.2 | 26.1 | 10.5 | 0.6 | 0.1 | 0 |
+| 🟢 | Poroto pallar hervido | 115 | 7.8 | 20.9 | 7.0 | 0.4 | 0.1 | 2 |
+| 🟢 | Haba seca hervida | 110 | 7.6 | 19.7 | 5.4 | 0.4 | 0.1 | 5 |
+| 🟢 | Poroto adzuki hervido | 128 | 7.5 | 24.8 | 7.3 | 0.1 | 0.0 | 8 |
+| 🟢 | Garbanzo en lata (escurrido) | 139 | 7.1 | 22.5 | 6.4 | 2.8 | 0.2 | 246 |
+| 🟢 | Poroto mung hervido | 105 | 7.0 | 19.2 | 7.6 | 0.4 | 0.1 | 2 |
+
+Para dimensionarlo: una porción de 200 g de lentejas hervidas son **18 g de
+proteína y 16 g de fibra** por 232 kcal, con 0,2 g de saturada. Los mismos
+18 g de proteína en nalga al horno entran en 60 g de carne —bastante menos
+volumen— pero traen 0,8 g de saturada y ninguna fibra. No son sustitutos: el
+perfil de aminoácidos y la absorción del hierro no son los mismos. Pero como
+guarnición de una proteína animal, una legumbre suma proteína y fibra en vez
+de solo almidón, que es lo que aporta el arroz o la papa.
+
+El **garbanzo en lata** está para poder comparar contra el hervido en casa:
+mismo garbanzo, 246 mg de sodio contra 7. Escurrir y enjuagar baja bastante
+esa cifra; el valor de USDA ya es del sólido escurrido.
+
+#### En seco y derivados
+
+Los valores en seco sirven para pesar antes de cocinar, no para comparar con
+un plato servido.
+
+| | Alimento | kcal | Prot | Carb | Fibra | Grasa | Sat | Sodio |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 | Soja | 446 | 36.5 | 30.2 | 9.3 | 19.9 | 2.9 | 2 |
+| 🟢 | Altramuz | 371 | 36.2 | 40.4 | 18.9 | 9.7 | 1.2 | 15 |
+| 🟢 | Haba seca | 341 | 26.1 | 58.3 | 25.0 | 1.5 | 0.3 | 13 |
+| 🟢 | Maní | 567 | 25.8 | 16.1 | 8.5 | 49.2 | 6.3 | 18 |
+| 🟢 | Lenteja | 352 | 24.6 | 63.4 | 10.7 | 1.1 | 0.2 | 6 |
+| 🟢 | Maní tostado | 587 | 24.4 | 21.3 | 8.4 | 49.7 | 7.7 | 6 |
+| 🟢 | Lenteja roja | 358 | 23.9 | 63.1 | 10.8 | 2.2 | 0.4 | 7 |
+| 🟢 | Poroto mung | 347 | 23.9 | 62.6 | 16.3 | 1.2 | 0.3 | 15 |
+| 🟢 | Poroto colorado | 333 | 23.6 | 60.0 | 24.9 | 0.8 | 0.1 | 24 |
+| 🟢 | Poroto blanco | 333 | 23.4 | 60.3 | 15.2 | 0.9 | 0.2 | 16 |
+| 🟢 | Poroto cranberry | 335 | 23.0 | 60.1 | 24.7 | 1.2 | 0.3 | 6 |
+| 🟢 | Harina de garbanzo | 387 | 22.4 | 57.8 | 10.8 | 6.7 | 0.7 | 64 |
+| 🟢 | Poroto manteca | 337 | 22.3 | 60.8 | 15.3 | 1.5 | 0.2 | 5 |
+| 🟢 | Manteca de maní | 598 | 22.2 | 22.3 | 5.0 | 51.4 | 10.3 | 17 |
+| 🟢 | Gandul | 343 | 21.7 | 62.8 | 15.0 | 1.5 | 0.3 | 17 |
+| 🟢 | Poroto negro | 341 | 21.6 | 62.4 | 15.5 | 1.4 | 0.4 | 5 |
+| 🟢 | Poroto pallar | 338 | 21.5 | 63.4 | 19.0 | 0.7 | 0.2 | 18 |
+| 🟢 | Poroto pinto | 347 | 21.4 | 62.6 | 15.5 | 1.2 | 0.2 | 12 |
+| 🟢 | Garbanzo | 378 | 20.5 | 63.0 | 12.2 | 6.0 | 0.6 | 24 |
+| 🟢 | Tempeh | 192 | 20.3 | 7.6 | — | 10.8 | 2.5 | 9 |
+| 🟢 | Poroto adzuki | 329 | 19.9 | 62.9 | 12.7 | 0.5 | 0.2 | 5 |
+| 🟢 | Natto | 211 | 19.4 | 12.7 | 5.4 | 11.0 | 1.6 | 7 |
+| 🟢 | Tofu | 144 | 17.3 | 2.8 | 2.3 | 8.7 | 1.3 | 14 |
+| 🟢 | Edamame | 147 | 13.0 | 11.1 | 4.2 | 6.8 | 0.8 | 15 |
+| 🟡 | Miso | 198 | 12.8 | 25.4 | 5.4 | 6.0 | 1.0 | 3728 |
+| 🟡 | Tamari | 60 | 10.5 | 5.6 | 0.8 | 0.1 | 0.0 | 5586 |
+| 🟡 | Salsa de soja | 53 | 8.1 | 4.9 | 0.8 | 0.6 | 0.1 | 5493 |
+| 🟢 | Hummus | 177 | 4.9 | 20.1 | 4.0 | 8.6 | 1.1 | 242 |
+| 🟢 | Leche de soja | 33 | 2.9 | 1.7 | 0.5 | 1.6 | 0.2 | 37 |
+
+Las tres entradas 🟡 —miso, salsa de soja, tamari— lo son por sodio, y es un
+falso positivo previsible: son condimentos que se usan de a cucharadas, no de
+a 100 g. El criterio de la categoría los mide como si fueran un plato.
+
 ### Cereales y panes
 
 Ordenados por **fibra sobre carbohidratos**, que es la señal de integral vs
@@ -468,7 +554,7 @@ donde el crudo da rojo. **Cocinar no puede hacer que un corte sea más sano de
 lo que es.**
 
 El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
-adivinado por el nombre: los **49 pares** del catálogo coinciden hoy en color.
+adivinado por el nombre: los **62 pares** del catálogo coinciden hoy en color.
 
 ### Productos de marca
 
@@ -510,7 +596,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **391 🟢 · 55 🟡 · 66 🔴** sobre 512 alimentos.
+Reparto actual: **404 🟢 · 55 🟡 · 66 🔴** sobre 525 alimentos.
 
 ---
 
@@ -570,5 +656,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 458 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 525 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
