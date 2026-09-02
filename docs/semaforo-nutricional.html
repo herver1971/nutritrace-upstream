@@ -76,10 +76,18 @@ section { margin:0 0 4rem; }
 .scroll { max-height:min(72vh,44rem); overflow:auto; margin:1.2rem 0 .6rem;
            border:1px solid var(--rule); border-radius:3px; background:var(--surface); }
 table { border-collapse:collapse; width:100%; font-size:.87rem; }
+/* Las tablas de datos NO se estiran. Con `width:100%` el sobrante se lo comia
+   la columna del nombre, que es la unica elastica, y quedaba un desierto entre
+   «Poroto cranberry hervido» y su primer numero. Con `auto` cada columna toma
+   lo que necesita y los numeros vuelven a quedar al lado del alimento; la caja
+   se encoge con la tabla en vez de dejar un marco medio vacio. */
+.tdat { width:max-content; max-width:100%; }
+.tdat table { width:auto; }
+.tdat .nm { padding-right:1.4rem; }
 th { font-size:.68rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
       color:var(--muted); text-align:right; padding:.7rem .7rem; white-space:nowrap;
       border-bottom:2px solid var(--rule-hard); background:var(--surface);
-      position:sticky; top:0;position:sticky; top:0; z-index:2; }
+      position:sticky; top:0; z-index:2; }
 th.sortable { cursor:pointer; user-select:none; }
 th.sortable:hover, th[aria-sort] { color:var(--ink); }
 th .ind { display:inline-block; width:.8em; margin-left:.25em; opacity:.3; font-weight:400; }
@@ -298,7 +306,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
       <span class="lbl">El plato</span>
       <button type="button" class="vaciar" id="vaciar">vaciar</button>
     </header>
-    <div class="scroll"><table>
+    <div class="scroll tdat"><table>
       <thead><tr><th class="l">Alimento</th><th>g</th><th>kcal</th><th>Prot</th><th>Carb</th>
       <th>Fibra</th><th>Grasa</th><th>Sat</th><th>Na</th><th></th></tr></thead>
       <tbody id="comp-body"></tbody>
@@ -309,7 +317,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   <h3>Aceites y grasas</h3>
   <div class="col"><p>Todos son ~100&nbsp;g de grasa y ~884&nbsp;kcal: la energía no los
   diferencia, <strong>la composición sí</strong>.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por proporción de saturada · gramos por 100 g</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>Grasa</th><th>Sat</th><th>Mono</th><th>Poli</th><th>% Sat</th></tr></thead>
     <tbody><tr data-id="aceite-canola" data-n="884|0|0|0|100|7.37|0"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Aceite de canola</td><td class="num">100.0</td><td class="num">7.4</td><td class="num">63.3</td><td class="num">28.1</td><td class="num">7%</td></tr>
@@ -351,7 +359,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   casi todos, su versión cocida. El sodio explica por qué las curadas quedan en rojo aunque
   su grasa sea baja: el jamón magro pasa la prueba de grasa con 1&nbsp;203&nbsp;mg de
   sodio.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por grasa saturada · gramos por 100 g, sodio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Insat</th><th>Prot</th><th>Na</th></tr></thead>
     <tbody><tr data-id="pavo-pechuga" data-n="114|23.66|0.14|0|1.48|0.29|113"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Pechuga de pavo cruda</td><td class="num">114</td><td class="num">1.5</td><td class="num">0.3</td><td class="num">0.5</td><td class="num">23.7</td><td class="num">113</td></tr>
@@ -430,7 +438,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   <h3>Pescados y mariscos</h3>
   <div class="col"><p><strong>El más graso apenas llega a 4,2&nbsp;g de saturada</strong> (caballa cocida). La grasa no
   los diferencia: la salazón y el ahumado, sí.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por grasa saturada · gramos por 100 g, sodio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Insat</th><th>Prot</th><th>Na</th></tr></thead>
     <tbody><tr data-id="camaron-cocido" data-n="99|23.98|0.2||0.28|0.06|111"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Camarón cocido</td><td class="num">99</td><td class="num">0.3</td><td class="num">0.1</td><td class="num">0.1</td><td class="num">24.0</td><td class="num">111</td></tr>
@@ -496,7 +504,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   de 2 a 1.</p></div>
 
   <h4 class="sub-h">Cocidas, como llegan al plato</h4>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por proteína · gramos por 100 g, sodio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Prot</th><th>Carb</th><th>Fibra</th><th>Grasa</th><th>Sat</th><th>Na</th></tr></thead>
     <tbody><tr data-id="soja-cocida" data-n="172|18.21|8.36|6|8.97|1.3|1"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Soja hervida</td><td class="num">172</td><td class="num">18.2</td><td class="num">8.4</td><td class="num">6.0</td><td class="num">9.0</td><td class="num">1.3</td><td class="num">1</td></tr>
@@ -529,7 +537,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   <h4 class="sub-h">En seco y derivados</h4>
   <div class="col"><p>Los valores en seco sirven para pesar antes de cocinar, no para comparar
   con un plato servido.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por proteína · gramos por 100 g, sodio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Prot</th><th>Carb</th><th>Fibra</th><th>Grasa</th><th>Sat</th><th>Na</th></tr></thead>
     <tbody><tr data-id="soja" data-n="446|36.49|30.16|9.3|19.94|2.88|2"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Soja</td><td class="num">446</td><td class="num">36.5</td><td class="num">30.2</td><td class="num">9.3</td><td class="num">19.9</td><td class="num">2.9</td><td class="num">2</td></tr>
@@ -570,7 +578,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   <div class="col"><p>Ordenados por <strong>fibra sobre carbohidratos</strong>, que es la señal
   de integral vs refinado y sobrevive a la cocción — la fibra absoluta no, porque un grano
   cocido es mayormente agua.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por fibra sobre carbohidratos · gramos por 100 g</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Carb</th><th>Fibra</th><th>Fibra/Carb</th></tr></thead>
     <tbody><tr data-id="salvado-trigo" data-n="216|15.55|64.51|42.8|4.25|0.63|2"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Salvado de trigo</td><td class="num">216</td><td class="num">64.5</td><td class="num">42.8</td><td class="num">0.663</td></tr>
@@ -622,7 +630,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   </table></div>
 
   <h3>Lácteos y huevos</h3>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>Ordenado por grasa saturada · gramos por 100 g</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>Azúcar</th></tr></thead>
     <tbody><tr data-id="clara-huevo" data-n="52|10.9|0.73|0|0.17|0|166"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Clara de huevo</td><td class="num">52</td><td class="num">0.2</td><td class="num">0.0</td><td class="num">0.7</td></tr>
@@ -673,7 +681,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Verduras</h3>
   <div class="col"><p>Ordenadas por <strong>fibra</strong>. Las 111 son verdes, y eso no es un empate: es que el criterio de la categoría <em>no discrimina</em>, porque ninguna verdura tiene con qué salir mal parada. Estuvieron fuera de este documento por esa razón, y era un error: el color no las separa, pero los números sí, y para armar un plato la pregunta nunca es «¿es sana?» sino «¿cuál de estas me da más fibra por caloría?».</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>111 alimentos · 111 🟢 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Carb</th><th>Fibra</th><th>Prot</th><th>K</th><th>Na</th></tr></thead>
     <tbody><tr data-id="tomate-secado" data-n="258|14.11|55.76|12.3|2.97|0.43|107"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Tomate secado al sol</td><td class="num">258</td><td class="num">55.8</td><td class="num">12.3</td><td class="num">14.1</td><td class="num">3427</td><td class="num">107</td></tr>
@@ -792,7 +800,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Frutas</h3>
   <div class="col"><p>Ordenadas por <strong>azúcar</strong>, que es el criterio de la categoría: fruta fresca verde, y ámbar arriba de 40&nbsp;g. Las siete ámbar son todas deshidratadas, y el ámbar no dice «no comas» sino «esto es fruta con el agua sacada»: 100&nbsp;g de orejones no son una fruta, son cinco.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>65 alimentos · 58 🟢 · 7 🟡 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Carb</th><th>Azúcar</th><th>Fibra</th><th>K</th></tr></thead>
     <tbody><tr data-id="datil-medjool" data-n="277|1.81|74.97|6.7|0.15||1"><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Dátil Medjool</td><td class="num">277</td><td class="num">75.0</td><td class="num">66.5</td><td class="num">6.7</td><td class="num">696</td></tr>
@@ -865,7 +873,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Frutos secos y semillas</h3>
   <div class="col"><p>Ordenados por <strong>proporción de saturada</strong> sobre la grasa total, no por gramos: son todos 50&nbsp;% grasa o más, así que la cantidad no los separa y la composición sí. Es el mismo criterio que se usa con los aceites.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>23 alimentos · 21 🟢 · 2 🔴 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Grasa</th><th>Sat</th><th>% sat</th><th>Prot</th><th>Fibra</th><th>Na</th></tr></thead>
     <tbody><tr data-id="leche-coco" data-n="230|2.29|5.54|2.2|23.84|21.14|15"><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Leche de coco</td><td class="num">230</td><td class="num">23.8</td><td class="num">21.1</td><td class="num">94</td><td class="num">2.3</td><td class="num">2.2</td><td class="num">15</td></tr>
@@ -896,7 +904,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Condimentos y especias</h3>
   <div class="col"><p>Ordenados por <strong>sodio</strong>. La categoría entera es un falso positivo esperando: se la juzga por 100&nbsp;g y se usa por cucharaditas. Una cucharadita de sal son 6&nbsp;g, o sea el 6&nbsp;% de la fila.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>42 alimentos · 39 🟢 · 2 🟡 · 1 🔴 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Sodio</th><th>Azúcar</th><th>Fibra</th></tr></thead>
     <tbody><tr data-id="sal" data-n="0|0|0|0|0|0|38758"><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Sal</td><td class="num">0</td><td class="num">38758</td><td class="num">0.0</td><td class="num">0.0</td></tr>
@@ -946,7 +954,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Bebidas</h3>
   <div class="col"><p>Ordenadas por <strong>azúcar</strong>. El criterio tiene una regla extra: arriba de 35&nbsp;kcal con menos de 3&nbsp;g de azúcar es ámbar, que es la forma de que el alcohol no pase por la ventanilla del azúcar — la cerveza tiene poca azúcar y calorías igual.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>15 alimentos · 9 🟢 · 6 🟡 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Azúcar</th><th>Carb</th><th>Na</th></tr></thead>
     <tbody><tr data-id="jugo-manzana" data-n="46|0.1|11.3|0.2|0.13|0.02|4"><td class="lt"><span class="dot a" aria-label="amber"></span></td><td class="nm">Jugo de manzana</td><td class="num">46</td><td class="num">9.6</td><td class="num">11.3</td><td class="num">4</td></tr>
@@ -969,7 +977,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 
   <h3>Dulces y azúcares</h3>
   <div class="col"><p>Ordenados por <strong>azúcar</strong>. Nueve de doce son rojos, y es la única categoría donde eso es el resultado correcto y no un problema del criterio.</p></div>
-  <div class="scroll"><table>
+  <div class="scroll tdat"><table>
     <caption>12 alimentos · 1 🟢 · 2 🟡 · 9 🔴 · por 100 g, sodio y potasio en mg</caption>
     <thead><tr><th></th><th class="l">Alimento</th><th>kcal</th><th>Azúcar</th><th>Grasa</th><th>Sat</th><th>Fibra</th></tr></thead>
     <tbody><tr data-id="azucar" data-n="387|0|99.98|0|0|0|1"><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Azúcar</td><td class="num">387</td><td class="num">99.8</td><td class="num">0.0</td><td class="num">0.0</td><td class="num">0.0</td></tr>
