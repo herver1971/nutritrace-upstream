@@ -35,7 +35,12 @@ body {
   -webkit-font-smoothing:antialiased;
 }
 .wrap { max-width:78rem; margin:0 auto; padding:0 1.5rem 6rem; }
-.col { max-width:38rem; }
+/* 38rem daba el largo de linea clasico (~75 caracteres), pero con las tablas a
+   todo el ancho la prosa al lado se leia como una columnita perdida. 56rem es
+   el punto donde deja de verse angosta sin que la linea se vuelva incomoda de
+   seguir; a 78rem, el ancho de las tablas, serian 150 caracteres por renglon y
+   el ojo pierde el salto de linea. */
+.col { max-width:56rem; }
 h1,h2,h3,.lbl,th,.dat { font-family:Archivo,"Helvetica Neue",Arial,sans-serif; }
 h1 { font-size:clamp(2.1rem,5vw,3.1rem); font-weight:700; letter-spacing:-.02em; line-height:1.05;
      margin:0 0 .6rem; text-wrap:balance; }
@@ -48,19 +53,19 @@ strong { font-weight:600; }
 .lbl { font-size:.72rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
 
 header { padding:4rem 0 2.4rem; border-bottom:1px solid var(--rule); margin-bottom:2.8rem; }
-.sub { font-size:1.13rem; color:var(--muted); max-width:34rem; margin:.9rem 0 0; }
+.sub { font-size:1.13rem; color:var(--muted); max-width:44rem; margin:.9rem 0 0; }
 .meta { display:flex; flex-wrap:wrap; gap:1.6rem; margin-top:2rem; }
 .meta div { display:flex; flex-direction:column; gap:.15rem; }
 .meta .v { font-family:Archivo,sans-serif; font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums; }
 
 section { margin:0 0 4rem; }
 .toc { background:var(--surface); border:1px solid var(--rule); border-radius:3px;
-        padding:1.3rem 1.5rem; margin:0 0 3.5rem; box-shadow:var(--shadow); max-width:38rem; }
+        padding:1.3rem 1.5rem; margin:0 0 3.5rem; box-shadow:var(--shadow); max-width:56rem; }
 .toc ol { margin:.7rem 0 0; padding-left:1.2rem; columns:2; column-gap:2rem; font-size:.95rem; }
 .toc li { margin:.25rem 0; break-inside:avoid; }
 
 .note { border-left:3px solid var(--accent); background:var(--accent-soft);
-         padding:.9rem 1.2rem; margin:1.4rem 0; border-radius:0 3px 3px 0; max-width:38rem; }
+         padding:.9rem 1.2rem; margin:1.4rem 0; border-radius:0 3px 3px 0; max-width:56rem; }
 .note p:last-child { margin-bottom:0; }
 
 /* Sticky headers need a scroll box with a HEIGHT. `overflow-x:auto` alone
@@ -174,13 +179,13 @@ tr[hidden] { display:none; }
 .fam h4 { font-family:Archivo,sans-serif; font-size:.95rem; font-weight:700; margin:0 0 .45rem; }
 .fam p { font-size:.92rem; margin:0; color:var(--muted); }
 
-ol.pri { counter-reset:p; list-style:none; padding:0; margin:1.3rem 0; max-width:38rem; }
+ol.pri { counter-reset:p; list-style:none; padding:0; margin:1.3rem 0; max-width:56rem; }
 ol.pri li { counter-increment:p; position:relative; padding-left:2.4rem; margin:0 0 .95rem; }
 ol.pri li::before { content:counter(p); position:absolute; left:0; top:.12rem;
   font-family:Archivo,sans-serif; font-size:.75rem; font-weight:700; color:var(--accent);
   border:1.5px solid var(--accent); border-radius:50%; width:1.5rem; height:1.5rem;
   display:grid; place-items:center; }
-ul.plain { max-width:38rem; padding-left:1.15rem; }
+ul.plain { max-width:56rem; padding-left:1.15rem; }
 ul.plain li { margin:.45rem 0; }
 footer { border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--muted); font-size:.88rem; }
 code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
