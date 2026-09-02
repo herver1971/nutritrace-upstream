@@ -303,6 +303,14 @@ function trafficLight(cat, n, cooked = false) {
     }
     case 'frutas':  return sug > 40 ? LIGHT.AMBER : LIGHT.GREEN;  // dried concentrates sugar
     case 'verduras': return LIGHT.GREEN;
+    // Nutritionally the mushrooms are one flat field: 22-39 kcal, 1-4 g de
+    // protein, under 1 g of fat, and saturated fat measured in hundredths of a
+    // gram. Nothing there separates a portobello from a girgola. The brine
+    // does: canned mushrooms carry 425 mg of sodium against the 5 mg of the
+    // same mushroom fresh, which is the whole reason the category is judged at
+    // all. Dried shiitake is left green on purpose — its 296 kcal are a dry
+    // weight, the same situation as uncooked rice, and the entry says so.
+    case 'hongos': return band(na, 200, 800);
     // Nuts and legumes: sodium separates the natural from the salted, but it
     // is not the only thing hiding in these drawers. Coconut sits under
     // "frutos secos" and is 94 % saturated — worse than butter — while every

@@ -3,7 +3,7 @@
  *
  * These are categorical colours, not semantic ones. The nutrition traffic
  * light already owns green / amber / red on the row's left edge and wash, so
- * these hues sit in the teal→blue→violet→magenta arc instead, and the three
+ * these hues sit in the teal→blue→violet→magenta arc instead, and the four
  * earth-toned categories are desaturated enough to read as brown, tan and
  * olive rather than as red or amber.
  *
@@ -26,3 +26,4 @@
 .cat-carnes       { --cat-h:  18; --cat-s: 30%; }
 .cat-cereales     { --cat-h:  36; --cat-s: 30%; }
 .cat-aceites      { --cat-h:  58; --cat-s: 26%; }
+.cat-hongos       { --cat-h:  78; --cat-s: 16%; }

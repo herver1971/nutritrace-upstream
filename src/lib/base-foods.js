@@ -25,6 +25,7 @@ const CATEGORY_LABELS = {
   dulces:         { es: 'Dulces',            en: 'Sweets' },
   frutas:         { es: 'Frutas',            en: 'Fruit' },
   'frutos-secos': { es: 'Frutos secos',      en: 'Nuts & seeds' },
+  hongos:         { es: 'Hongos',           en: 'Mushrooms' },
   lacteos:        { es: 'Lácteos y huevos',  en: 'Dairy & eggs' },
   legumbres:      { es: 'Legumbres',         en: 'Legumes' },
   pescados:       { es: 'Pescados y mariscos', en: 'Fish & seafood' },

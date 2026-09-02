@@ -471,7 +471,7 @@ El salto real es a **integral** (🟢), que triplica la fibra.
 
 ### Verduras
 
-Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el criterio de la categoría **no discrimina**, porque ninguna verdura tiene con qué salir mal parada. Estuvieron fuera de este documento por esa razón, y era un error: el color no las separa, pero los números sí, y para armar un plato la pregunta nunca es «¿es sana?» sino «¿cuál de estas me da más fibra por caloría?».
+Ordenadas por **fibra**. Las 107 son verdes, y eso no es un empate: es que el criterio de la categoría **no discrimina**, porque ninguna verdura tiene con qué salir mal parada. Estuvieron fuera de este documento por esa razón, y era un error: el color no las separa, pero los números sí, y para armar un plato la pregunta nunca es «¿es sana?» sino «¿cuál de estas me da más fibra por caloría?».
 
 | | Alimento | kcal | Carb | Fibra | Prot | K | Na |
 |---|---|---|---|---|---|---|---|
@@ -513,12 +513,10 @@ Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el cr
 | 🟢 | Berenjena hervida | 35 | 8.7 | 2.5 | 0.8 | 123 | 1 |
 | 🟢 | Ciboulette | 30 | 4.4 | 2.5 | 3.3 | 296 | 3 |
 | 🟢 | Repollo | 25 | 5.8 | 2.5 | 1.3 | 170 | 18 |
-| 🟢 | Shiitake | 34 | 6.8 | 2.5 | 2.2 | 304 | 9 |
 | 🟢 | Choclo hervido | 96 | 21.0 | 2.4 | 3.4 | 218 | 1 |
 | 🟢 | Espinaca cocida | 23 | 3.8 | 2.4 | 3.0 | 466 | 70 |
 | 🟢 | Papa blanca | 69 | 15.7 | 2.4 | 1.7 | 407 | 16 |
 | 🟢 | Coliflor hervida | 23 | 4.1 | 2.3 | 1.8 | 142 | 15 |
-| 🟢 | Champiñón cocido | 28 | 5.3 | 2.2 | 2.2 | 356 | 2 |
 | 🟢 | Espinaca | 23 | 3.6 | 2.2 | 2.9 | 558 | 79 |
 | 🟢 | Nopal | 16 | 3.3 | 2.2 | 1.3 | 257 | 21 |
 | 🟢 | Papa al horno | 93 | 21.2 | 2.2 | 2.5 | 535 | 10 |
@@ -564,7 +562,6 @@ Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el cr
 | 🟢 | Zapallito hervido | 20 | 4.3 | 1.4 | 0.9 | 192 | 1 |
 | 🟢 | Alga kelp | 43 | 9.6 | 1.3 | 1.7 | 89 | 233 |
 | 🟢 | Lechuga criolla | 15 | 2.9 | 1.3 | 1.4 | 194 | 28 |
-| 🟢 | Portobello | 22 | 3.9 | 1.3 | 2.1 | 364 | 9 |
 | 🟢 | Lechuga repollada | 14 | 3.0 | 1.2 | 0.9 | 141 | 10 |
 | 🟢 | Morrón rojo cocido | 28 | 6.7 | 1.2 | 0.9 | 166 | 2 |
 | 🟢 | Repollo chino | 16 | 3.2 | 1.2 | 1.2 | 238 | 9 |
@@ -573,7 +570,6 @@ Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el cr
 | 🟢 | Lechuga mantecosa | 13 | 2.2 | 1.1 | 1.4 | 238 | 5 |
 | 🟢 | Tomate verde | 23 | 5.1 | 1.1 | 1.2 | 204 | 13 |
 | 🟢 | Zapallito | 16 | 3.4 | 1.1 | 1.2 | 262 | 2 |
-| 🟢 | Champiñón | 22 | 3.3 | 1.0 | 3.1 | 318 | 5 |
 | 🟢 | Pepinillo en vinagre | 12 | 2.4 | 1.0 | 0.5 | 117 | 809 |
 | 🟢 | Puerro hervido | 31 | 7.6 | 1.0 | 0.8 | 87 | 10 |
 | 🟢 | Cebolla dulce | 32 | 7.6 | 0.9 | 0.8 | 119 | 8 |
@@ -588,6 +584,62 @@ Ordenadas por **fibra**. Las 111 son verdes, y eso no es un empate: es que el cr
 | 🟢 | Alga nori | 35 | 5.1 | 0.3 | 5.8 | 356 | 48 |
 
 La columna que decide casi siempre es la fibra. Entre 100 g de lechuga y 100 g de alcaucil hervido hay 1,3 contra 8,6 g: el mismo color, seis veces la fibra. El potasio está para el otro objetivo, y ahí la papa y la batata mandan pese a ser las más calóricas.
+
+### Hongos
+
+Ordenados por **fibra**. Estaban repartidos dentro de Verduras, y no son
+verduras: no son plantas. Separarlos es lo que deja ver que **entre ellos casi
+no hay diferencia** — 22 a 39 kcal, 1 a 4 g de proteína, menos de 1 g de grasa
+y la saturada medida en centésimas. Elegir gírgola o portobello no cambia
+nada nutricional; lo que cambia es el sabor y la textura, y eso es motivo
+suficiente.
+
+Lo único que sí los separa es **la salmuera**. Un champiñón fresco tiene 5 mg
+de sodio; el mismo champiñón en lata, 425. Por eso la categoría se juzga por
+sodio y por nada más: es el único eje donde hay algo que decidir.
+
+| | Alimento | kcal | Prot | Carb | Fibra | K | Na | Vit D |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 | Shiitake seco | 296 | 9.6 | 75.4 | 11.5 | 1534 | 13 | 3.9 |
+| 🟢 | Chantarela | 32 | 1.5 | 6.9 | 3.8 | 506 | 9 | 5.3 |
+| 🟢 | Shiitake salteado | 39 | 3.5 | 7.7 | 3.6 | 326 | 5 | 0.5 |
+| 🟢 | Morilla | 31 | 3.1 | 5.1 | 2.8 | 411 | 21 | 5.1 |
+| 🟢 | Enoki | 37 | 2.7 | 7.8 | 2.7 | 359 | 3 | 0.1 |
+| 🟢 | Maitake | 31 | 1.9 | 7.0 | 2.7 | 204 | 1 | 28.1 |
+| 🟡 | Hongos de paja en lata | 32 | 3.8 | 4.6 | 2.5 | 78 | 384 |  |
+| 🟢 | Shiitake | 34 | 2.2 | 6.8 | 2.5 | 304 | 9 | 0.4 |
+| 🟡 | Champiñones en lata | 25 | 1.9 | 5.1 | 2.4 | 129 | 425 | 0.2 |
+| 🟢 | Gírgola | 33 | 3.3 | 6.1 | 2.3 | 420 | 18 | 0.7 |
+| 🟢 | Champiñón hervido | 28 | 2.2 | 5.3 | 2.2 | 356 | 2 | 0.2 |
+| 🟢 | Portobello grillado | 29 | 3.3 | 4.4 | 2.2 | 437 | 11 | 0.3 |
+| 🟢 | Shiitake hervido | 56 | 1.6 | 14.4 | 2.1 | 117 | 4 | 0.7 |
+| 🟢 | Champiñón salteado | 26 | 3.6 | 4.0 | 1.8 | 396 | 12 | 0.2 |
+| 🟢 | Portobello | 22 | 2.1 | 3.9 | 1.3 | 364 | 9 | 0.3 |
+| 🟢 | Champiñón | 22 | 3.1 | 3.3 | 1.0 | 318 | 5 | 0.2 |
+| 🟢 | Champiñón marrón (crimini) | 22 | 2.5 | 4.3 | 0.6 | 448 | 6 | 0.1 |
+
+> **Champiñón, crimini y portobello son el mismo hongo.** *Agaricus bisporus*,
+> en tres momentos: la cepa blanca, la cepa marrón joven y esa misma cepa
+> marrón ya abierta. Los tres dan 22 kcal y se parecen en todo lo demás. La
+> góndola los cobra distinto; la comida no los distingue.
+
+> **El shiitake seco es peso en seco.** 296 kcal y 75 g de hidratos por 100 g
+> no son un hongo calórico: son un hongo sin agua, la misma situación que el
+> arroz crudo. Diez gramos secos se hidratan en unos 45-50 g y ahí valen 30
+> kcal. Registrar los gramos secos contra esta entrada, o los húmedos contra
+> «Shiitake hervido» — nunca los gramos húmedos contra el seco.
+
+**El maitake es el alimento con más vitamina D de todo el catálogo**: 28 µg por
+100 g, por encima del salmón ahumado (17) y de la caballa (16), con una
+ingesta recomendada de 15 µg al día. La chantarela y la morilla llegan a 5.
+Los hongos fabrican vitamina D con luz ultravioleta, igual que la piel, así
+que el número depende de si se secaron al sol: el de cultivo en galpón puede
+traer bastante menos que lo que dice esta tabla.
+
+Lo que no son los hongos es una fuente de proteína. Los mejores de la tabla
+rondan los 3,5 g por 100 g — un cuarto de lo que da un huevo, un décimo de lo
+que da una pechuga. Reemplazan a la carne en el plato por textura y por umami,
+no por número.
 
 ### Frutas
 
@@ -836,6 +888,7 @@ un pescado por su sal. Una fórmula única no puede capturar eso.
 | **Cereales** | Fibra / carbohidratos | 🟢 ≥0,04 · 🟡 ≥0,02 · 🔴 <0,02 | Sobrevive a la cocción. Arroz integral 0,047 vs blanco 0,016 |
 | **Frutas** | Azúcar | 🟡 si >40 g | Solo las desecadas concentran azúcar; la fruta entera no es el problema |
 | **Verduras** | — | Siempre 🟢 | No hay diferencias relevantes para estos objetivos |
+| **Hongos** | Sodio | 🟢 ≤200 · 🟡 ≤800 · 🔴 >800 | Entre ellos no hay nada que separar: 22-39 kcal y saturada en centésimas. Solo la salmuera del enlatado los distingue (425 mg vs 5 mg) |
 | **Legumbres** | Sodio, y % de saturada si la grasa supera 5 g | Na >600 → 🟡<br>sat 🟢 ≤30% · 🟡 ≤50% | El % solo se aplica donde la grasa es real: un poroto tiene 0,5 g de grasa total y su «54 % saturada» es ruido |
 | **Frutos secos** | Sodio, y % de saturada si la grasa supera 5 g | Na >300 → 🟡<br>sat 🟢 ≤30% · 🟡 ≤50% | El coco vive en esta categoría y es 94 % saturado, peor que la manteca; todo fruto seco real ronda 6-25 % |
 | **Dulces** | Azúcar | 🟢 ≤10 · 🟡 ≤40 · 🔴 >40 | Es el eje, sin vueltas |
@@ -876,7 +929,7 @@ donde el crudo da rojo. **Cocinar no puede hacer que un corte sea más sano de
 lo que es.**
 
 El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
-adivinado por el nombre: los **86 pares** del catálogo coinciden hoy en color.
+adivinado por el nombre: los **90 pares** del catálogo coinciden hoy en color.
 
 ### Productos de marca
 
@@ -918,7 +971,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **424 🟢 · 55 🟡 · 66 🔴** sobre 545 alimentos.
+Reparto actual: **435 🟢 · 57 🟡 · 66 🔴** sobre 558 alimentos.
 
 ---
 
@@ -978,5 +1031,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 545 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 558 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
