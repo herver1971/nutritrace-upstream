@@ -92,6 +92,32 @@ caption { caption-side:top; text-align:left; font-family:Archivo,sans-serif; fon
 h4.sub-h { font-family:Archivo,sans-serif; font-size:.85rem; font-weight:600; letter-spacing:.06em;
            text-transform:uppercase; color:var(--muted); margin:2rem 0 0; }
 
+/* Barra de filtro. Va pegada arriba porque la pregunta que este documento
+   contesta de verdad —«tengo trucha, con que la acompaño»— se responde
+   recorriendo varias tablas a la vez, no leyendo una sola de arriba abajo. */
+.filtro { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:.6rem; align-items:center;
+          background:var(--paper); border-bottom:1px solid var(--rule); padding:.8rem 0; margin:1.4rem 0 0; }
+.filtro input { flex:1 1 15rem; min-width:0; font-family:Archivo,sans-serif; font-size:.95rem;
+          padding:.5rem .7rem; border:1px solid var(--rule); border-radius:3px;
+          background:var(--surface); color:var(--ink); }
+.filtro input::placeholder { color:var(--muted); }
+.chips { display:flex; gap:.3rem; }
+.chip { font-family:Archivo,sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; user-select:none;
+        padding:.42rem .7rem; border:1px solid var(--rule); border-radius:999px;
+        background:var(--surface); color:var(--muted); display:flex; align-items:center; gap:.35rem; }
+.chip:hover { color:var(--ink); }
+.chip[aria-pressed="true"] { border-color:currentColor; }
+.chip[data-luz="g"][aria-pressed="true"] { color:var(--ok); }
+.chip[data-luz="a"][aria-pressed="true"] { color:var(--warn); }
+.chip[data-luz="r"][aria-pressed="true"] { color:var(--bad); }
+.filtro .cuenta { font-family:Archivo,sans-serif; font-size:.78rem; color:var(--muted); white-space:nowrap; }
+.filtro .limpiar { font-family:Archivo,sans-serif; font-size:.78rem; background:none; border:0;
+        color:var(--accent); cursor:pointer; padding:.42rem .2rem; }
+tr[hidden] { display:none; }
+/* Una tabla sin coincidencias no se esconde: se apaga. Esconderla movería todo
+   el documento con cada tecla y se perderia de vista donde estaba parado uno. */
+.apagada { opacity:.35; }
+
 .crit { width:100%; border-collapse:collapse; font-size:.9rem; margin:1.2rem 0; }
 .crit th { position:static; text-align:left; }
 .crit td { vertical-align:top; padding:.6rem .7rem; }
@@ -208,6 +234,17 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
   <div class="col">
     <h2>Comparación de alimentos</h2>
     <p>Ordenados por el eje con que se los juzga. El punto de color es el semáforo.</p>
+  </div>
+  <div class="filtro">
+    <input id="q" type="search" placeholder="Filtrar las siete tablas: «cocid», «garbanzo», «pollo»…"
+           aria-label="Filtrar alimentos por nombre">
+    <div class="chips" role="group" aria-label="Filtrar por color">
+      <button type="button" class="chip" data-luz="g" aria-pressed="false"><span class="dot g"></span>Verde</button>
+      <button type="button" class="chip" data-luz="a" aria-pressed="false"><span class="dot a"></span>Ámbar</button>
+      <button type="button" class="chip" data-luz="r" aria-pressed="false"><span class="dot r"></span>Rojo</button>
+    </div>
+    <span class="cuenta" id="cuenta"></span>
+    <button type="button" class="limpiar" id="limpiar" hidden>limpiar</button>
   </div>
 
   <h3>Aceites y grasas</h3>
@@ -850,6 +887,95 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
       });
     });
   });
+})();
+</script>
+<script>
+/* Filtro sobre las siete tablas a la vez.
+ *
+ * El documento se lee de dos maneras distintas. Una es de arriba abajo, para
+ * entender por que una categoria se juzga como se juzga; para eso estan las
+ * tablas ordenadas por su eje. La otra es la que aparece cuando hay que decidir
+ * una comida —«tengo trucha, con que la acompaño»— y ahi no se lee una tabla:
+ * se saltan varias comparando candidatos. Esto sirve a la segunda. */
+(function () {
+  var q = document.getElementById('q');
+  var cuenta = document.getElementById('cuenta');
+  var limpiar = document.getElementById('limpiar');
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  var tablas = [].slice.call(document.querySelectorAll('.scroll table:not(.crit)'));
+  if (!q || !tablas.length) return;
+
+  /* Sin acentos y en minusculas: nadie escribe «brócoli» con tilde en un
+   * buscador, y «pure» tiene que encontrar «puré». */
+  function pelar(s) {
+    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // El texto de cada fila se calcula una sola vez: son 500 filas y el filtro
+  // corre en cada tecla.
+  var filas = [];
+  tablas.forEach(function (tabla) {
+    var cap = tabla.querySelector('caption');
+    var rows = [].slice.call(tabla.tBodies[0].rows);
+    rows.forEach(function (tr) {
+      var dot = tr.querySelector('.dot');
+      var luz = dot ? (dot.classList.contains('g') ? 'g'
+                     : dot.classList.contains('a') ? 'a'
+                     : dot.classList.contains('r') ? 'r' : '') : '';
+      filas.push({ tr: tr, tabla: tabla,
+                   texto: pelar(tr.cells[1] ? tr.cells[1].textContent : ''), luz: luz });
+    });
+    tabla._cap = cap;
+    tabla._capTexto = cap ? cap.textContent : '';
+    tabla._total = rows.length;
+  });
+
+  function aplicar() {
+    var texto = pelar(q.value.trim());
+    var luces = chips.filter(function (c) { return c.getAttribute('aria-pressed') === 'true'; })
+                     .map(function (c) { return c.dataset.luz; });
+    var activo = texto !== '' || luces.length > 0;
+    var vistos = 0;
+    var porTabla = new Map();
+
+    filas.forEach(function (f) {
+      var ok = (texto === '' || f.texto.indexOf(texto) !== -1)
+            && (luces.length === 0 || luces.indexOf(f.luz) !== -1);
+      f.tr.hidden = !ok;
+      if (ok) { vistos++; porTabla.set(f.tabla, (porTabla.get(f.tabla) || 0) + 1); }
+    });
+
+    tablas.forEach(function (tabla) {
+      var n = porTabla.get(tabla) || 0;
+      // La caption dice cuantas quedaron: sin eso, una tabla filtrada a tres
+      // filas parece una tabla de tres alimentos.
+      if (tabla._cap) {
+        tabla._cap.textContent = activo
+          ? tabla._capTexto + '  ·  ' + n + ' de ' + tabla._total
+          : tabla._capTexto;
+      }
+      tabla.closest('.scroll').classList.toggle('apagada', activo && n === 0);
+    });
+
+    cuenta.textContent = activo ? vistos + ' de ' + filas.length + ' alimentos' : '';
+    limpiar.hidden = !activo;
+  }
+
+  q.addEventListener('input', aplicar);
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      aplicar();
+    });
+  });
+  limpiar.addEventListener('click', function () {
+    q.value = '';
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+    aplicar();
+    q.focus();
+  });
+  // Escape limpia sin tener que apuntarle al boton, que en el celular es chico.
+  q.addEventListener('keydown', function (e) { if (e.key === 'Escape') limpiar.click(); });
 })();
 </script>
 </body>
