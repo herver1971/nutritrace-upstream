@@ -111,6 +111,11 @@ h4.sub-h { font-family:Archivo,sans-serif; font-size:.85rem; font-weight:600; le
 .chip[data-luz="a"][aria-pressed="true"] { color:var(--warn); }
 .chip[data-luz="r"][aria-pressed="true"] { color:var(--bad); }
 .filtro .cuenta { font-family:Archivo,sans-serif; font-size:.78rem; color:var(--muted); white-space:nowrap; }
+/* La pista vive en la barra y no adentro del comparador: ahi solo la leia
+   quien ya habia descubierto como abrirlo. */
+.filtro .pista { flex-basis:100%; font-family:Archivo,sans-serif; font-size:.76rem;
+        color:var(--accent); }
+.filtro .pista[hidden] { display:none; }
 .filtro .limpiar { font-family:Archivo,sans-serif; font-size:.78rem; background:none; border:0;
         color:var(--accent); cursor:pointer; padding:.42rem .2rem; }
 tr[hidden] { display:none; }
@@ -281,6 +286,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
     </div>
     <span class="cuenta" id="cuenta"></span>
     <button type="button" class="limpiar" id="limpiar" hidden>limpiar</button>
+    <span class="pista" id="pista">Tocá una fila para armar un plato ↓</span>
   </div>
   <section class="comp" id="comp" hidden aria-label="Comparador">
     <header>
@@ -659,9 +665,7 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <tr data-id="manteca-sal" data-n="717|0.85|0.06|0|81.11|51.37|643"><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Manteca con sal</td><td class="num">717</td><td class="num">81.1</td><td class="num">51.4</td><td class="num">0.1</td></tr>
 <tr data-id="ghee" data-n="900|0|0|0|100|60|0"><td class="lt"><span class="dot r" aria-label="red"></span></td><td class="nm">Ghee</td><td class="num">900</td><td class="num">100.0</td><td class="num">60.0</td><td class="num">0.0</td></tr></tbody>
   </table></div>
-</section>
 
-<section id="arroz" class="col">
   <h3>Verduras</h3>
   <div class="col"><p>Ordenadas por <strong>fibra</strong>. Las 111 son verdes, y eso no es un empate: es que el criterio de la categoría <em>no discrimina</em>, porque ninguna verdura tiene con qué salir mal parada. Estuvieron fuera de este documento por esa razón, y era un error: el color no las separa, pero los números sí, y para armar un plato la pregunta nunca es «¿es sana?» sino «¿cuál de estas me da más fibra por caloría?».</p></div>
   <div class="scroll"><table>
@@ -977,7 +981,9 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
 <tr data-id="cacao-polvo" data-n="228|19.6|57.9|37|13.7|8.07|21"><td class="lt"><span class="dot g" aria-label="green"></span></td><td class="nm">Cacao en polvo</td><td class="num">228</td><td class="num">1.8</td><td class="num">13.7</td><td class="num">8.1</td><td class="num">37.0</td></tr></tbody>
   </table></div>
   <div class="col"><p>El único verde es el cacao en polvo sin azucarar, que está en esta categoría por parentesco y no por composición. La escala de los chocolates es la información útil: del 70-85&nbsp;% al 45-59&nbsp;% el azúcar se duplica.</p></div>
+</section>
 
+<section id="arroz" class="col">
   <h2>Arroz: cuál es cuál</h2>
   <p>Tres cosas distintas que se confunden fácil:</p>
   <table class="crit">
@@ -1388,8 +1394,11 @@ code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.86em;
     return v == null ? '—' : v.toFixed(dec);
   }
 
+  var pista = document.getElementById('pista');
+
   function pintar() {
     caja.hidden = elegidas.length === 0;
+    if (pista) pista.hidden = elegidas.length > 0;
     cuerpo.textContent = '';
     var total = {}, faltan = {};
     CAMPOS.forEach(function (c) { total[c] = 0; faltan[c] = false; });
