@@ -554,7 +554,7 @@ donde el crudo da rojo. **Cocinar no puede hacer que un corte sea más sano de
 lo que es.**
 
 El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
-adivinado por el nombre: los **62 pares** del catálogo coinciden hoy en color.
+adivinado por el nombre: los **86 pares** del catálogo coinciden hoy en color.
 
 ### Productos de marca
 
@@ -596,7 +596,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **404 🟢 · 55 🟡 · 66 🔴** sobre 525 alimentos.
+Reparto actual: **424 🟢 · 55 🟡 · 66 🔴** sobre 545 alimentos.
 
 ---
 
@@ -656,5 +656,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 525 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 545 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
