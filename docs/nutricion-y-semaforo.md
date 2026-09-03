@@ -221,6 +221,7 @@ la salazón y el ahumado, sí.
 | 🟢 | Cangrejo crudo | 87 | 1.1 | 0.2 | 0.6 | 18.1 | 293 |
 | 🟢 | Pulpo crudo | 82 | 1.0 | 0.2 | 0.4 | 14.9 | 230 |
 | 🟢 | Mero crudo | 92 | 1.0 | 0.2 | 0.5 | 19.4 | 53 |
+| 🟢 | Atún al natural (lata) | 116 | 0.8 | 0.2 | 0.5 | 25.5 | 50 |
 | 🟢 | Merluza cruda | 90 | 1.3 | 0.2 | 0.7 | 18.3 | 72 |
 | 🟢 | Pargo crudo | 100 | 1.3 | 0.3 | 0.7 | 20.5 | 64 |
 | 🟢 | Halibut crudo | 91 | 1.3 | 0.3 | 0.8 | 18.6 | 68 |
@@ -973,7 +974,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **437 🟢 · 57 🟡 · 66 🔴** sobre 560 alimentos.
+Reparto actual: **438 🟢 · 57 🟡 · 66 🔴** sobre 561 alimentos.
 
 ---
 
@@ -1033,5 +1034,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 560 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 561 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*

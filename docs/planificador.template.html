@@ -1,0 +1,672 @@
+<title>Planificador de platos</title>
+<style>
+:root{
+  --bg:#faf9f7; --card:#fff; --tinta:#1c1b19; --suave:#6b6862; --linea:#e5e2dc;
+  --ok:#2e7d4f; --warn:#b8860b; --bad:#b3352c; --acento:#2f6f8f; --acento-suave:#eaf1f5;
+}
+:root:not([data-theme="light"]){ color-scheme:light }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#17181a; --card:#1f2124; --tinta:#e8e6e3; --suave:#9b9791; --linea:#32353a;
+  --ok:#68c48d; --warn:#dcae4a; --bad:#e8837a; --acento:#7fb6d4; --acento-suave:#22303a;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#17181a; --card:#1f2124; --tinta:#e8e6e3; --suave:#9b9791; --linea:#32353a;
+  --ok:#68c48d; --warn:#dcae4a; --bad:#e8837a; --acento:#7fb6d4; --acento-suave:#22303a;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tinta);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:1.5rem 1rem 5rem}
+.wrap{max-width:70rem;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 .2rem;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:2rem 0 .6rem;letter-spacing:-.005em}
+h2 .q{font-weight:400;color:var(--suave);font-size:.85rem;margin-left:.5rem}
+p{margin:.5rem 0}
+.sub{color:var(--suave);margin:0 0 1.2rem;max-width:46rem}
+.card{background:var(--card);border:1px solid var(--linea);border-radius:10px;padding:1rem 1.1rem;margin:.7rem 0}
+.nota{color:var(--suave);font-size:.85rem;line-height:1.5}
+.nota strong{color:var(--tinta);font-weight:600}
+button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--linea);
+  border-radius:7px;padding:.35rem .7rem;cursor:pointer}
+button:hover{border-color:var(--acento)}
+button.on{background:var(--acento-suave);border-color:var(--acento);color:var(--acento);font-weight:600}
+button.primario{background:var(--acento);border-color:var(--acento);color:#fff;font-weight:600;padding:.5rem 1.1rem}
+button.primario:disabled{opacity:.45;cursor:not-allowed}
+select,input[type=number],input[type=text]{font:inherit;color:inherit;background:var(--card);
+  border:1px solid var(--linea);border-radius:7px;padding:.3rem .5rem}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+
+/* ── Presupuesto ─────────────────────────────────────────────────────── */
+.presu{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.8rem}
+.pz{border:1px solid var(--linea);border-radius:8px;padding:.55rem .7rem;background:var(--bg)}
+.pz .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--suave)}
+.pz .v{font-size:1.25rem;font-weight:650;font-variant-numeric:tabular-nums;line-height:1.25}
+.pz .d{font-size:.75rem;color:var(--suave);font-variant-numeric:tabular-nums}
+.barra{height:5px;border-radius:3px;background:var(--linea);margin-top:.4rem;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--acento)}
+.barra i.ok{background:var(--ok)} .barra i.warn{background:var(--warn)} .barra i.bad{background:var(--bad)}
+
+/* ── Plato ───────────────────────────────────────────────────────────── */
+table{border-collapse:collapse;width:100%}
+th,td{padding:.4rem .55rem;border-bottom:1px solid var(--linea);text-align:right;
+  font-variant-numeric:tabular-nums}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);font-weight:600}
+th.l,td.l{text-align:left}
+tr.tot td{border-bottom:none;border-top:2px solid var(--linea);font-weight:650}
+.rol{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--suave);
+  display:block;font-weight:600}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.45rem;vertical-align:.05em}
+.dot.g{background:var(--ok)} .dot.a{background:var(--warn)} .dot.r{background:var(--bad)}
+td .gr{width:4.2rem;text-align:right}
+.alt{background:var(--bg);border:1px dashed var(--linea);border-radius:8px;padding:.6rem .75rem;margin:.3rem 0 .8rem}
+.alt table{font-size:.9rem}
+.alt .fuera{color:var(--suave)}
+.scroll{overflow-x:auto}
+.ojo{color:var(--suave);font-size:.8rem}
+.aviso{border-left:3px solid var(--warn);padding:.5rem .8rem;background:var(--card);
+  border-radius:0 8px 8px 0;margin:.7rem 0;font-size:.9rem}
+.aviso.malo{border-left-color:var(--bad)}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips button{padding:.25rem .6rem;font-size:.85rem}
+.hint{font-size:.8rem;color:var(--suave);margin-top:.35rem}
+</style>
+
+<div class="wrap">
+
+<h1>Planificador de platos</h1>
+<p class="sub">Arma un plato entero con lo que te queda del día. Lee tu diario y
+tus metas de NutriTrace en vivo — no hay nada que cargar a mano.
+<strong>Es una sugerencia, no una receta</strong>: cambiá lo que no tengas, ajustá
+los gramos, y si te sirve tal cual está, cargalo con un botón.</p>
+
+<div id="estado" class="aviso">Leyendo tu diario…</div>
+
+<!-- ── 1. Qué comida estoy planificando ────────────────────────────── -->
+<h2>1 · Qué comida <span class="q">y cuánto le toca del día</span></h2>
+<div class="card">
+  <div class="fila"><span class="ojo">Planificando:</span><span id="comidas" class="chips"></span></div>
+  <p class="nota" id="reparto"></p>
+</div>
+
+<!-- ── 2. Presupuesto ──────────────────────────────────────────────── -->
+<h2>2 · Lo que le queda a esta comida</h2>
+<div class="card"><div class="presu" id="presu"></div>
+  <p class="nota" id="presu-nota"></p></div>
+
+<!-- ── 3. El plato ─────────────────────────────────────────────────── -->
+<h2>3 · El plato <span class="q">tocá «cambiar» para ver alternativas</span></h2>
+<div class="card">
+  <div class="fila" style="margin-bottom:.7rem">
+    <span class="ojo">Mostrar:</span>
+    <button id="b-desp" class="on">solo lo que tengo</button>
+    <button id="b-todo">todo el catálogo</button>
+    <span style="flex:1"></span>
+    <button id="b-otro">otra combinación</button>
+  </div>
+  <div class="scroll"><table id="plato"></table></div>
+  <div id="alternativas"></div>
+  <p class="nota" id="plato-nota"></p>
+  <div class="fila" style="margin-top:.9rem">
+    <button id="b-cargar" class="primario">Cargar en el diario</button>
+    <span id="cargar-msg" class="ojo"></span>
+  </div>
+  <p class="hint">El botón crea los alimentos en tu biblioteca si no están y agrega
+  las filas a la comida elegida. No pisa nada de lo que ya tenés cargado.</p>
+</div>
+
+<!-- ── 4. Comparador libre ─────────────────────────────────────────── -->
+<h2>4 · Comparar <span class="q">cualquier cosa contra cualquier cosa</span></h2>
+<div class="card">
+  <p class="nota">Escribí nombres separados por coma. Sirve para la pregunta que
+  las tablas del semáforo no contestan: <em>¿arroz integral o batata?</em> — cada
+  categoría se muestra con las columnas por las que se la juzga, así que no se
+  pueden comparar entre sí. Acá todo se mide igual, por 100&nbsp;g.</p>
+  <div class="fila" style="margin:.6rem 0">
+    <input type="text" id="comp-q" placeholder="arroz integral, batata, lenteja" style="flex:1;min-width:14rem">
+  </div>
+  <div class="scroll"><table id="comp"></table></div>
+</div>
+
+<p class="nota" style="margin-top:2rem">Los valores son por 100&nbsp;g y salen de
+USDA FoodData Central (SR Legacy 2018-04, dominio público), el mismo catálogo que
+usa Básicos y el semáforo. Página generada por
+<code>scripts/build-planificador.mjs</code>.</p>
+
+</div>
+
+<script>
+const CATALOGO = /*__CATALOGO__*/;
+const PORID = new Map(CATALOGO.map(f => [f.id, f]));
+
+// ── Despensa ──────────────────────────────────────────────────────────
+// Lo que realmente entra en esta casa, por rol dentro del plato. Sin esto el
+// planificador propone bacalao y chantarelas con total corrección matemática y
+// ninguna utilidad. Sale de lo que Hernán dijo que come más lo que aparece en
+// su propio diario de los últimos meses.
+const DESPENSA = {
+  proteina: ['pollo-pechuga-cocida', 'pollo-muslo-cocido', 'huevo-duro', 'huevo-revuelto',
+             'atun-lata', 'merluza-cocida', 'trucha-cocida', 'nalga-cocida'],
+  base:     ['lenteja-cocida', 'garbanzo-cocido', 'arroz-integral-cocido', 'arroz-blanco-cocido',
+             'papa-hervida', 'batata-hervida', 'choclo-cocido'],
+  verdura:  ['brocoli-cocido', 'espinaca-cocida', 'zanahoria', 'zanahoria-cocida', 'tomate',
+             'lechuga-criolla', 'cebolla-cocida', 'zapallo-anco-cocido', 'champinon-salteado',
+             'repollo', 'calabaza'],
+  grasa:    ['aceite-oliva'],
+};
+// Lo que NO va a aparecer nunca, aunque el catálogo lo tenga.
+const VETADOS = new Set(['polenta']);
+
+// Qué categorías del catálogo pueden cumplir cada rol, para el modo
+// «todo el catálogo».
+const ROLES = {
+  proteina: { cats: ['carnes', 'pescados', 'lacteos'], min: f => (f.n.prot || 0) >= 15 },
+  base:     { cats: ['legumbres', 'cereales'],         min: f => (f.n.carb || 0) >= 5 },
+  verdura:  { cats: ['verduras', 'hongos'],            min: () => true },
+  grasa:    { cats: ['aceites'],                       min: () => true },
+};
+const NOMBRE_ROL = { proteina: 'Proteína', base: 'Base', verdura: 'Verdura', grasa: 'Grasa' };
+
+// ── Estado ────────────────────────────────────────────────────────────
+const HOY = new Date().toLocaleDateString('sv');   // sv = YYYY-MM-DD, sin UTC
+let COMIDAS = ['Desayuno', 'Almuerzo', 'Cena'];
+let METAS = null, DIARIO = null, COMIDA = null, SOLO_DESPENSA = true;
+// Comidas que no se van a comer hoy. Sin esto el reparto le guarda cupo a la
+// colación y a la merienda todos los días, y como casi nunca se cargan, la
+// cena queda sistemáticamente chica: con el diario de hoy la cena recibía el
+// 63 % de lo que quedaba en vez del 100 %, o sea 26 g de proteína de menos.
+let SALTEADAS = new Set();
+let PLATO = [];            // [{rol, id, gramos}]
+let ABIERTO = null;        // rol cuyas alternativas se están mostrando
+
+// Pesos por defecto del reparto del día. No son iguales a propósito: una
+// comida principal no puede recibir lo mismo que una colación, y repartir en
+// partes iguales deja la cena sin margen o el desayuno con un cupo absurdo.
+const PESO = { desayuno: 25, colacion: 8, almuerzo: 32, merienda: 8, cena: 27 };
+const pesoDe = nombre => {
+  const k = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return PESO[k] ?? 20;
+};
+
+// ── Números ───────────────────────────────────────────────────────────
+const NUT = ['kcal', 'prot', 'carb', 'fib', 'gra', 'sat', 'na'];
+const ETIQ = { kcal: 'kcal', prot: 'proteína', carb: 'carbos', fib: 'fibra', gra: 'grasa', sat: 'saturada', na: 'sodio' };
+// Qué dirección es «bien» para cada meta. NutriTrace las guarda con isMin.
+const META_CLAVE = { kcal: 'calories', prot: 'proteins', carb: 'carbohydrates', fib: 'fiber', gra: 'fat' };
+const ES_MINIMO = { prot: true, fib: true };
+
+const r0 = x => Math.round(x);
+const r1 = x => Math.round(x * 10) / 10;
+const num = x => (x == null || Number.isNaN(x)) ? 0 : Number(x);
+
+/** Los nutrientes de `gramos` de un alimento del catálogo. */
+function aporte(id, gramos) {
+  const f = PORID.get(id), o = {};
+  for (const k of NUT) o[k] = num(f.n[k]) * gramos / 100;
+  return o;
+}
+const sumar = partes => {
+  const t = Object.fromEntries(NUT.map(k => [k, 0]));
+  for (const p of partes) for (const k of NUT) t[k] += num(p[k]);
+  return t;
+};
+
+// ── Carga desde la app ────────────────────────────────────────────────
+async function traer(url) {
+  const r = await fetch(url, { credentials: 'same-origin' });
+  if (!r.ok) throw new Error(url + ' → ' + r.status);
+  return r.json();
+}
+
+async function arrancar() {
+  const est = document.getElementById('estado');
+  let ajustes;
+  try {
+    [ajustes, DIARIO] = await Promise.all([traer('/api/settings'), traer('/api/diary/' + HOY)]);
+  } catch (e) {
+    est.className = 'aviso malo';
+    est.innerHTML = '<strong>No pude leer tu diario.</strong> Esta página lee ' +
+      '<code>/api/settings</code> y <code>/api/diary</code> con tu sesión de NutriTrace. ' +
+      'Abrí la app y logueate en esta misma pestaña, después recargá. (' + e.message + ')';
+    return;
+  }
+  if (Array.isArray(ajustes.mealNames) && ajustes.mealNames.length) COMIDAS = ajustes.mealNames;
+  METAS = ajustes.goals || {};
+  if (!METAS.calories) {
+    est.className = 'aviso malo';
+    est.textContent = 'Leí tu diario pero no encontré metas cargadas en NutriTrace. ' +
+      'Definilas en Ajustes → Objetivos y recargá.';
+    return;
+  }
+  est.style.display = 'none';
+  COMIDA = primeraSinCargar();
+  pintarComidas();
+  recalcular();
+}
+
+/** Los nutrientes ya consumidos hoy, en total y por comida. */
+function consumido() {
+  const porComida = COMIDAS.map(() => Object.fromEntries(NUT.map(k => [k, 0])));
+  const total = Object.fromEntries(NUT.map(k => [k, 0]));
+  const LARGO = { kcal: 'calories', prot: 'proteins', carb: 'carbohydrates',
+                  fib: 'fiber', gra: 'fat', sat: 'saturated-fat', na: 'sodium' };
+  for (const it of (DIARIO.items || [])) {
+    const q = num(it.quantity) || 1, m = num(it.meal);
+    for (const k of NUT) {
+      const v = num(it.nutrition?.[LARGO[k]]) * q;
+      total[k] += v;
+      if (porComida[m]) porComida[m][k] += v;
+    }
+  }
+  return { total, porComida };
+}
+
+const primeraSinCargar = () => {
+  const { porComida } = consumido();
+  const i = porComida.findIndex(c => c.kcal === 0);
+  return i < 0 ? COMIDAS.length - 1 : i;
+};
+
+/** Meta del día para una clave, o null si no está definida. */
+function metaDe(k) {
+  const g = METAS[META_CLAVE[k]];
+  if (!g) return null;
+  const v = g.max ?? g.min;
+  return v == null ? null : { valor: Number(v), esMin: !!g.isMin };
+}
+
+/**
+ * El presupuesto de la comida elegida.
+ *
+ * No es «lo que queda del día»: si a la una de la tarde el almuerzo se come
+ * todo lo que queda, la cena arranca en cero. Lo que queda se reparte entre
+ * las comidas que todavía no tienen nada cargado, con los pesos de PESO.
+ */
+function presupuesto() {
+  const { total, porComida } = consumido();
+  const pendientes = COMIDAS.map((n, i) => ({ n, i }))
+    .filter(({ i }) => porComida[i].kcal === 0 && !SALTEADAS.has(i));
+  const conmigo = pendientes.some(p => p.i === COMIDA) ? pendientes : [...pendientes, { n: COMIDAS[COMIDA], i: COMIDA }];
+  const sumaPesos = conmigo.reduce((a, p) => a + pesoDe(p.n), 0) || 1;
+  const parte = pesoDe(COMIDAS[COMIDA]) / sumaPesos;
+
+  const out = {};
+  for (const k of Object.keys(META_CLAVE)) {
+    const m = metaDe(k);
+    if (!m) { out[k] = null; continue; }
+    // Lo ya cargado en ESTA comida no cuenta como gastado: se está re-planificando.
+    const gastado = total[k] - porComida[COMIDA][k];
+    const queda = m.valor - gastado;
+    out[k] = { meta: m.valor, esMin: m.esMin, gastado, queda, cupo: queda * parte, yaEnComida: porComida[COMIDA][k] };
+  }
+  out._parte = parte; out._pendientes = conmigo.map(p => p.n);
+  return out;
+}
+
+// ── Armado del plato ──────────────────────────────────────────────────
+const candidatos = rol => {
+  const ids = SOLO_DESPENSA ? DESPENSA[rol]
+    : CATALOGO.filter(f => ROLES[rol].cats.includes(f.cat) && ROLES[rol].min(f)).map(f => f.id);
+  return ids.filter(id => PORID.has(id) && !VETADOS.has(id));
+};
+
+/** Gramos redondeados a algo que se pueda servir. */
+const redondear = (g, paso) => Math.max(paso, Math.round(g / paso) * paso);
+
+/**
+ * Reparte los gramos de un plato ya elegido para acercarse al cupo.
+ * La proteína manda (es el objetivo más difícil del día), después la fibra,
+ * y las calorías actúan de techo.
+ */
+function ajustarGramos(sel, cupo) {
+  const P = PORID.get(sel.proteina), B = PORID.get(sel.base);
+  const objProt = cupo.prot ? Math.max(0, cupo.prot.cupo) : 40;
+  const objFib  = cupo.fib  ? Math.max(0, cupo.fib.cupo)  : 10;
+
+  // La base aporta parte de la proteína, así que se resuelve primero con una
+  // porción de tamaño humano y después la proteína cubre lo que falta.
+  let gB = redondear(Math.min(250, Math.max(80, (objFib * 0.55) / (num(B.n.fib) / 100 || 0.02))), 10);
+  const protB = num(B.n.prot) * gB / 100;
+  let gP = redondear(Math.max(60, (objProt - protB) / (num(P.n.prot) / 100 || 0.2)), 10);
+  gP = Math.min(gP, 320);
+
+  // Las verduras completan la fibra que falta, repartida entre las elegidas.
+  const fibHasta = objFib - num(B.n.fib) * gB / 100;
+  const verduras = sel.verduras.map(id => {
+    const f = PORID.get(id);
+    const porGramo = num(f.n.fib) / 100;
+    const g = porGramo > 0.005 ? (fibHasta / sel.verduras.length) / porGramo : 120;
+    return { id, gramos: redondear(Math.min(250, Math.max(60, g)), 10) };
+  });
+
+  const filas = [
+    { rol: 'proteina', id: sel.proteina, gramos: gP },
+    { rol: 'base',     id: sel.base,     gramos: gB },
+    ...verduras.map(v => ({ rol: 'verdura', id: v.id, gramos: v.gramos })),
+  ];
+  // El aceite entra solo si el cupo de grasa lo banca: es lo primero que sobra
+  // cuando el día ya viene cargado de grasa.
+  const graHasta = cupo.gra ? cupo.gra.cupo : 99;
+  const usada = sumar(filas.map(f => aporte(f.id, f.gramos))).gra;
+  if (graHasta - usada >= 5) filas.push({ rol: 'grasa', id: 'aceite-oliva', gramos: 5 });
+  return filas;
+}
+
+/**
+ * Cuánto se aleja un plato del cupo. Menor es mejor.
+ * Pasarse de un techo pesa más que quedarse corto de un mínimo, porque el
+ * techo es lo que se rompe sin poder arreglarlo después.
+ */
+function penalidad(filas, cupo) {
+  const t = sumar(filas.map(f => aporte(f.id, f.gramos)));
+  let p = 0;
+  // Desempate por el semáforo. Con el cupo ya cubierto por otro lado, dos
+  // bases quedan empatadas en números y el armador elegía cualquiera: proponía
+  // arroz blanco teniendo integral. Es chico a propósito — mueve el desempate,
+  // no gana contra un cupo que no entra.
+  for (const f of filas) p += { g: 0, a: 0.25, r: 0.7 }[PORID.get(f.id).luz] || 0;
+  const PESOS = { kcal: 1, prot: 2.2, fib: 1.6, gra: 2.4, carb: .5 };
+  for (const k of Object.keys(META_CLAVE)) {
+    const c = cupo[k]; if (!c || !c.cupo) continue;
+    const rel = (t[k] - c.cupo) / Math.max(1, Math.abs(c.cupo));
+    if (c.esMin) p += rel < 0 ? PESOS[k] * -rel : PESOS[k] * rel * .15;
+    else         p += rel > 0 ? PESOS[k] * rel * 1.8 : PESOS[k] * -rel * .25;
+  }
+  return p;
+}
+
+/**
+ * Preselección por rol antes de combinar.
+ *
+ * En modo despensa hay 8 proteínas, 7 bases y 11 verduras: 8x7x55 = 3080
+ * combinaciones, que se calculan sin que se note. Con el catálogo entero son
+ * ~150 proteínas, ~90 bases y ~120 verduras, o sea 150x90x7140 = 96 millones,
+ * y la página se cuelga sin decir nada — pasó la primera vez que se probó el
+ * botón «todo el catálogo». Cada rol se recorta antes a los mejores por su
+ * propio eje, y lo de la despensa entra siempre: es lo que el plato tiene que
+ * poder proponer aunque el catálogo traiga algo mejor en el papel.
+ */
+const TOPE = { proteina: 14, base: 10, verdura: 12 };
+
+/** ¿Son el mismo alimento en dos estados? Zanahoria y zanahoria hervida lo son. */
+function mismaCosa(a, b) {
+  const A = PORID.get(a), B = PORID.get(b);
+  return A.crudo === b || B.crudo === a || (A.crudo && A.crudo === B.crudo);
+}
+function preseleccion(rol) {
+  const todos = candidatos(rol);
+  if (todos.length <= TOPE[rol]) return todos;
+  // Densidad del nutriente que define el rol, por caloría: es lo que hace que
+  // un ingrediente entre en un cupo ajustado.
+  const eje = { proteina: f => num(f.n.prot), base: f => num(f.n.fib), verdura: f => num(f.n.fib) }[rol];
+  const puntaje = f => eje(f) / Math.max(20, num(f.n.kcal));
+  const dela = new Set(DESPENSA[rol] || []);
+  const resto = todos.filter(id => !dela.has(id))
+    .sort((a, b) => puntaje(PORID.get(b)) - puntaje(PORID.get(a)));
+  return [...todos.filter(id => dela.has(id)), ...resto].slice(0, TOPE[rol]);
+}
+
+/** Prueba combinaciones y se queda con la que mejor entra. */
+function proponer(cupo, saltear = 0) {
+  const prot = preseleccion('proteina'), bases = preseleccion('base'), verd = preseleccion('verdura');
+  const combos = [];
+  for (const p of prot) for (const b of bases) {
+    // Dos verduras: una de hoja/color y otra más, para que el plato tenga forma.
+    for (let i = 0; i < verd.length; i++) for (let j = i + 1; j < verd.length; j++) {
+      if (mismaCosa(verd[i], verd[j])) continue;
+      const sel = { proteina: p, base: b, verduras: [verd[i], verd[j]] };
+      const filas = ajustarGramos(sel, cupo);
+      combos.push({ filas, p: penalidad(filas, cupo) });
+    }
+  }
+  combos.sort((a, b) => a.p - b.p);
+  if (!combos.length) return [];
+  // Las mejores combinaciones comparten proteína y base y solo se diferencian
+  // en las verduras, así que avanzar de a uno parecía no hacer nada. Se salta
+  // al siguiente plato con OTRA proteína o base: eso es lo que se está
+  // pidiendo cuando se toca «otra combinación».
+  const vistas = [];
+  for (const c of combos) {
+    const firma = c.filas[0].id + '|' + c.filas[1].id;
+    if (!vistas.some(v => v.firma === firma)) vistas.push({ firma, filas: c.filas });
+    if (vistas.length > 40) break;
+  }
+  return vistas[saltear % vistas.length].filas;
+}
+
+// ── Pintado ───────────────────────────────────────────────────────────
+function pintarComidas() {
+  const cont = document.getElementById('comidas');
+  cont.innerHTML = '';
+  COMIDAS.forEach((n, i) => {
+    const b = document.createElement('button');
+    b.textContent = n; b.className = i === COMIDA ? 'on' : '';
+    b.onclick = () => { COMIDA = i; ABIERTO = null; pintarComidas(); recalcular(); };
+    cont.appendChild(b);
+  });
+}
+
+function pintarPresupuesto(cupo) {
+  const c = document.getElementById('presu');
+  c.innerHTML = '';
+  for (const k of Object.keys(META_CLAVE)) {
+    const v = cupo[k]; if (!v) continue;
+    const d = document.createElement('div'); d.className = 'pz';
+    const pct = Math.min(100, Math.max(0, 100 * v.gastado / v.meta));
+    const clase = v.esMin ? (pct >= 100 ? 'ok' : '') : (pct > 100 ? 'bad' : pct > 85 ? 'warn' : 'ok');
+    d.innerHTML =
+      `<div class="k">${ETIQ[k]}</div>` +
+      `<div class="v">${r0(v.cupo)}${k === 'kcal' ? '' : ' g'}</div>` +
+      `<div class="d">de ${r0(v.queda)} que ${v.esMin ? 'faltan' : 'quedan'} · meta ${v.meta}</div>` +
+      `<div class="barra"><i class="${clase}" style="width:${pct}%"></i></div>`;
+    c.appendChild(d);
+  }
+  const { _parte } = cupo;
+  const rep = document.getElementById('reparto');
+  const { porComida } = consumido();
+  rep.innerHTML =
+    `A <strong>${COMIDAS[COMIDA]}</strong> le toca el <strong>${Math.round(_parte * 100)}%</strong> ` +
+    `de lo que queda del día. El reparto no es en partes iguales: una comida principal pesa ` +
+    `más que una colación.<br>Se reparte entre estas — <strong>apagá la que no vayas a comer</strong> ` +
+    `y el resto se agranda:<br>`;
+  const chips = document.createElement('span');
+  chips.className = 'chips'; chips.style.marginTop = '.4rem';
+  COMIDAS.forEach((n, i) => {
+    if (porComida[i].kcal > 0 && i !== COMIDA) return;   // ya comida: fuera del reparto
+    const b = document.createElement('button');
+    const fuera = SALTEADAS.has(i);
+    b.textContent = fuera ? n + ' · no' : n;
+    b.className = fuera ? '' : 'on';
+    b.title = fuera ? 'No entra en el reparto' : 'Entra en el reparto';
+    b.onclick = () => {
+      if (i === COMIDA) return;                          // la que se planifica siempre entra
+      SALTEADAS.has(i) ? SALTEADAS.delete(i) : SALTEADAS.add(i);
+      recalcular();
+    };
+    if (i === COMIDA) { b.style.cursor = 'default'; b.title = 'Es la que estás planificando'; }
+    chips.appendChild(b);
+  });
+  rep.appendChild(chips);
+  document.getElementById('presu-nota').innerHTML =
+    `El número grande es <strong>el cupo de esta comida</strong>; abajo, lo que queda del día entero. ` +
+    `Proteína y fibra son mínimos: la barra se llena cuando llegás. Calorías y grasa son techos: ` +
+    `la barra se pone roja cuando te pasás.` +
+    (cupo.kcal.yaEnComida ? ` Ojo: <strong>${COMIDAS[COMIDA]} ya tiene ${r0(cupo.kcal.yaEnComida)} kcal cargadas</strong> ` +
+      `y no se descontaron del cupo — esto planifica la comida de nuevo, no lo que le falta.` : '');
+}
+
+function pintarPlato(cupo) {
+  const t = document.getElementById('plato');
+  const tot = sumar(PLATO.map(f => aporte(f.id, f.gramos)));
+  let h = '<thead><tr><th class="l">Ingrediente</th><th>gramos</th>' +
+    NUT.map(k => `<th>${ETIQ[k]}</th>`).join('') + '<th></th></tr></thead><tbody>';
+  for (const f of PLATO) {
+    const a = PORID.get(f.id), n = aporte(f.id, f.gramos);
+    h += `<tr><td class="l"><span class="rol">${NOMBRE_ROL[f.rol]}</span>` +
+      `<span class="dot ${a.luz}"></span>${a.es}</td>` +
+      `<td><input class="gr" type="number" min="0" step="5" value="${f.gramos}" data-id="${f.id}"></td>` +
+      NUT.map(k => `<td>${k === 'kcal' || k === 'na' ? r0(n[k]) : r1(n[k])}</td>`).join('') +
+      `<td><button data-rol="${f.rol}" data-id="${f.id}">cambiar</button></td></tr>`;
+  }
+  h += `<tr class="tot"><td class="l">Total del plato</td><td></td>` +
+    NUT.map(k => `<td>${k === 'kcal' || k === 'na' ? r0(tot[k]) : r1(tot[k])}</td>`).join('') + '<td></td></tr>';
+  h += `<tr><td class="l ojo">Cupo de ${COMIDAS[COMIDA]}</td><td></td>` +
+    NUT.map(k => {
+      const c = cupo[k];
+      return `<td class="ojo">${c ? r0(c.cupo) : '—'}</td>`;
+    }).join('') + '<td></td></tr></tbody>';
+  t.innerHTML = h;
+
+  t.querySelectorAll('input.gr').forEach(inp => {
+    inp.onchange = () => {
+      const f = PLATO.find(x => x.id === inp.dataset.id);
+      f.gramos = Math.max(0, Number(inp.value) || 0);
+      recalcular(true);
+    };
+  });
+  t.querySelectorAll('button[data-rol]').forEach(b => {
+    b.onclick = () => { ABIERTO = ABIERTO === b.dataset.id ? null : b.dataset.id; recalcular(true); };
+  });
+
+  // Lectura en prosa de cómo quedó, que es lo que se mira antes de decidir.
+  const faltas = [], sobras = [];
+  for (const k of Object.keys(META_CLAVE)) {
+    const c = cupo[k]; if (!c) continue;
+    const d = tot[k] - c.cupo;
+    if (c.esMin && d < -2) faltas.push(`${r0(-d)} g de ${ETIQ[k]}`);
+    if (!c.esMin && d > (k === 'kcal' ? 40 : 2)) sobras.push(`${r0(d)}${k === 'kcal' ? ' kcal' : ' g de ' + ETIQ[k]}`);
+  }
+  document.getElementById('plato-nota').innerHTML =
+    (faltas.length || sobras.length)
+      ? (faltas.length ? `Le falta <strong>${faltas.join(' y ')}</strong>. ` : '') +
+        (sobras.length ? `Se pasa por <strong>${sobras.join(' y ')}</strong>. ` : '') +
+        'Cambiá un ingrediente o movele los gramos.'
+      : 'Entra en el cupo de esta comida en todo.';
+}
+
+/** Las alternativas para un rol, ordenadas por cuánto mejoran el plato. */
+function pintarAlternativas(cupo) {
+  const c = document.getElementById('alternativas');
+  if (!ABIERTO) { c.innerHTML = ''; return; }
+  const actual = PLATO.find(f => f.id === ABIERTO);
+  if (!actual) { c.innerHTML = ''; return; }
+  const base = penalidad(PLATO, cupo);
+  const opciones = candidatos(actual.rol)
+    .filter(id => id !== actual.id && !PLATO.some(f => f.id === id))
+    .filter(id => !PLATO.some(f => f.id !== actual.id && mismaCosa(f.id, id)))
+    .map(id => {
+      const filas = PLATO.map(f => f.id === actual.id ? { ...f, id } : f);
+      return { id, delta: penalidad(filas, cupo) - base, tot: sumar(filas.map(f => aporte(f.id, f.gramos))) };
+    })
+    .sort((a, b) => a.delta - b.delta).slice(0, 8);
+
+  const enDespensa = new Set(DESPENSA[actual.rol] || []);
+  let h = `<div class="alt"><p class="nota">En lugar de <strong>${PORID.get(actual.id).es}</strong>, ` +
+    `con los mismos ${actual.gramos} g. Ordenadas por cuánto acercan el plato al cupo. ` +
+    `<span class="fuera">Las que no tenés en casa van marcadas</span>, para que decidas si vale salir a comprarlas.</p>` +
+    `<table><thead><tr><th class="l">Alternativa</th>` +
+    NUT.map(k => `<th>${ETIQ[k]}</th>`).join('') + `<th></th></tr></thead><tbody>`;
+  for (const o of opciones) {
+    const f = PORID.get(o.id);
+    h += `<tr><td class="l"><span class="dot ${f.luz}"></span>${f.es}` +
+      (enDespensa.has(o.id) ? '' : ' <span class="fuera">· hay que comprarlo</span>') + `</td>` +
+      NUT.map(k => `<td>${k === 'kcal' || k === 'na' ? r0(o.tot[k]) : r1(o.tot[k])}</td>`).join('') +
+      `<td><button data-usar="${o.id}">usar</button></td></tr>`;
+  }
+  h += '</tbody></table></div>';
+  c.innerHTML = h;
+  c.querySelectorAll('button[data-usar]').forEach(b => {
+    b.onclick = () => {
+      const f = PLATO.find(x => x.id === ABIERTO);
+      f.id = b.dataset.usar; ABIERTO = null; recalcular(true);
+    };
+  });
+}
+
+function recalcular(conservarPlato = false) {
+  const cupo = presupuesto();
+  pintarPresupuesto(cupo);
+  if (!conservarPlato) PLATO = proponer(cupo, VARIANTE);
+  pintarPlato(cupo);
+  pintarAlternativas(cupo);
+}
+
+let VARIANTE = 0;
+document.getElementById('b-otro').onclick = () => { VARIANTE++; ABIERTO = null; recalcular(); };
+document.getElementById('b-desp').onclick = () => {
+  SOLO_DESPENSA = true; document.getElementById('b-desp').className = 'on';
+  document.getElementById('b-todo').className = ''; VARIANTE = 0; ABIERTO = null; recalcular();
+};
+document.getElementById('b-todo').onclick = () => {
+  SOLO_DESPENSA = false; document.getElementById('b-todo').className = 'on';
+  document.getElementById('b-desp').className = ''; VARIANTE = 0; ABIERTO = null; recalcular();
+};
+
+// ── Cargar en el diario ───────────────────────────────────────────────
+document.getElementById('b-cargar').onclick = async () => {
+  const b = document.getElementById('b-cargar'), msg = document.getElementById('cargar-msg');
+  b.disabled = true; msg.textContent = 'Cargando…';
+  const LARGO = { kcal: 'calories', prot: 'proteins', carb: 'carbohydrates',
+                  fib: 'fiber', gra: 'fat', sat: 'saturated-fat', na: 'sodium' };
+  try {
+    const items = [];
+    for (const fila of PLATO) {
+      const f = PORID.get(fila.id);
+      // POST /api/foods deduplica por barcode: si el alimento ya está en la
+      // biblioteca devuelve el existente en vez de crear otro.
+      const alim = await fetch('/api/foods', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: f.es, barcode: f.bc, portion: 100, unit: 'g',
+          nutrition: Object.fromEntries(NUT.map(k => [LARGO[k], num(f.n[k])])),
+          alt_units: f.u || [], notes: f.nota || null,
+        }),
+      }).then(r => r.ok ? r.json() : Promise.reject(new Error('POST /api/foods → ' + r.status)));
+      const a = aporte(fila.id, fila.gramos);
+      items.push({
+        uuid: crypto.randomUUID(), meal: COMIDA, addedAt: new Date().toISOString(),
+        id: alim.id, food_server_id: alim.id, name: f.es, brand: alim.brand || '',
+        portion: fila.gramos, unit: 'g', quantity: 1,
+        nutrition: Object.fromEntries(NUT.map(k => [LARGO[k], r1(a[k] * 10) / 10])),
+        imgUrl: '',
+      });
+    }
+    // Se relee el día antes de escribir: entre que cargó la página y ahora, el
+    // celular pudo haber agregado algo, y el PUT manda la lista completa.
+    const actual = await traer('/api/diary/' + HOY);
+    const r = await fetch('/api/diary/' + HOY, {
+      method: 'PUT', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: [...(actual.items || []), ...items] }),
+    });
+    if (!r.ok) throw new Error('PUT /api/diary → ' + r.status);
+    DIARIO = await traer('/api/diary/' + HOY);
+    msg.textContent = `Listo: ${items.length} filas en ${COMIDAS[COMIDA]}.`;
+    recalcular(true);
+  } catch (e) {
+    msg.textContent = 'No se pudo: ' + e.message;
+  } finally { b.disabled = false; }
+};
+
+// ── Comparador ────────────────────────────────────────────────────────
+const pelar = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+document.getElementById('comp-q').oninput = e => {
+  const terminos = e.target.value.split(',').map(s => pelar(s.trim())).filter(Boolean);
+  const t = document.getElementById('comp');
+  if (!terminos.length) { t.innerHTML = ''; return; }
+  const hits = [];
+  for (const term of terminos) {
+    const m = CATALOGO.filter(f => pelar(f.es).includes(term)).slice(0, 4);
+    for (const f of m) if (!hits.some(h => h.id === f.id)) hits.push(f);
+  }
+  if (!hits.length) { t.innerHTML = '<tbody><tr><td class="l ojo">Nada con ese nombre.</td></tr></tbody>'; return; }
+  t.innerHTML = '<thead><tr><th class="l">Alimento (100 g)</th>' +
+    NUT.map(k => `<th>${ETIQ[k]}</th>`).join('') + '</tr></thead><tbody>' +
+    hits.map(f => `<tr><td class="l"><span class="dot ${f.luz}"></span>${f.es}</td>` +
+      NUT.map(k => `<td>${f.n[k] == null ? '—' : (k === 'kcal' || k === 'na' ? r0(f.n[k]) : r1(f.n[k]))}</td>`).join('') +
+      '</tr>').join('') + '</tbody>';
+};
+
+arrancar();
+</script>
