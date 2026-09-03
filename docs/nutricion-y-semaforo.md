@@ -253,6 +253,7 @@ la salazón y el ahumado, sí.
 | 🟢 | Arenque crudo | 158 | 9.0 | 2.0 | 5.9 | 18.0 | 90 |
 | 🟢 | Salmón cocido | 206 | 12.3 | 2.4 | 8.7 | 22.1 | 61 |
 | 🟢 | Arenque cocido | 203 | 11.6 | 2.6 | 7.5 | 23.0 | 115 |
+| 🟢 | Sardina en salsa de tomate | 185 | 10.4 | 2.7 | 6.9 | 20.9 | 414 |
 | 🟢 | Salmón crudo | 208 | 13.4 | 3.0 | 7.7 | 20.4 | 59 |
 | 🟢 | Caballa cruda | 205 | 13.9 | 3.3 | 8.8 | 18.6 | 90 |
 | 🟢 | Caballa cocida | 262 | 17.8 | 4.2 | 11.3 | 23.9 | 83 |
@@ -974,7 +975,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **438 🟢 · 57 🟡 · 66 🔴** sobre 561 alimentos.
+Reparto actual: **439 🟢 · 57 🟡 · 66 🔴** sobre 562 alimentos.
 
 ---
 
@@ -1034,5 +1035,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 561 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 562 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
