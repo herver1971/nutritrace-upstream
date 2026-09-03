@@ -210,17 +210,66 @@ let METAS = null, DIARIO = null, COMIDA = null, SOLO_DESPENSA = true;
 // cena queda sistemáticamente chica: con el diario de hoy la cena recibía el
 // 63 % de lo que quedaba en vez del 100 %, o sea 26 g de proteína de menos.
 let SALTEADAS = new Set();
+let DIAS_APRENDIDOS = 0;
 let PLATO = [];            // [{rol, id, gramos}]
 let ABIERTO = null;        // rol cuyas alternativas se están mostrando
 
-// Pesos por defecto del reparto del día. No son iguales a propósito: una
-// comida principal no puede recibir lo mismo que una colación, y repartir en
-// partes iguales deja la cena sin margen o el desayuno con un cupo absurdo.
-const PESO = { desayuno: 25, colacion: 8, almuerzo: 32, merienda: 8, cena: 27 };
+// Reparto del día por comida. Los pesos NO se inventan: salen del propio
+// diario. La primera versión los traía a ojo (25/8/32/8/27) y el desayuno
+// quedaba al doble de lo real — 487 kcal contra las 173 de mediana que come
+// Hernán, así que proponía desayunos que nadie iba a comer. Estos números son
+// el único lugar del planificador donde una suposición mía se convertía en una
+// sugerencia concreta, y por eso ahora se miden.
+//
+// Estos quedan sólo como respaldo, para cuando no hay historial suficiente.
+const PESO_BASE = { desayuno: 25, colacion: 8, almuerzo: 32, merienda: 8, cena: 27 };
+const DIAS_MINIMOS = 7;     // menos que esto y la mediana es ruido
+const PISO = 3;             // ninguna comida puede quedar en cero: si la elegís, algo tiene que tocarle
+let PESOS = null;           // aprendidos; null = usar PESO_BASE
+
+const sinTildeMin = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const pesoDe = nombre => {
-  const k = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return PESO[k] ?? 20;
+  if (PESOS) return PESOS[COMIDAS.indexOf(nombre)] ?? PISO;
+  return PESO_BASE[sinTildeMin(nombre)] ?? 20;
 };
+
+const mediana = xs => {
+  if (!xs.length) return 0;
+  const o = [...xs].sort((a, b) => a - b), m = o.length >> 1;
+  return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2;
+};
+
+/**
+ * Aprende el reparto mirando qué porcentaje del día se lleva cada comida.
+ *
+ * Se usa la MEDIANA de la proporción diaria, no el promedio de calorías: un
+ * desayuno de restaurante de 800 kcal no tiene que mover el reparto de los
+ * otros trescientos días. Los días cuentan enteros, incluidas las comidas en
+ * cero — si casi nunca hacés colación, su peso tiene que ser chico, y un
+ * promedio sobre «los días que sí» diría lo contrario.
+ */
+function aprenderPesos(historial) {
+  const porComida = COMIDAS.map(() => []);
+  let dias = 0;
+  for (const dia of historial) {
+    const items = dia.items || [];
+    if (!items.length) continue;
+    const k = COMIDAS.map(() => 0);
+    for (const it of items) {
+      const m = num(it.meal);
+      if (k[m] != null) k[m] += num(it.nutrition?.calories) * (num(it.quantity) || 1);
+    }
+    const total = k.reduce((a, b) => a + b, 0);
+    // Un día a medio cargar diría que el desayuno es el 100 % de la dieta.
+    if (total < 400) continue;
+    dias++;
+    k.forEach((v, i) => porComida[i].push(100 * v / total));
+  }
+  if (dias < DIAS_MINIMOS) return null;
+  const crudos = porComida.map(v => Math.max(PISO, mediana(v)));
+  const suma = crudos.reduce((a, b) => a + b, 0);
+  return { pesos: crudos.map(v => 100 * v / suma), dias };
+}
 
 // ── Números ───────────────────────────────────────────────────────────
 const NUT = ['kcal', 'prot', 'carb', 'fib', 'gra', 'sat', 'na'];
@@ -254,9 +303,14 @@ async function traer(url) {
 
 async function arrancar() {
   const est = document.getElementById('estado');
-  let ajustes;
+  let ajustes, historial = [];
   try {
-    [ajustes, DIARIO] = await Promise.all([traer('/api/settings'), traer('/api/diary/' + HOY)]);
+    // El historial completo son unos cientos de KB y sirve para aprender el
+    // reparto; si falla, se sigue igual con los pesos de respaldo.
+    [ajustes, DIARIO, historial] = await Promise.all([
+      traer('/api/settings'), traer('/api/diary/' + HOY),
+      traer('/api/diary').catch(() => []),
+    ]);
   } catch (e) {
     est.className = 'aviso malo';
     est.innerHTML = '<strong>No pude leer tu diario.</strong> Esta página lee ' +
@@ -265,6 +319,8 @@ async function arrancar() {
     return;
   }
   if (Array.isArray(ajustes.mealNames) && ajustes.mealNames.length) COMIDAS = ajustes.mealNames;
+  const aprendido = Array.isArray(historial) ? aprenderPesos(historial) : null;
+  if (aprendido) { PESOS = aprendido.pesos; DIAS_APRENDIDOS = aprendido.dias; }
   METAS = ajustes.goals || {};
   if (!METAS.calories) {
     est.className = 'aviso malo';
@@ -545,8 +601,13 @@ function pintarPresupuesto(cupo) {
   const { porComida } = consumido();
   rep.innerHTML =
     `A <strong>${COMIDAS[COMIDA]}</strong> le toca el <strong>${Math.round(_parte * 100)}%</strong> ` +
-    `de lo que queda del día. El reparto no es en partes iguales: una comida principal pesa ` +
-    `más que una colación.<br>Se reparte entre estas — <strong>apagá la que no vayas a comer</strong> ` +
+    `de lo que queda del día. ` +
+    (PESOS
+      ? `El reparto está medido sobre tus últimos <strong>${DIAS_APRENDIDOS} días</strong> con registro: ` +
+        COMIDAS.map((n, i) => `${n} ${Math.round(PESOS[i])}%`).join(' · ') + '.'
+      : `Todavía no hay suficiente historial para medir tu reparto (hacen falta ${DIAS_MINIMOS} días), ` +
+        `así que se usa uno por defecto.`) +
+    `<br>Se reparte entre estas — <strong>apagá la que no vayas a comer</strong> ` +
     `y el resto se agranda:<br>`;
   const chips = document.createElement('span');
   chips.className = 'chips'; chips.style.marginTop = '.4rem';
