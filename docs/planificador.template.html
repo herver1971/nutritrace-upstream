@@ -160,7 +160,14 @@ const DESPENSA = {
   fruta:    ['manzana', 'banana', 'kiwi', 'frutilla', 'arandano', 'naranja', 'pera'],
   cereal:   ['pan-integral', 'avena', 'avena-cocida', 'granola', 'pan-centeno'],
   'fruto-seco': ['almendra', 'nuez'],
+  bebida:   ['cafe-espresso', 'cafe', 'cafe-descafeinado', 'te-verde', 'te-negro'],
 };
+// La leche del café. No es un rol que se elija: acompaña a la bebida, igual
+// que el aceite acompaña al plato de almuerzo. Sale de que el café con leche
+// aparece en TODOS los desayunos del diario y el planificador no lo ponía en
+// ninguno — 20 g de leche descremada son 8 kcal, pero si no están, el botón
+// de cargar deja el desayuno incompleto y hay que completarlo a mano siempre.
+const LECHE_DEL_CAFE = { id: 'leche-descremada', gramos: 20 };
 // Lo que NO va a aparecer nunca, aunque el catálogo lo tenga.
 const VETADOS = new Set(['polenta']);
 
@@ -172,13 +179,20 @@ const ROLES = {
   verdura:  { cats: ['verduras', 'hongos'],            min: () => true },
   grasa:    { cats: ['aceites'],                       min: () => true },
   lacteo:   { cats: ['lacteos'],                       min: f => (f.n.prot || 0) >= 5 },
-  fruta:    { cats: ['frutas'],                        min: f => (f.n.kcal || 0) < 120 },
+  // Azúcar mínimo para que sea una fruta que alguien se come, y no un limón:
+  // con el catálogo entero el armador proponía 120 g de limón, que en los
+  // números entra perfecto. Por hidratos no se distinguen (9,3 contra 12);
+  // por azúcar sí (2,5 contra 10 y pico).
+  fruta:    { cats: ['frutas'],  min: f => (f.n.kcal || 0) < 120 && (f.n.azuc || 0) >= 4 },
   cereal:   { cats: ['cereales'],                      min: f => (f.n.carb || 0) >= 10 },
   'fruto-seco': { cats: ['frutos-secos'],              min: f => (f.n.gra || 0) >= 20 },
+  // Sólo infusiones y agua: una bebida con azúcar no es parte de un desayuno
+  // que se está tratando de planificar.
+  bebida:   { cats: ['bebidas'],                      min: f => (f.n.kcal || 0) <= 15 },
 };
 const NOMBRE_ROL = { proteina: 'Proteína', base: 'Base', verdura: 'Verdura', grasa: 'Grasa',
                      lacteo: 'Lácteo o huevo', fruta: 'Fruta', cereal: 'Cereal o pan',
-                     'fruto-seco': 'Fruto seco' };
+                     'fruto-seco': 'Fruto seco', bebida: 'Infusión', leche: 'Leche del café' };
 
 /**
  * Qué forma tiene el plato según la comida.
@@ -188,9 +202,14 @@ const NOMBRE_ROL = { proteina: 'Proteína', base: 'Base', verdura: 'Verdura', gr
  * calabaza, que es un almuerzo — nutricionalmente entraba en el cupo y como
  * comida no existía. La forma es tan parte de la sugerencia como los números.
  */
+// La forma del desayuno no salió de mi cabeza esta vez: los siete desayunos
+// más recientes del diario son los mismos cuatro renglones —tostada, queso,
+// café y un chorrito de leche— entre 165 y 191 kcal. La fruta va igual, como
+// hueco a llenar: no aparece en el diario, pero es donde entra la fibra que al
+// desayuno le falta entera.
 const FORMA = {
-  desayuno: ['lacteo', 'cereal', 'fruta', 'fruto-seco'],
-  merienda: ['lacteo', 'cereal', 'fruta'],
+  desayuno: ['bebida', 'lacteo', 'cereal', 'fruta'],
+  merienda: ['bebida', 'lacteo', 'cereal'],
   colacion: ['lacteo', 'fruta'],
   almuerzo: ['proteina', 'base', 'verdura', 'verdura'],
   cena:     ['proteina', 'base', 'verdura', 'verdura'],
@@ -200,6 +219,8 @@ const sinTilde = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/
 const formaDe = i => FORMA[sinTilde(COMIDAS[i] || '')] || FORMA.almuerzo;
 /** El aceite sólo tiene sentido en un plato de almuerzo o cena. */
 const llevaAceite = i => formaDe(i).includes('proteina');
+/** Donde hay café, hay leche. */
+const llevaLeche = i => formaDe(i).includes('bebida');
 
 // ── Estado ────────────────────────────────────────────────────────────
 const HOY = new Date().toLocaleDateString('sv');   // sv = YYYY-MM-DD, sin UTC
@@ -416,6 +437,10 @@ const PORCION = {
   fruta:        { ini: 120, min: 60,  max: 250, paso: 10 },
   'fruto-seco': { ini:  15, min:  5,  max:  30, paso:  5 },
   grasa:        { ini:   5, min:  5,  max:  15, paso:  5 },
+  // La infusión no se mueve para cuadrar el cupo: nadie toma medio café para
+  // que le entre el pan. Mínimo y máximo iguales al inicio la dejan quieta.
+  bebida:       { ini: 100, min: 100, max: 100, paso: 10 },
+  leche:        { ini:  20, min:  20, max:  60, paso: 10 },
 };
 
 /**
@@ -479,7 +504,8 @@ function ajustarGramos(sel, cupo) {
  */
 const TOPE = 12;
 const EJE = { proteina: 'prot', lacteo: 'prot', base: 'fib', verdura: 'fib',
-              cereal: 'fib', fruta: 'fib', 'fruto-seco': 'prot', grasa: 'kcal' };
+              cereal: 'fib', fruta: 'fib', 'fruto-seco': 'prot', grasa: 'kcal',
+              bebida: 'kcal', leche: 'prot' };
 function preseleccion(rol) {
   const todos = candidatos(rol);
   if (todos.length <= TOPE) return todos;
@@ -510,12 +536,32 @@ function penalidad(filas, cupo) {
   // arroz blanco teniendo integral. Es chico a propósito — mueve el desempate,
   // no gana contra un cupo que no entra.
   for (const f of filas) p += { g: 0, a: 0.25, r: 0.7 }[PORID.get(f.id).luz] || 0;
+  // Desempate por el orden de la despensa. Hay roles donde los números no
+  // distinguen nada —café, té y descafeinado son todos ~0 kcal— y el armador
+  // elegía el que quedara primero por casualidad: proponía té verde a alguien
+  // que toma café todos los días. Con esto, el orden en que están escritos los
+  // ingredientes de cada rol expresa la preferencia. La primera versión pesaba
+  // 0,001 por puesto y seguía ganando el té: los 8 kcal que el espresso tiene
+  // de más valían más que tres puestos de preferencia.
+  for (const f of filas) {
+    const i = (DESPENSA[f.rol] || []).indexOf(f.id);
+    // La bebida pesa más porque es el rol donde los números no deciden nada:
+    // entre café, descafeinado y té hay 9 kcal de diferencia y cualquier
+    // criterio nutricional elige al azar. Ahí manda la preferencia.
+    p += i < 0 ? 0.2 : i * (f.rol === 'bebida' ? 0.05 : 0.01);
+  }
   const PESOS = { kcal: 1, prot: 2.2, fib: 1.6, gra: 2.4, carb: .5 };
   for (const k of Object.keys(META_CLAVE)) {
     const c = cupo[k]; if (!c || !c.cupo) continue;
     const rel = (t[k] - c.cupo) / Math.max(1, Math.abs(c.cupo));
-    if (c.esMin) p += rel < 0 ? PESOS[k] * -rel : PESOS[k] * rel * .15;
-    else         p += rel > 0 ? PESOS[k] * rel * 1.8 : PESOS[k] * -rel * .25;
+    if (c.esMin) { p += rel < 0 ? PESOS[k] * -rel : PESOS[k] * rel * .15; continue; }
+    // Techos. Pasarse cuesta caro. Quedarse corto sólo cuesta en calorías —
+    // comer de menos es un problema real — pero NO en grasa ni en hidratos:
+    // ahí quedarse corto es exactamente lo que se busca. Con la penalización
+    // pareja el armador gastaba el cupo de grasa porque sí, y proponía muslo
+    // de pollo teniendo pechuga.
+    p += rel > 0 ? PESOS[k] * rel * 1.8
+       : (k === 'kcal' ? PESOS[k] * -rel * .25 : 0);
   }
   return p;
 }
@@ -536,6 +582,8 @@ function proponer(cupo, saltear = 0) {
     if (i === forma.length) {
       const sel = forma.map((rol, k) => ({ rol, id: elegidos[k] }));
       const filas = ajustarGramos(sel, cupo);
+      if (llevaLeche(COMIDA) && !filas.some(f => f.id === LECHE_DEL_CAFE.id))
+        filas.push({ rol: 'leche', ...LECHE_DEL_CAFE });
       if (llevaAceite(COMIDA)) {
         // El aceite entra sólo si el cupo de grasa lo banca: es lo primero que
         // sobra cuando el día ya viene cargado de grasa.

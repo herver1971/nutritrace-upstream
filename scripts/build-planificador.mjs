@@ -28,6 +28,9 @@ const MARCA = '/*__CATALOGO__*/';
 const NUTRIENTES = [
   ['calories', 'kcal'], ['proteins', 'prot'], ['carbohydrates', 'carb'],
   ['fiber', 'fib'], ['fat', 'gra'], ['saturated-fat', 'sat'], ['sodium', 'na'],
+  // No se muestra en ninguna tabla: lo usa el filtro que separa una fruta de
+  // postre de un limón, que en hidratos son casi lo mismo (9,3 g contra 12).
+  ['sugars', 'azuc'],
 ];
 
 const cat = JSON.parse(fs.readFileSync(CAT, 'utf8'));
