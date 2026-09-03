@@ -111,6 +111,10 @@ los gramos, y si te sirve tal cual está, cargalo con un botón.</p>
     <button id="b-cargar" class="primario">Cargar en el diario</button>
     <span id="cargar-msg" class="ojo"></span>
   </div>
+  <p class="hint">El punto <span class="ojo">●</span> al lado de los gramos quiere decir
+  que esa porción no es un supuesto: es la que servís habitualmente, sacada de tu
+  diario. Las demás salen del tipo de alimento y de cuántas calorías puede ocupar
+  esa fila, y se corrigen solas en cuanto registres el alimento un par de veces.</p>
   <p class="hint">El botón crea los alimentos en tu biblioteca si no están y agrega
   las filas a la comida elegida. No pisa nada de lo que ya tenés cargado.</p>
 </div>
@@ -156,7 +160,12 @@ const DESPENSA = {
   // Roles de desayuno y merienda. Salen de lo que aparece en el diario:
   // café con leche, tostada con queso, fruta y un puñado de frutos secos.
   lacteo:   ['yogur-griego-descremado', 'yogur-descremado', 'queso-cottage-light',
-             'leche-descremada', 'huevo-duro', 'huevo-revuelto', 'queso-ricotta-descremada'],
+             'leche-descremada', 'huevo-duro', 'huevo-revuelto', 'queso-ricotta-descremada',
+             // Rojo en el semáforo por sus 15 g de saturada, pero es el queso
+             // que aparece en todos los desayunos del diario. Está para que
+             // salga entre las alternativas con su porción real, no para que
+             // el armador lo proponga: la penalidad por rojo lo manda al fondo.
+             'port-salut-san-francisco'],
   fruta:    ['manzana', 'banana', 'kiwi', 'frutilla', 'arandano', 'naranja', 'pera'],
   cereal:   ['pan-integral', 'avena', 'avena-cocida', 'granola', 'pan-centeno'],
   'fruto-seco': ['almendra', 'nuez'],
@@ -232,6 +241,7 @@ let METAS = null, DIARIO = null, COMIDA = null, SOLO_DESPENSA = true;
 // 63 % de lo que quedaba en vez del 100 %, o sea 26 g de proteína de menos.
 let SALTEADAS = new Set();
 let DIAS_APRENDIDOS = 0;
+let PORCIONES = new Map();   // id del catálogo → gramos que se sirve en la práctica
 let PLATO = [];            // [{rol, id, gramos}]
 let ABIERTO = null;        // rol cuyas alternativas se están mostrando
 
@@ -269,6 +279,40 @@ const mediana = xs => {
  * cero — si casi nunca hacés colación, su peso tiene que ser chico, y un
  * promedio sobre «los días que sí» diría lo contrario.
  */
+/**
+ * Aprende cuánto se sirve realmente de cada alimento, mirando el diario.
+ *
+ * La porción la definía el rol, no el alimento, y 170 g está bien para un
+ * yogur y es un disparate para un queso: proponía 210 g de cottage donde se
+ * usan 25. El rol no puede saberlo — «lácteo» abarca desde la leche del café
+ * hasta el queso de la tostada.
+ *
+ * Los gramos NO se leen de `portion`: el diario guarda la porción en la unidad
+ * con la que se cargó, y hay entradas en tazas, cucharadas y unidades. Lo que
+ * sí es siempre comparable son las calorías del renglón, así que los gramos se
+ * reconstruyen dividiéndolas por las del alimento por 100 g.
+ */
+function aprenderPorciones(historial) {
+  const porNombre = new Map();
+  for (const f of CATALOGO) porNombre.set(pelar(f.es), f);
+  const juntadas = new Map();
+  for (const dia of historial) for (const it of (dia.items || [])) {
+    const f = porNombre.get(pelar(it.name || ''));
+    if (!f || !num(f.n.kcal)) continue;
+    const kcal = num(it.nutrition?.calories) * (num(it.quantity) || 1);
+    const gramos = 100 * kcal / num(f.n.kcal);
+    if (gramos < 1 || gramos > 600) continue;      // ruido o error de carga
+    if (!juntadas.has(f.id)) juntadas.set(f.id, []);
+    juntadas.get(f.id).push(gramos);
+  }
+  const out = new Map();
+  // Con dos registros la mediana es cualquier cosa: «Avena cocida» aparece dos
+  // veces por 6 g y de ahí salía una porción de 5 g de avena, que no es una
+  // porción, es un accidente.
+  for (const [id, v] of juntadas) if (v.length >= 3) out.set(id, mediana(v));
+  return out;
+}
+
 function aprenderPesos(historial) {
   const porComida = COMIDAS.map(() => []);
   let dias = 0;
@@ -342,6 +386,7 @@ async function arrancar() {
   if (Array.isArray(ajustes.mealNames) && ajustes.mealNames.length) COMIDAS = ajustes.mealNames;
   const aprendido = Array.isArray(historial) ? aprenderPesos(historial) : null;
   if (aprendido) { PESOS = aprendido.pesos; DIAS_APRENDIDOS = aprendido.dias; }
+  if (Array.isArray(historial)) PORCIONES = aprenderPorciones(historial);
   METAS = ajustes.goals || {};
   if (!METAS.calories) {
     est.className = 'aviso malo';
@@ -432,8 +477,11 @@ const PORCION = {
   proteina:     { ini: 150, min: 60,  max: 320, paso: 10 },
   base:         { ini: 180, min: 60,  max: 250, paso: 10 },
   verdura:      { ini: 120, min: 50,  max: 250, paso: 10 },
-  lacteo:       { ini: 170, min: 60,  max: 300, paso: 10 },
-  cereal:       { ini:  50, min: 20,  max: 100, paso:  5 },
+  // El rango es enorme a propósito: acá conviven la cucharada de queso de la
+  // tostada y el pote de yogur. Cuál de las dos es la elige el alimento en
+  // `limites()`, no el rol.
+  lacteo:       { ini: 170, min: 15,  max: 300, paso:  5 },
+  cereal:       { ini:  50, min: 15,  max: 100, paso:  5 },
   fruta:        { ini: 120, min: 60,  max: 250, paso: 10 },
   'fruto-seco': { ini:  15, min:  5,  max:  30, paso:  5 },
   grasa:        { ini:   5, min:  5,  max:  15, paso:  5 },
@@ -452,8 +500,46 @@ const PORCION = {
  * sólo dentro de sus límites, así que ninguna corrección termina pidiendo
  * 600 g de pan.
  */
+/**
+ * Los límites de una fila: los del rol, corregidos por el alimento.
+ *
+ * Dos correcciones. Si el diario dice cuánto se sirve de ese alimento, manda
+ * eso y el rango se abre a la mitad y al doble. Si no hay dato, el arranque se
+ * limita por energía: ninguna fila puede llevarse más de un tercio de las
+ * calorías de la comida, que es lo que impedía proponer 170 g de un queso de
+ * 330 kcal por cada 100.
+ */
+function limites(rol, id, cupo) {
+  const P = PORCION[rol];
+  const sabido = PORCIONES.get(id);
+  if (sabido) {
+    // Lo que se sirve en la práctica manda, pero dentro del rango del rol:
+    // un registro raro no puede volverse la regla.
+    const g = Math.min(P.max, Math.max(P.min, sabido));
+    return { ini: redondear(g, P.paso),
+             min: Math.max(P.min, redondear(g * .5, P.paso)),
+             max: Math.min(P.max, redondear(g * 2, P.paso)), paso: P.paso, medido: true };
+  }
+  // Sin dato, la energía pone el límite: ninguna fila puede llevarse más de un
+  // tercio de las calorías de la comida. Sin esto el ajuste por proteína hacía
+  // crecer el queso hasta su máximo de rol — 190 g de cottage — porque el rol
+  // no distingue un queso de un yogur.
+  const kcal100 = num(PORID.get(id).n.kcal);
+  const techo = cupo.kcal && cupo.kcal.cupo ? cupo.kcal.cupo / 3 : Infinity;
+  const porEnergia = kcal100 > 0 ? 100 * techo / kcal100 : Infinity;
+  return { ...P,
+           ini: redondear(Math.max(P.min, Math.min(P.ini, porEnergia)), P.paso),
+           max: redondear(Math.max(P.min, Math.min(P.max, porEnergia * 1.5)), P.paso) };
+}
+
 function ajustarGramos(sel, cupo) {
-  const filas = sel.map(({ rol, id }) => ({ rol, id, gramos: PORCION[rol].ini }));
+  const lim = new Map();
+  const filas = sel.map(({ rol, id }) => {
+    const L = limites(rol, id, cupo);
+    lim.set(id, L);
+    return { rol, id, gramos: L.ini, medido: !!L.medido };
+  });
+  const P_ = f => lim.get(f.id);
   const tot = () => sumar(filas.map(f => aporte(f.id, f.gramos)));
 
   // Empuja una carencia hacia la fila que más denso tenga ese nutriente.
@@ -463,10 +549,10 @@ function ajustarGramos(sel, cupo) {
     if (falta <= 0) return;
     const cand = filas
       .map(f => ({ f, dens: num(PORID.get(f.id).n[clave]) / 100 }))
-      .filter(x => x.dens > 0.002 && x.f.gramos < PORCION[x.f.rol].max)
+      .filter(x => x.dens > 0.002 && x.f.gramos < P_(x.f).max)
       .sort((a, b) => b.dens - a.dens)[0];
     if (!cand) return;
-    const P = PORCION[cand.f.rol];
+    const P = P_(cand.f);
     cand.f.gramos = redondear(Math.min(P.max, cand.f.gramos + falta / cand.dens), P.paso);
   };
   empujar('prot', cupo.prot && cupo.prot.cupo);
@@ -481,7 +567,7 @@ function ajustarGramos(sel, cupo) {
       if (exceso <= 1.02) break;
       let movio = false;
       for (const f of filas) {
-        const P = PORCION[f.rol];
+        const P = P_(f);
         const nuevo = redondear(Math.max(P.min, f.gramos / exceso), P.paso);
         if (nuevo !== f.gramos) { f.gramos = nuevo; movio = true; }
       }
@@ -692,7 +778,9 @@ function pintarPlato(cupo) {
     const a = PORID.get(f.id), n = aporte(f.id, f.gramos);
     h += `<tr><td class="l"><span class="rol">${NOMBRE_ROL[f.rol]}</span>` +
       `<span class="dot ${a.luz}"></span>${a.es}</td>` +
-      `<td><input class="gr" type="number" min="0" step="5" value="${f.gramos}" data-id="${f.id}"></td>` +
+      `<td><input class="gr" type="number" min="0" step="5" value="${f.gramos}" data-id="${f.id}"` +
+        (f.medido ? ` title="Es lo que servís habitualmente, según tu diario"` : '') + '>' +
+        (f.medido ? '<span class="ojo" style="margin-left:.3rem" title="Es lo que servís habitualmente, según tu diario">●</span>' : '') + '</td>' +
       NUT.map(k => `<td>${k === 'kcal' || k === 'na' ? r0(n[k]) : r1(n[k])}</td>`).join('') +
       `<td><button data-rol="${f.rol}" data-id="${f.id}">cambiar</button></td></tr>`;
   }
@@ -766,7 +854,13 @@ function pintarAlternativas(cupo) {
   c.querySelectorAll('button[data-usar]').forEach(b => {
     b.onclick = () => {
       const f = PLATO.find(x => x.id === ABIERTO);
-      f.id = b.dataset.usar; ABIERTO = null; recalcular(true);
+      f.id = b.dataset.usar;
+      // La tabla de alternativas compara a gramos iguales, que es lo correcto
+      // para elegir; pero una vez elegido, los gramos son los del alimento
+      // nuevo. Sin esto, cambiar a un queso duro dejaba la porción del yogur.
+      const L = limites(f.rol, f.id, presupuesto());
+      f.gramos = L.ini; f.medido = !!L.medido;
+      ABIERTO = null; recalcular(true);
     };
   });
 }
