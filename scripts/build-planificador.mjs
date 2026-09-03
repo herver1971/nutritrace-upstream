@@ -65,7 +65,10 @@ if (!tpl.includes(MARCA)) { console.error(`✗ la plantilla no tiene ${MARCA}`);
 const ids = new Set(foods.map(f => f.id));
 const usados = [...tpl.matchAll(/'([a-z0-9-]+)'(?=[,\]\s])/g)].map(m => m[1]);
 const despensa = tpl.slice(tpl.indexOf('const DESPENSA'), tpl.indexOf('};', tpl.indexOf('const DESPENSA')));
-const faltan = [...new Set([...despensa.matchAll(/'([a-z0-9-]+)'/g)].map(m => m[1]))].filter(x => !ids.has(x));
+// Sólo los valores de las listas, no las claves del objeto: `'fruto-seco':`
+// es un rol, no un ingrediente, y la primera versión lo reportaba como id
+// inexistente.
+const faltan = [...new Set([...despensa.matchAll(/'([a-z0-9-]+)'(?!\s*:)/g)].map(m => m[1]))].filter(x => !ids.has(x));
 if (faltan.length) { console.error('✗ la despensa nombra ids que no están en el catálogo:\n  ' + faltan.join('\n  ')); process.exit(1); }
 
 const salida = tpl.replace(MARCA, JSON.stringify(foods));

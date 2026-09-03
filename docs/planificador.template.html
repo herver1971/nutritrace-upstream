@@ -153,6 +153,13 @@ const DESPENSA = {
              'lechuga-criolla', 'cebolla-cocida', 'zapallo-anco-cocido', 'champinon-salteado',
              'repollo', 'calabaza'],
   grasa:    ['aceite-oliva'],
+  // Roles de desayuno y merienda. Salen de lo que aparece en el diario:
+  // café con leche, tostada con queso, fruta y un puñado de frutos secos.
+  lacteo:   ['yogur-griego-descremado', 'yogur-descremado', 'queso-cottage-light',
+             'leche-descremada', 'huevo-duro', 'huevo-revuelto', 'queso-ricotta-descremada'],
+  fruta:    ['manzana', 'banana', 'kiwi', 'frutilla', 'arandano', 'naranja', 'pera'],
+  cereal:   ['pan-integral', 'avena', 'avena-cocida', 'granola', 'pan-centeno'],
+  'fruto-seco': ['almendra', 'nuez'],
 };
 // Lo que NO va a aparecer nunca, aunque el catálogo lo tenga.
 const VETADOS = new Set(['polenta']);
@@ -164,8 +171,35 @@ const ROLES = {
   base:     { cats: ['legumbres', 'cereales'],         min: f => (f.n.carb || 0) >= 5 },
   verdura:  { cats: ['verduras', 'hongos'],            min: () => true },
   grasa:    { cats: ['aceites'],                       min: () => true },
+  lacteo:   { cats: ['lacteos'],                       min: f => (f.n.prot || 0) >= 5 },
+  fruta:    { cats: ['frutas'],                        min: f => (f.n.kcal || 0) < 120 },
+  cereal:   { cats: ['cereales'],                      min: f => (f.n.carb || 0) >= 10 },
+  'fruto-seco': { cats: ['frutos-secos'],              min: f => (f.n.gra || 0) >= 20 },
 };
-const NOMBRE_ROL = { proteina: 'Proteína', base: 'Base', verdura: 'Verdura', grasa: 'Grasa' };
+const NOMBRE_ROL = { proteina: 'Proteína', base: 'Base', verdura: 'Verdura', grasa: 'Grasa',
+                     lacteo: 'Lácteo o huevo', fruta: 'Fruta', cereal: 'Cereal o pan',
+                     'fruto-seco': 'Fruto seco' };
+
+/**
+ * Qué forma tiene el plato según la comida.
+ *
+ * Sin esto el planificador armaba lo mismo para todo: proteína, base y dos
+ * verduras. Para el desayuno proponía sardina en aceite con papa hervida y
+ * calabaza, que es un almuerzo — nutricionalmente entraba en el cupo y como
+ * comida no existía. La forma es tan parte de la sugerencia como los números.
+ */
+const FORMA = {
+  desayuno: ['lacteo', 'cereal', 'fruta', 'fruto-seco'],
+  merienda: ['lacteo', 'cereal', 'fruta'],
+  colacion: ['lacteo', 'fruta'],
+  almuerzo: ['proteina', 'base', 'verdura', 'verdura'],
+  cena:     ['proteina', 'base', 'verdura', 'verdura'],
+};
+const sinTilde = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+/** La forma de la comida elegida; si no se reconoce el nombre, plato de almuerzo. */
+const formaDe = i => FORMA[sinTilde(COMIDAS[i] || '')] || FORMA.almuerzo;
+/** El aceite sólo tiene sentido en un plato de almuerzo o cena. */
+const llevaAceite = i => formaDe(i).includes('proteina');
 
 // ── Estado ────────────────────────────────────────────────────────────
 const HOY = new Date().toLocaleDateString('sv');   // sv = YYYY-MM-DD, sin UTC
@@ -314,42 +348,97 @@ const candidatos = rol => {
 const redondear = (g, paso) => Math.max(paso, Math.round(g / paso) * paso);
 
 /**
+ * Cuánto se sirve de cada rol, y entre qué límites tiene sentido moverlo.
+ * `paso` es el redondeo: nadie pesa 87 g de pan.
+ */
+const PORCION = {
+  proteina:     { ini: 150, min: 60,  max: 320, paso: 10 },
+  base:         { ini: 180, min: 60,  max: 250, paso: 10 },
+  verdura:      { ini: 120, min: 50,  max: 250, paso: 10 },
+  lacteo:       { ini: 170, min: 60,  max: 300, paso: 10 },
+  cereal:       { ini:  50, min: 20,  max: 100, paso:  5 },
+  fruta:        { ini: 120, min: 60,  max: 250, paso: 10 },
+  'fruto-seco': { ini:  15, min:  5,  max:  30, paso:  5 },
+  grasa:        { ini:   5, min:  5,  max:  15, paso:  5 },
+};
+
+/**
  * Reparte los gramos de un plato ya elegido para acercarse al cupo.
- * La proteína manda (es el objetivo más difícil del día), después la fibra,
- * y las calorías actúan de techo.
+ *
+ * Arranca de la porción típica de cada rol y después empuja: primero la
+ * proteína, que es la meta más difícil del día, después la fibra, y al final
+ * las calorías actúan de techo y encogen todo en proporción. Cada rol se mueve
+ * sólo dentro de sus límites, así que ninguna corrección termina pidiendo
+ * 600 g de pan.
  */
 function ajustarGramos(sel, cupo) {
-  const P = PORID.get(sel.proteina), B = PORID.get(sel.base);
-  const objProt = cupo.prot ? Math.max(0, cupo.prot.cupo) : 40;
-  const objFib  = cupo.fib  ? Math.max(0, cupo.fib.cupo)  : 10;
+  const filas = sel.map(({ rol, id }) => ({ rol, id, gramos: PORCION[rol].ini }));
+  const tot = () => sumar(filas.map(f => aporte(f.id, f.gramos)));
 
-  // La base aporta parte de la proteína, así que se resuelve primero con una
-  // porción de tamaño humano y después la proteína cubre lo que falta.
-  let gB = redondear(Math.min(250, Math.max(80, (objFib * 0.55) / (num(B.n.fib) / 100 || 0.02))), 10);
-  const protB = num(B.n.prot) * gB / 100;
-  let gP = redondear(Math.max(60, (objProt - protB) / (num(P.n.prot) / 100 || 0.2)), 10);
-  gP = Math.min(gP, 320);
+  // Empuja una carencia hacia la fila que más denso tenga ese nutriente.
+  const empujar = (clave, objetivo) => {
+    if (!objetivo) return;
+    const falta = objetivo - tot()[clave];
+    if (falta <= 0) return;
+    const cand = filas
+      .map(f => ({ f, dens: num(PORID.get(f.id).n[clave]) / 100 }))
+      .filter(x => x.dens > 0.002 && x.f.gramos < PORCION[x.f.rol].max)
+      .sort((a, b) => b.dens - a.dens)[0];
+    if (!cand) return;
+    const P = PORCION[cand.f.rol];
+    cand.f.gramos = redondear(Math.min(P.max, cand.f.gramos + falta / cand.dens), P.paso);
+  };
+  empujar('prot', cupo.prot && cupo.prot.cupo);
+  empujar('fib',  cupo.fib  && cupo.fib.cupo);
 
-  // Las verduras completan la fibra que falta, repartida entre las elegidas.
-  const fibHasta = objFib - num(B.n.fib) * gB / 100;
-  const verduras = sel.verduras.map(id => {
-    const f = PORID.get(id);
-    const porGramo = num(f.n.fib) / 100;
-    const g = porGramo > 0.005 ? (fibHasta / sel.verduras.length) / porGramo : 120;
-    return { id, gramos: redondear(Math.min(250, Math.max(60, g)), 10) };
-  });
-
-  const filas = [
-    { rol: 'proteina', id: sel.proteina, gramos: gP },
-    { rol: 'base',     id: sel.base,     gramos: gB },
-    ...verduras.map(v => ({ rol: 'verdura', id: v.id, gramos: v.gramos })),
-  ];
-  // El aceite entra solo si el cupo de grasa lo banca: es lo primero que sobra
-  // cuando el día ya viene cargado de grasa.
-  const graHasta = cupo.gra ? cupo.gra.cupo : 99;
-  const usada = sumar(filas.map(f => aporte(f.id, f.gramos))).gra;
-  if (graHasta - usada >= 5) filas.push({ rol: 'grasa', id: 'aceite-oliva', gramos: 5 });
+  // Las calorías son techo: si el plato se pasó, se encoge en proporción,
+  // pero sin bajar de la porción mínima de cada rol.
+  const techo = cupo.kcal && cupo.kcal.cupo;
+  if (techo) {
+    for (let vuelta = 0; vuelta < 4; vuelta++) {
+      const exceso = tot().kcal / techo;
+      if (exceso <= 1.02) break;
+      let movio = false;
+      for (const f of filas) {
+        const P = PORCION[f.rol];
+        const nuevo = redondear(Math.max(P.min, f.gramos / exceso), P.paso);
+        if (nuevo !== f.gramos) { f.gramos = nuevo; movio = true; }
+      }
+      if (!movio) break;
+    }
+  }
   return filas;
+}
+
+/**
+ * Preselección por rol antes de combinar.
+ *
+ * En modo despensa hay pocos de cada rol y las combinaciones se calculan sin
+ * que se note. Con el catálogo entero son ~150 proteínas, ~90 bases y ~120
+ * verduras: 96 millones de combinaciones, y la página se cuelga sin decir nada
+ * — pasó la primera vez que se probó el botón «todo el catálogo». Cada rol se
+ * recorta antes a los mejores por su propio eje, y lo de la despensa entra
+ * siempre: es lo que el plato tiene que poder proponer aunque el catálogo
+ * traiga algo mejor en el papel.
+ */
+const TOPE = 12;
+const EJE = { proteina: 'prot', lacteo: 'prot', base: 'fib', verdura: 'fib',
+              cereal: 'fib', fruta: 'fib', 'fruto-seco': 'prot', grasa: 'kcal' };
+function preseleccion(rol) {
+  const todos = candidatos(rol);
+  if (todos.length <= TOPE) return todos;
+  const clave = EJE[rol] || 'prot';
+  const puntaje = f => num(f.n[clave]) / Math.max(20, num(f.n.kcal));
+  const dela = new Set(DESPENSA[rol] || []);
+  const resto = todos.filter(id => !dela.has(id))
+    .sort((a, b) => puntaje(PORID.get(b)) - puntaje(PORID.get(a)));
+  return [...todos.filter(id => dela.has(id)), ...resto].slice(0, TOPE);
+}
+
+/** ¿Son el mismo alimento en dos estados? Zanahoria y zanahoria hervida lo son. */
+function mismaCosa(a, b) {
+  const A = PORID.get(a), B = PORID.get(b);
+  return A.crudo === b || B.crudo === a || (A.crudo && A.crudo === B.crudo);
 }
 
 /**
@@ -376,58 +465,48 @@ function penalidad(filas, cupo) {
 }
 
 /**
- * Preselección por rol antes de combinar.
- *
- * En modo despensa hay 8 proteínas, 7 bases y 11 verduras: 8x7x55 = 3080
- * combinaciones, que se calculan sin que se note. Con el catálogo entero son
- * ~150 proteínas, ~90 bases y ~120 verduras, o sea 150x90x7140 = 96 millones,
- * y la página se cuelga sin decir nada — pasó la primera vez que se probó el
- * botón «todo el catálogo». Cada rol se recorta antes a los mejores por su
- * propio eje, y lo de la despensa entra siempre: es lo que el plato tiene que
- * poder proponer aunque el catálogo traiga algo mejor en el papel.
+ * Prueba combinaciones con la forma que corresponde a la comida y se queda con
+ * la que mejor entra en el cupo.
  */
-const TOPE = { proteina: 14, base: 10, verdura: 12 };
-
-/** ¿Son el mismo alimento en dos estados? Zanahoria y zanahoria hervida lo son. */
-function mismaCosa(a, b) {
-  const A = PORID.get(a), B = PORID.get(b);
-  return A.crudo === b || B.crudo === a || (A.crudo && A.crudo === B.crudo);
-}
-function preseleccion(rol) {
-  const todos = candidatos(rol);
-  if (todos.length <= TOPE[rol]) return todos;
-  // Densidad del nutriente que define el rol, por caloría: es lo que hace que
-  // un ingrediente entre en un cupo ajustado.
-  const eje = { proteina: f => num(f.n.prot), base: f => num(f.n.fib), verdura: f => num(f.n.fib) }[rol];
-  const puntaje = f => eje(f) / Math.max(20, num(f.n.kcal));
-  const dela = new Set(DESPENSA[rol] || []);
-  const resto = todos.filter(id => !dela.has(id))
-    .sort((a, b) => puntaje(PORID.get(b)) - puntaje(PORID.get(a)));
-  return [...todos.filter(id => dela.has(id)), ...resto].slice(0, TOPE[rol]);
-}
-
-/** Prueba combinaciones y se queda con la que mejor entra. */
+const TOPE_COMBOS = 30000;
 function proponer(cupo, saltear = 0) {
-  const prot = preseleccion('proteina'), bases = preseleccion('base'), verd = preseleccion('verdura');
+  const forma = formaDe(COMIDA);
+  const opciones = forma.map(rol => preseleccion(rol));
+  if (opciones.some(o => !o.length)) return [];
+
   const combos = [];
-  for (const p of prot) for (const b of bases) {
-    // Dos verduras: una de hoja/color y otra más, para que el plato tenga forma.
-    for (let i = 0; i < verd.length; i++) for (let j = i + 1; j < verd.length; j++) {
-      if (mismaCosa(verd[i], verd[j])) continue;
-      const sel = { proteina: p, base: b, verduras: [verd[i], verd[j]] };
+  const armar = (i, elegidos) => {
+    if (combos.length >= TOPE_COMBOS) return;
+    if (i === forma.length) {
+      const sel = forma.map((rol, k) => ({ rol, id: elegidos[k] }));
       const filas = ajustarGramos(sel, cupo);
+      if (llevaAceite(COMIDA)) {
+        // El aceite entra sólo si el cupo de grasa lo banca: es lo primero que
+        // sobra cuando el día ya viene cargado de grasa.
+        const graHasta = cupo.gra ? cupo.gra.cupo : 99;
+        if (graHasta - sumar(filas.map(f => aporte(f.id, f.gramos))).gra >= 5)
+          filas.push({ rol: 'grasa', id: 'aceite-oliva', gramos: 5 });
+      }
       combos.push({ filas, p: penalidad(filas, cupo) });
+      return;
     }
-  }
+    for (const id of opciones[i]) {
+      // Nada repetido, ni el mismo alimento en crudo y cocido en el mismo plato.
+      if (elegidos.some(e => e === id || mismaCosa(e, id))) continue;
+      armar(i + 1, [...elegidos, id]);
+    }
+  };
+  armar(0, []);
   combos.sort((a, b) => a.p - b.p);
   if (!combos.length) return [];
-  // Las mejores combinaciones comparten proteína y base y solo se diferencian
-  // en las verduras, así que avanzar de a uno parecía no hacer nada. Se salta
-  // al siguiente plato con OTRA proteína o base: eso es lo que se está
-  // pidiendo cuando se toca «otra combinación».
+
+  // Las mejores combinaciones se diferencian sólo en el último ingrediente, y
+  // avanzar de a uno parecía no hacer nada. Se salta al siguiente plato que
+  // cambie el ingrediente principal: eso es lo que se está pidiendo cuando se
+  // toca «otra combinación».
   const vistas = [];
   for (const c of combos) {
-    const firma = c.filas[0].id + '|' + c.filas[1].id;
+    const firma = c.filas.slice(0, 2).map(f => f.id).join('|');
     if (!vistas.some(v => v.firma === firma)) vistas.push({ firma, filas: c.filas });
     if (vistas.length > 40) break;
   }
