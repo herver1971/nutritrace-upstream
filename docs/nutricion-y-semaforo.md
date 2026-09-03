@@ -357,6 +357,7 @@ mayormente agua).
 | 🟢 | Salvado de avena | 246 | 66.2 | 15.4 | 0.233 |
 | 🟢 | Centeno en grano | 338 | 75.9 | 15.1 | 0.199 |
 | 🟢 | Harina integral de trigo | 332 | 74.5 | 13.1 | 0.176 |
+| 🟢 | Granola | 489 | 53.9 | 8.9 | 0.165 |
 | 🟢 | Trigo burgol crudo | 342 | 75.9 | 12.5 | 0.165 |
 | 🟢 | Harina de centeno | 349 | 75.4 | 11.8 | 0.156 |
 | 🟢 | Avena arrollada | 379 | 67.7 | 10.1 | 0.149 |
@@ -742,6 +743,7 @@ Ordenados por **proporción de saturada** sobre la grasa total, no por gramos: s
 | 🟢 | Manteca de almendras | 614 | 55.5 | 4.2 | 8 | 21.0 | 10.3 | 7 |
 | 🟢 | Almendra tostada | 598 | 52.5 | 4.1 | 8 | 21.0 | 10.9 | 3 |
 | 🟢 | Almendra | 579 | 49.9 | 3.8 | 8 | 21.2 | 12.5 | 1 |
+| 🟢 | Harina de almendras | 590 | 52.5 | 4.0 | 7.9 | 21.4 | 9.9 | 19 |
 | 🟢 | Avellana | 628 | 60.8 | 4.5 | 8 | 15.0 | 9.7 | 0 |
 | 🟢 | Nuez negra | 619 | 59.3 | 3.5 | 6 | 24.1 | 6.8 | 2 |
 
@@ -971,7 +973,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **435 🟢 · 57 🟡 · 66 🔴** sobre 558 alimentos.
+Reparto actual: **437 🟢 · 57 🟡 · 66 🔴** sobre 560 alimentos.
 
 ---
 
@@ -1031,5 +1033,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 558 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 560 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
