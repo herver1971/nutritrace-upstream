@@ -524,8 +524,14 @@ function main() {
   // until a full reload. ("tomate" and "tomate cherry" pointed at the same row
   // and did exactly that.) If two names should share nutrition, one of them
   // belongs in the other's `alias` list, not in a second entry.
+  //
+  // The condition mirrors entryBarcode() in src/lib/base-foods.js: an entry
+  // with no `fdc` -- an `approx_of`, or a `label` transcribed from a pack --
+  // is keyed `ntBase_<id>` instead, which is unique by construction. Without
+  // the `f.fdc` guard every label entry collides on `fdc: undefined` and the
+  // second one added fails the build for a barcode clash that cannot happen.
   const byFdc = new Map();
-  for (const f of out.filter(f => !f.approx)) {
+  for (const f of out.filter(f => !f.approx && f.fdc)) {
     if (!byFdc.has(f.fdc)) byFdc.set(f.fdc, []);
     byFdc.get(f.fdc).push(f.id);
   }

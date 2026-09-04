@@ -832,7 +832,7 @@ Los jugos son el caso interesante. El de naranja exprimido es la misma fruta que
 
 ### Dulces y azúcares
 
-Ordenados por **azúcar**. Nueve de doce son rojos, y es la única categoría donde eso es el resultado correcto y no un problema del criterio.
+Ordenados por **azúcar**. Nueve de trece son rojos, y es la única categoría donde eso es el resultado correcto y no un problema del criterio.
 
 | | Alimento | kcal | Azúcar | Grasa | Sat | Fibra |
 |---|---|---|---|---|---|---|
@@ -848,8 +848,9 @@ Ordenados por **azúcar**. Nueve de doce son rojos, y es la única categoría do
 | 🟡 | Chocolate semiamargo 60-69% | 579 | 36.7 | 38.3 | 22.0 | 8.0 |
 | 🟡 | Chocolate amargo 70-85% | 598 | 24.0 | 42.6 | 24.5 | 10.9 |
 | 🟢 | Cacao en polvo | 228 | 1.8 | 13.7 | 8.1 | 37.0 |
+| 🟢 | Gelatina light de durazno | 8 | 0.0 | 0.0 | 0.0 | 0.0 |
 
-El único verde es el cacao en polvo sin azucarar, que está en esta categoría por parentesco y no por composición. La escala de los chocolates es la información útil: del 70-85 % al 45-59 % el azúcar se duplica.
+Los dos verdes son el cacao en polvo sin azucarar, que está en esta categoría por parentesco y no por composición, y la gelatina light, que no tiene azúcar porque la reemplaza por aspartamo y acesulfame-k — el criterio mira azúcar y ahí no hay nada que marcar. La escala de los chocolates es la información útil: del 70-85 % al 45-59 % el azúcar se duplica.
 
 ## 4. El semáforo nutricional
 
@@ -979,7 +980,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **443 🟢 · 57 🟡 · 66 🔴** sobre 566 alimentos.
+Reparto actual: **444 🟢 · 57 🟡 · 66 🔴** sobre 567 alimentos.
 
 ---
 
@@ -1039,5 +1040,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 566 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 567 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
