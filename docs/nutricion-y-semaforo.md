@@ -370,6 +370,8 @@ mayormente agua).
 | 🟢 | Trigo sarraceno | 343 | 71.5 | 10.0 | 0.140 |
 | 🟢 | Cebada perlada cocida | 123 | 28.2 | 3.8 | 0.135 |
 | 🟢 | Quinoa cocida | 120 | 21.3 | 2.8 | 0.131 |
+| 🟢 | Fideos integrales cocidos | 149 | 30.1 | 3.9 | 0.130 |
+| 🟢 | Fideos integrales secos | 352 | 73.4 | 9.2 | 0.125 |
 | 🟢 | Pan de centeno | 259 | 48.3 | 5.8 | 0.120 |
 | 🟢 | Amaranto cocido | 102 | 18.7 | 2.1 | 0.112 |
 | 🟢 | Quinoa cruda | 368 | 64.2 | 7.0 | 0.109 |
@@ -381,12 +383,14 @@ mayormente agua).
 | 🟢 | Arroz integral cocido | 123 | 25.6 | 1.6 | 0.063 |
 | 🟡 | Cuscús cocido | 112 | 23.2 | 1.4 | 0.060 |
 | 🟢 | Harina de arroz integral | 363 | 76.5 | 4.6 | 0.060 |
+| 🟢 | Fideos cocidos | 158 | 30.9 | 1.8 | 0.058 |
 | 🟡 | Mijo cocido | 119 | 23.7 | 1.3 | 0.055 |
 | 🟢 | Pan blanco de molde | 266 | 49.4 | 2.7 | 0.055 |
 | 🟡 | Arroz glutinoso | 97 | 21.1 | 1.0 | 0.047 |
 | 🟢 | Arroz integral crudo | 367 | 76.3 | 3.6 | 0.047 |
 | 🟢 | Pan italiano | 259 | 48.1 | 2.1 | 0.044 |
 | 🟢 | Gluten de trigo | 370 | 13.8 | 0.6 | 0.044 |
+| 🟢 | Fideos secos | 371 | 74.7 | 3.2 | 0.043 |
 | 🟢 | Pan francés (de panadería) | 272 | 51.9 | 2.2 | 0.042 |
 | 🟡 | Fideos de arroz cocidos | 108 | 24.0 | 1.0 | 0.042 |
 | 🟡 | Pan pita | 275 | 55.7 | 2.2 | 0.039 |
@@ -933,7 +937,7 @@ donde el crudo da rojo. **Cocinar no puede hacer que un corte sea más sano de
 lo que es.**
 
 El vínculo crudo→cocido está declarado en los datos (`cooked_of`), no
-adivinado por el nombre: los **90 pares** del catálogo coinciden hoy en color.
+adivinado por el nombre: los **92 pares** del catálogo coinciden hoy en color.
 
 ### Productos de marca
 
@@ -975,7 +979,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **439 🟢 · 57 🟡 · 66 🔴** sobre 562 alimentos.
+Reparto actual: **443 🟢 · 57 🟡 · 66 🔴** sobre 566 alimentos.
 
 ---
 
@@ -1035,5 +1039,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 562 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 566 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
