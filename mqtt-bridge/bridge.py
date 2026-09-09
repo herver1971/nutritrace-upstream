@@ -128,8 +128,8 @@ def _marca_temporal(plano):
 def _valores_openscale(payload):
     """Rescata las metricas de `values[]`, el formato que publica openScale.
 
-    `values` es una lista de objetos {key, value, unit, ...}. Aplanarla con
-    `_plano()` da `values_8_key = "BONE"` y `values_8_value = 3.1781251`: el
+    `values` es una lista de objetos {<nombre>, value, unit, ...}. Aplanarla con
+    `_plano()` da `values_8_name = "BONE"` y `values_8_value = 3.1781251`: el
     NOMBRE de la metrica queda del lado del valor, no de la clave, asi que el
     mapeo por nombre no lo encuentra nunca y `values[]` se ignoraba entero.
     Hay que reconstruir {"BONE": 3.1781251} antes de aplanar.
@@ -150,17 +150,46 @@ def _valores_openscale(payload):
     """
     if not isinstance(payload, dict):
         return {}
-    return {str(v["key"]): v["value"]
-            for v in payload.get("values", [])
-            if isinstance(v, dict) and "key" in v and "value" in v}
+    salida = {}
+    for v in payload.get("values", []):
+        clave = _clave_metrica(v)
+        if clave is not None and "value" in v:
+            salida[clave] = v["value"]
+    return salida
+
+
+def _clave_metrica(v):
+    """El nombre de la metrica dentro de una entrada de `values[]`.
+
+    openScaleSync la publico como `key` hasta 2026-09-06 y como `name` desde
+    el 07-09; `identity` ("builtin.bone") viene en las dos. Aceptar los tres
+    evita que un renombre del publicador vuelva a vaciar `values[]` en
+    silencio: sin esa lista se pierden BMI, TDEE, grasa visceral, proteina e
+    impedancia, y muscle/bone/lbm se guardan en PORCENTAJE como si fueran kg
+    (ver el docstring de _valores_openscale). Paso en produccion del 07 al
+    09-09-2026: la masa muscular salto de 59,6 a 65,9 "kg" sin que nada fallara.
+    """
+    if not isinstance(v, dict):
+        return None
+    for campo in ("key", "name"):
+        if isinstance(v.get(campo), str) and v[campo].strip():
+            return v[campo].strip()
+    ident = v.get("identity")
+    if isinstance(ident, str) and ident.strip():
+        return ident.strip().rsplit(".", 1)[-1].upper()
+    return None
 
 
 def _unidades(payload):
     """{clave normalizada: unidad} a partir de `values[]`, si el payload lo trae."""
     if not isinstance(payload, dict):
         return {}
-    return {_norm(v.get("key", "")): v.get("unit")
-            for v in payload.get("values", []) if isinstance(v, dict)}
+    salida = {}
+    for v in payload.get("values", []):
+        clave = _clave_metrica(v)
+        if clave is not None:
+            salida[_norm(clave)] = v.get("unit")
+    return salida
 
 
 def construir(payload):
@@ -198,25 +227,30 @@ def construir(payload):
             continue
         cuerpo[destino] = num
 
-    # openScale mide el musculo en PORCENTAJE (unit "%" en values[]), pero
-    # NutriTrace guarda `muscle_mass` en kg (columna muscle_mass_kg). Sin
-    # convertir, un 63,5 % entra como "63,5 kg" y pasa el rango [5..200] sin
-    # que nada avise. Se convierte con el peso de la misma pesada.
-    if _unidades(payload).get("muscle") == "%" and "muscle_mass" in cuerpo:
-        if "weight" in cuerpo:
-            kg = round(cuerpo["muscle_mass"] * cuerpo["weight"] / 100, 3)
-            lo, hi = RANGOS["muscle_mass"]
-            if lo <= kg <= hi:
-                log.info("musculo %.2f %% x %.2f kg = %.2f kg",
-                         cuerpo["muscle_mass"], cuerpo["weight"], kg)
-                cuerpo["muscle_mass"] = kg
-            else:
-                descartados.append(f"muscle_mass={kg} fuera de rango [{lo}..{hi}]")
-                del cuerpo["muscle_mass"]
-        else:
+    # openScale mide musculo, hueso y masa magra en PORCENTAJE arriba (unit "%"
+    # en values[]), pero NutriTrace los guarda en kg. Sin convertir, un 63,5 %
+    # entra como "63,5 kg" y pasa el rango [5..200] sin que nada avise. Se
+    # convierte con el peso de la misma pesada.
+    unidades = _unidades(payload)
+    for campo, unidad_key in (("muscle_mass", "muscle"),
+                              ("bone_mass", "bone"),
+                              ("lean_body_mass", "lbm")):
+        if unidades.get(unidad_key) != "%" or campo not in cuerpo:
+            continue
+        if "weight" not in cuerpo:
             # Sin peso no hay forma de pasarlo a kg; mandar el % seria mentir.
-            descartados.append("muscle_mass en % y sin peso para convertir")
-            del cuerpo["muscle_mass"]
+            descartados.append(f"{campo} en % y sin peso para convertir")
+            del cuerpo[campo]
+            continue
+        kg = round(cuerpo[campo] * cuerpo["weight"] / 100, 3)
+        lo, hi = RANGOS[campo]
+        if lo <= kg <= hi:
+            log.info("%s %.2f %% x %.2f kg = %.2f kg", campo,
+                     cuerpo[campo], cuerpo["weight"], kg)
+            cuerpo[campo] = kg
+        else:
+            descartados.append(f"{campo}={kg} fuera de rango [{lo}..{hi}]")
+            del cuerpo[campo]
 
     if descartados:
         log.warning("valores descartados: %s", "; ".join(descartados))
