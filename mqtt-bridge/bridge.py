@@ -15,7 +15,7 @@ Dos modos:
 
 Configuración por variables de entorno; ver .env.example.
 """
-import json, os, re, sys, time, logging
+import json, os, re, sys, threading, time, logging
 from datetime import datetime, timezone
 
 import paho.mqtt.client as mqtt
@@ -32,6 +32,24 @@ MQTT_TOPIC = os.environ.get("MQTT_TOPIC", "#")
 NT_URL   = os.environ.get("NT_URL", "http://127.0.0.1:3001").rstrip("/")
 NT_TOKEN = os.environ.get("NT_TOKEN", "")
 SOURCE   = os.environ.get("SOURCE", "mqtt-balanza")
+
+# ── Home Assistant (opcional) ──────────────────────────────────────────────
+# Segunda pata del puente, independiente de MQTT: consulta sensores de HA cada
+# HA_POLL_SEC y empuja los agregados diarios (pasos, calorias activas, sueño)
+# a POST /api/v1/wellness. Existe porque la sincronizacion de Health Connect
+# vive en la app Android y se corta si la app no se usa, mientras que HA ya
+# tiene los mismos numeros por otra via.
+#
+# HA_METRICS es un JSON {metrica_de_nutritrace: entity_id}. No hay mapa por
+# defecto a proposito: los entity_id son de cada casa.
+HA_URL    = os.environ.get("HA_URL", "").rstrip("/")
+HA_TOKEN  = os.environ.get("HA_TOKEN", "")
+HA_SOURCE = os.environ.get("HA_SOURCE", "home-assistant")
+HA_POLL_SEC = int(os.environ.get("HA_POLL_SEC", "900"))
+try:
+    HA_METRICS = json.loads(os.environ.get("HA_METRICS", "{}"))
+except json.JSONDecodeError:
+    HA_METRICS = {}
 MODE     = os.environ.get("MODE", "run").lower()
 DRY_RUN  = os.environ.get("DRY_RUN", "").lower() in ("1", "true", "yes")
 
@@ -280,6 +298,82 @@ def enviar(cuerpo):
         log.error("NutriTrace respondió %s: %s", r.status_code, r.text[:300])
 
 
+# ── Home Assistant → /api/v1/wellness ─────────────────────────────────────
+def _leer_ha(entity_id):
+    """Estado numerico de una entidad, o None si no hay lectura utilizable."""
+    r = requests.get(
+        f"{HA_URL}/api/states/{entity_id}",
+        headers={"Authorization": f"Bearer {HA_TOKEN}"},
+        timeout=10,
+    )
+    if r.status_code != 200:
+        log.warning("HA %s respondio %s", entity_id, r.status_code)
+        return None
+    estado = (r.json() or {}).get("state")
+    # HA usa estas tres cadenas cuando la entidad no tiene valor; float() las
+    # convertiria en una excepcion o, peor, "unknown" no, pero un sensor que
+    # se reinicia deja un 0 que si es un numero valido y no queremos pisar
+    # con el la lectura buena del dia.
+    if estado in (None, "unknown", "unavailable", "none", ""):
+        return None
+    try:
+        return float(estado)
+    except (TypeError, ValueError):
+        log.debug("HA %s no es numerico: %r", entity_id, estado)
+        return None
+
+
+def sondear_ha():
+    """Una pasada: lee cada entidad configurada y manda lo que haya."""
+    metricas = {}
+    for metrica, entity_id in HA_METRICS.items():
+        try:
+            v = _leer_ha(entity_id)
+        except requests.RequestException as e:
+            log.error("HA %s no responde: %s", entity_id, e)
+            continue
+        if v is not None:
+            metricas[metrica] = round(v, 3)
+    if not metricas:
+        log.debug("HA: nada que enviar en esta pasada")
+        return
+    # La fecha es la LOCAL del contenedor: los contadores diarios de pasos y
+    # calorias se resetean a medianoche local, y con TZ en UTC las lecturas de
+    # despues de las 21:00 se cargarian en el dia siguiente. Fijar TZ en el
+    # .env es parte de la instalacion.
+    cuerpo = {"date": datetime.now().strftime("%Y-%m-%d"),
+              "source": HA_SOURCE, "metrics": metricas}
+    if DRY_RUN:
+        log.info("DRY_RUN, no se envía: %s", json.dumps(cuerpo, ensure_ascii=False))
+        return
+    try:
+        r = requests.post(
+            f"{NT_URL}/api/v1/wellness",
+            json=cuerpo,
+            headers={"Authorization": f"Bearer {NT_TOKEN}"},
+            timeout=15,
+        )
+    except requests.RequestException as e:
+        log.error("no se pudo enviar bienestar: %s", e)
+        return
+    if r.ok:
+        d = r.json()
+        log.info("bienestar %s: %s", d.get("date"),
+                 ", ".join(f"{k}={v:g}" for k, v in (d.get("written") or {}).items()))
+    else:
+        log.error("NutriTrace respondió %s a /wellness: %s", r.status_code, r.text[:300])
+
+
+def bucle_ha():
+    """Hilo propio: el sondeo de HA no depende de que llegue nada por MQTT."""
+    while True:
+        try:
+            sondear_ha()
+        except Exception as e:                       # noqa: BLE001
+            log.error("sondeo de HA falló: %s", e)
+        time.sleep(HA_POLL_SEC)
+
+
 def on_connect(client, _u, _f, rc, *_):
     if rc == 0:
         log.info("conectado a %s:%s, suscribiendo a %r", MQTT_HOST, MQTT_PORT, MQTT_TOPIC)
@@ -323,6 +417,14 @@ def main():
         sys.exit(1)
     if MODE == "discover":
         log.info("modo descubrimiento: se muestra lo que llega, no se envía nada.")
+
+    if HA_URL and HA_TOKEN and HA_METRICS:
+        log.info("sondeo de Home Assistant cada %ss: %s",
+                 HA_POLL_SEC, ", ".join(sorted(HA_METRICS)))
+        threading.Thread(target=bucle_ha, daemon=True).start()
+    elif HA_URL or HA_TOKEN or HA_METRICS:
+        log.warning("Home Assistant a medio configurar: hacen falta HA_URL, "
+                    "HA_TOKEN y HA_METRICS. No se sondea.")
 
     c = mqtt.Client()
     if MQTT_USER:

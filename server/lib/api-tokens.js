@@ -32,6 +32,7 @@ export const SCOPE_DESCRIPTIONS = {
   'read:foods':      "Read the token owner's foods library. Used by CookTrace federation.",
   'write:workouts':  "Post workouts into the token owner's wellness history. Used by LiftTrace federation.",
   'write:activity':  "Log manual activity entries into the diary Activity section. Used by external trackers and headless integrations (issue #154).",
+  'write:wellness':  "Push daily wellness metrics (steps, active calories, sleep, resting HR) into the token owner's wellness history. Used by headless integrations such as Home Assistant.",
   'mcp:read':        'MCP: read the diary, goals, daily totals, and foods catalog (5 tools).',
   'mcp:write':       'MCP: log food / water / meals / body stats (4 additive tools). Requires MCP_WRITE_ENABLED=1 on the server.',
   'mcp:destroy':     'MCP: delete or edit diary entries, create catalog foods (3 tools). Requires MCP_DESTROY_ENABLED=1 AND every call to include confirm=true.',
@@ -56,6 +57,14 @@ export const KNOWN_SCOPES = new Set([
   // integrations pushing smart-scale readings straight to the server
   // (BLE → HA → NT), skipping the phone/Health-Connect roundtrip.
   'write:body-measurements',
+  // write:wellness unlocks POST /api/v1/wellness — daily aggregates
+  // (steps, active calories, sleep, resting HR) that none of the other
+  // three write endpoints can express: body-measurements only takes body
+  // composition, workouts takes one session, activity takes one diary
+  // row. Before this, the only writer of `steps` was the Android app's
+  // Health Connect sync, which leaves server-only and phone-less setups
+  // with no way to record a step count they already have elsewhere.
+  'write:wellness',
   // mcp:read unlocks the Model Context Protocol read tools (issue #103)
   // exposed under /api/mcp when MCP_ENABLED=1. Read-only in Phase 1;
   // future mcp:write scope will be added alongside the write tools.
