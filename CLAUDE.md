@@ -46,11 +46,18 @@ integraciones.
 - **El diario** está en `data/db/nutritrace.db`, tabla `diary`: Hernán es
   `user_id=1`, un registro por día con los `items` en JSON. Es la forma rápida de ver
   qué comió.
-- **Antes de proponer un menú, leer `../meali/CLAUDE.md`.** Las reglas de la dieta
-  de la nutricionista viven en Mealie, no acá. En corto:
-  - **Almuerzo:** almidón con vegetales crudos y cocidos, o un plato compuesto de
-    verdura. Una vez por semana puede ser pizza o empanadas, que comparten ese cupo.
-  - **Comida con carne:** solo con vegetales y una taza de sopa, **nunca con almidón**.
+- **Consultas de comida del día a día** ("¿qué almuerzo?", "¿cierra?", "cargalo"):
+  el perfil, las metas, sus costumbres y cómo se carga están en `CLAUDE.local.md`
+  (personal, fuera de git), y los datos se leen con
+  `~/Documentos/Hernan/Salud/nutricion_dia.py`.
+- **Para el menú semanal automático de Mealie, leer `../meali/CLAUDE.md`.** Esas
+  reglas de franjas (`plan-*`) siguen tal cual para `sortear.py`.
+- **Para recomendaciones puntuales en el chat (qué comer, qué compensar), esas
+  reglas de franjas ya no aplican** (decidido 14/09/2026): se fijaron para casi
+  nada de ejercicio, y ahora hay fuerza con LiftTrace (programa asignado el
+  27/08/2026; sesiones hechas el 09/09, 12/09 y 14/09) más caminatas largas.
+  Usar en cambio calorías/macros reales contra las metas de `user_settings.goals` (proteína, fibra, grasa, carbohidratos) y el gasto por
+  actividad — ver [[compensar-comidas-por-macros]] en memoria.
 - **Datos que entran solos**, sin que Hernán cargue nada: la balanza por el
   `mqtt-bridge`; pasos, calorías activas, sueño y pulso en reposo desde HA a
   `/api/v1/wellness`; y los entrenamientos de LiftTrace por federación.
