@@ -47,10 +47,10 @@ integraciones.
   `user_id=1`, un registro por día con los `items` en JSON. Es la forma rápida de ver
   qué comió.
 - **Antes de proponer un menú, leer `../meali/CLAUDE.md`.** Las reglas de la dieta
-  de la nutricionista viven en Mealie, no acá. En corto: el almuerzo lleva almidón con
-  vegetales crudos y cocidos, o un plato compuesto de verdura; la comida con carne va
-  solo con vegetales y una taza de sopa, **nunca con almidón**; pizza o empanadas una
-  vez por semana, compartiendo el cupo.
+  de la nutricionista viven en Mealie, no acá. En corto:
+  - **Almuerzo:** almidón con vegetales crudos y cocidos, o un plato compuesto de
+    verdura. Una vez por semana puede ser pizza o empanadas, que comparten ese cupo.
+  - **Comida con carne:** solo con vegetales y una taza de sopa, **nunca con almidón**.
 - **Datos que entran solos**, sin que Hernán cargue nada: la balanza por el
   `mqtt-bridge`; pasos, calorías activas, sueño y pulso en reposo desde HA a
   `/api/v1/wellness`; y los entrenamientos de LiftTrace por federación.
