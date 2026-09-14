@@ -40,3 +40,25 @@ NutriTrace es el centro del ecosistema de salud (balanza BLE, Mi Band, Health
 Connect, Home Assistant). El mapa completo está en
 `~/Documentos/Hernan/Salud/ARQUITECTURA-SALUD.md`. Leerlo antes de cambiar
 integraciones.
+
+## Cómo lo usa Hernán
+
+- **El diario** está en `data/db/nutritrace.db`, tabla `diary`: Hernán es
+  `user_id=1`, un registro por día con los `items` en JSON. Es la forma rápida de ver
+  qué comió.
+- **Antes de proponer un menú, leer `../meali/CLAUDE.md`.** Las reglas de la dieta
+  de la nutricionista viven en Mealie, no acá. En corto: el almuerzo lleva almidón con
+  vegetales crudos y cocidos, o un plato compuesto de verdura; la comida con carne va
+  solo con vegetales y una taza de sopa, **nunca con almidón**; pizza o empanadas una
+  vez por semana, compartiendo el cupo.
+- **Datos que entran solos**, sin que Hernán cargue nada: la balanza por el
+  `mqtt-bridge`; pasos, calorías activas, sueño y pulso en reposo desde HA a
+  `/api/v1/wellness`; y los entrenamientos de LiftTrace por federación.
+  `/api/v1/workouts` **no aparece en el diario** (se ve en Ajustes → Bienestar →
+  Historial de entrenamientos, y solo con `workoutsEnabled`); `/api/v1/activity` sí.
+- **La app Android quedó pausada** el 24/08/2026: una versión anterior a la 1.2.0
+  duplicaba el diario en cada sincronización. Hernán carga desde la web. Confirmar
+  con él si ya se actualizó antes de recomendar la app.
+- En HA, los gráficos de comida leen `comida:*` (`Home-Assistant/comida_estadisticas.py`)
+  y no los sensores `sensor.nutritrace_*`: Hernán corrige el diario al día siguiente, y
+  el historial del sensor no se entera.
