@@ -83,7 +83,11 @@
       "mobile_data": "You’re connected through mobile data. This server may require your home Wi-Fi or VPN.",
       "check_connection": "Check your Wi-Fi, VPN, or server.",
       "saved_locally": "Your changes are saved locally and will sync automatically."
-    }
+    },
+    "synced": "Synced",
+    "sync_offline": "Offline",
+    "sync_failing": "Can't reach the server",
+    "not_synced": "Not synced yet"
   },
   "settings": {
     "appearance": {
@@ -308,6 +312,12 @@
     },
     "about": {
       "section": "About"
+    },
+    "api_tokens": {
+      "section": "API Tokens"
+    },
+    "webhooks": {
+      "section": "Webhooks"
     }
   },
   "updates": {
@@ -622,7 +632,9 @@
       "nutrition_summary": "Nutrition Summary",
       "nutrition_summary_long": "Nutrition Summary — full breakdown of today's nutrients",
       "body_stats": "Body Stats",
-      "body_stats_long": "Body Stats — log weight, body fat, and measurements"
+      "body_stats_long": "Body Stats — log weight, body fat, and measurements",
+      "mark_day_complete": "Mark Day Complete",
+      "unmark_day_complete": "Unmark Day Complete"
     },
     "toast": {
       "body_stats_saved": "Body stats saved",
@@ -708,6 +720,26 @@
       "errors": {
         "name_required": "Name required",
         "kcal_required": "Calories required"
+      }
+    },
+    "day_complete": {
+      "marked_toast": "Day marked complete",
+      "auto_marked_toast": "All meals marked; day closed automatically",
+      "unmarked_toast": "Day mark cleared",
+      "error_toast": "Could not update day mark",
+      "meal_reminders_hint": "Tip: turn on meal reminders in Settings, Notifications so you don't forget a meal before end of day.",
+      "confirm_empty_title": "Close day with empty meals?",
+      "confirm_empty_msg": "These meals have no items and haven't been marked as skipped: {names}. Close anyway? The empty slots will be marked as intentionally skipped so you're not asked again on this day.",
+      "confirm_empty_ok": "Close Anyway",
+      "confirm_empty_cancel": "Keep Open",
+      "status": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "progress": "{done} of {total} meals logged",
+        "mark_complete": "Mark Day Complete",
+        "closed_headline": "Day Complete",
+        "closed_at": "Closed at {time}",
+        "reopen": "Reopen"
       }
     }
   },
@@ -809,7 +841,8 @@
     },
     "mealie": {
       "mass_note": "Per 100 g, computed from {grams} g of raw ingredients ({servings} servings). Weigh the finished dish and correct the portion if it cooked down or soaked up water. {missing} ingredients could not be weighed."
-    }
+    },
+    "loading_library": "Loading…"
   },
   "trace": {
     "panel_label": "AI Coach Chat",
@@ -997,7 +1030,9 @@
     "schedule_goal": "Schedule Goal",
     "show_progress_bar": "Show Daily Goals Progress Bar",
     "show_progress_bar_desc": "Progress strip at the bottom of the diary showing how much of your daily goals you've hit",
-    "meal_names": "Meal Names"
+    "meal_names": "Meal Names",
+    "show_completion": "Show Day Completion",
+    "show_completion_desc": "Adds a check toggle to the diary date bar so you can close each day when everything's logged. Marked days show a green check on the week strip, date picker, and statistics. Also adds a per-meal check on each meal card and confirms empty meals before closing the day. Off by default: no completion UI anywhere."
   },
   "settings_water": {
     "display_unit": "Display Unit",
@@ -1059,7 +1094,10 @@
     "bulk_share": "Bulk Share",
     "vis_private": "Private",
     "vis_group": "Everyone",
-    "vis_specific": "Specific People"
+    "vis_specific": "Specific People",
+    "cooktrace_section": "CookTrace",
+    "enable_cooktrace": "Enable CookTrace",
+    "cooktrace_desc": "Import recipes from your self-hosted CookTrace instance"
   },
   "settings_diagnostics": {
     "diag_mode": "Diagnostic Mode",
@@ -1079,7 +1117,8 @@
     "server_open_source": "Open Source",
     "server_license": "(AGPL-3.0)",
     "translations_from": "Translations powered by",
-    "support_dev": "Support Development"
+    "support_dev": "Support Development",
+    "support_note": "NutriTrace is free to self-host, always. The current goal is a Mac and an iPhone so the Trace apps can run properly on iOS."
   },
   "settings_merge": {
     "title": "Sync Options",
@@ -1349,6 +1388,21 @@
     },
     "errors": {
       "no_ingredients": "Please add at least one ingredient"
+    },
+    "ct_refresh": {
+      "headline": "CookTrace has newer content",
+      "sub": "Refresh to pull the latest name, ingredients, and totals.",
+      "refresh": "Refresh",
+      "dismiss": "Dismiss",
+      "refreshed_toast": "Recipe refreshed from CookTrace",
+      "error_toast": "Could not refresh from CookTrace",
+      "deleted_toast": "Recipe deleted"
+    },
+    "ct_deleted": {
+      "headline": "CookTrace source no longer available",
+      "sub": "The original recipe on CookTrace was deleted or is no longer readable with this token.",
+      "unlink": "Unlink",
+      "delete": "Delete"
     }
   },
   "settings_wellness": {
@@ -1411,7 +1465,8 @@
       "register_uri_note": "Register this exact URI in your app settings",
       "consumer_key": "Consumer Key",
       "consumer_key_ph": "Your Garmin Consumer Key",
-      "consumer_secret": "Consumer Secret"
+      "consumer_secret": "Consumer Secret",
+      "copy_failed": "Could not copy. Select the text manually."
     },
     "lifttrace_ovr": {
       "prefer_label": "Prefer Wearable Data Over LiftTrace",
@@ -1646,7 +1701,7 @@
       "spreadsheet_label": "Generic Spreadsheet",
       "spreadsheet_hint": "Any CSV with at least Date, Name, and Calories columns. Use our template for the easiest path.",
       "cronometer_label": "Cronometer",
-      "cronometer_hint": "Profile → Account → Export Data → Servings (CSV). Free tier supported.",
+      "cronometer_hint": "Account → Export Data → Food & Recipe Entries for your individual foods. Cronometer leaves the nutrition out of that file on some accounts; if yours has no calorie columns, use Daily Nutrition with \"Include diary group rows\" ticked to bring in your totals per meal.",
       "loseit_label": "Lose It!",
       "loseit_hint": "loseit.com → Insights → Weekly → Export to Spreadsheet. One CSV per week, concatenate first if importing multiple weeks.",
       "mfp_label": "MyFitnessPal",
@@ -1784,7 +1839,9 @@
       "export_diary_csv": "Export Diary As CSV",
       "export_diary_csv_desc": "Downloads your full diary history as a spreadsheet. Useful for analysis in Excel or Google Sheets.",
       "export_activity_csv": "Export Activity As CSV",
-      "export_activity_csv_desc": "Downloads your full manual activity log (name, calories, duration, distance, MET) as a spreadsheet."
+      "export_activity_csv_desc": "Downloads your full manual activity log (name, calories, duration, distance, MET) as a spreadsheet.",
+      "export_full_nutrition_csv": "Export Full Nutrition As CSV",
+      "export_full_nutrition_csv_desc": "Long-form export with per-item time, meal name, brand, and every built-in and custom nutrient (with units). Best for personal databases and long-term analytics."
     }
   },
   "settings_trace": {
@@ -2152,6 +2209,62 @@
     "errors": {
       "username_required": "Username is required",
       "failed": "Failed to create account"
+    }
+  },
+  "settings_webhooks": {
+    "intro": "Outgoing webhooks notify another service the instant something happens in NutriTrace: a food logged, water logged, a body stat logged, or a nutrition goal reached. Each webhook fires a signed HTTP POST to a URL you provide.",
+    "disabled_notice": "Webhooks are not enabled on this server. A webhook can still be created, but it won't fire until WEBHOOKS_ENABLED=1 is set.",
+    "just_created": {
+      "title": "Webhook created:",
+      "warn": "Copy this secret now. It will not be shown again, and you'll need it to verify the signature on deliveries.",
+      "copy": "Copy",
+      "saved": "I've saved it"
+    },
+    "empty": {
+      "title": "No webhooks yet",
+      "desc": "Create one to notify another service when something happens."
+    },
+    "row": {
+      "last_delivery": "last delivery {when}",
+      "never": "never",
+      "just_now": "just now",
+      "min_ago": "{n}m ago",
+      "hr_ago": "{n}h ago",
+      "day_ago": "{n}d ago",
+      "status_success": "delivered",
+      "status_failed": "failed",
+      "test_title": "Send a test event",
+      "enabled_title": "Enabled",
+      "delete_title": "Delete webhook"
+    },
+    "form": {
+      "new_webhook": "New Webhook",
+      "url": "Target URL *",
+      "url_ph": "https://example.com/webhook",
+      "events": "Events *",
+      "secret_label": "Secret (Optional)",
+      "secret_ph": "Leave empty to generate one",
+      "cancel": "Cancel",
+      "create": "Create Webhook",
+      "creating": "Creating…"
+    },
+    "confirm": {
+      "delete_title": "Delete this webhook?",
+      "delete_msg": "This cannot be undone. The target will stop receiving events immediately.",
+      "delete_confirm": "Delete"
+    },
+    "toast": {
+      "load_failed": "Could not load webhooks",
+      "url_required": "Enter a target URL",
+      "event_required": "Select at least one event",
+      "create_failed": "Could not create webhook",
+      "update_failed": "Could not update webhook",
+      "delete_failed": "Could not delete webhook",
+      "deleted": "Webhook deleted",
+      "test_failed": "Test delivery failed",
+      "test_delivered": "Test event delivered",
+      "copied": "Copied to clipboard",
+      "copy_failed": "Could not copy, select the text manually"
     }
   }
 }

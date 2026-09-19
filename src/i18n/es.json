@@ -886,6 +886,9 @@
     },
     "about": {
       "section": "Acerca de"
+    },
+    "api_tokens": {
+      "section": "Tokens de API"
     }
   },
   "settings_main": {

@@ -11,6 +11,11 @@ import workoutsRouter from './workouts.js';
 import activityRouter from './activity.js';
 import bodyMeasurementsRouter from './body-measurements.js';
 import wellnessRouter from './wellness.js';
+import diaryRouter from './diary.js';
+import goalsRouter from './goals.js';
+import mealsRouter from './meals.js';
+import stepsRouter from './steps.js';
+import profileRouter from './profile.js';
 
 const router = Router();
 
@@ -24,5 +29,15 @@ router.use('/workouts', workoutsRouter);
 router.use('/activity', activityRouter);
 router.use('/body-measurements', bodyMeasurementsRouter);
 router.use('/wellness', wellnessRouter);
+// diary/goals/meals/steps/profile are the general-purpose public API (a
+// user's own scripts and automations), not a sister-app federation
+// contract like the routers above. Each self-gates behind
+// PUBLIC_API_ENABLED and reuses the mcp:read/mcp:write scopes MCP
+// already defines.
+router.use('/diary', diaryRouter);
+router.use('/goals', goalsRouter);
+router.use('/meals', mealsRouter);
+router.use('/steps', stepsRouter);
+router.use('/profile', profileRouter);
 
 export default router;
