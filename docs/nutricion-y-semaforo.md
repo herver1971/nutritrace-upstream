@@ -30,6 +30,37 @@ Empujan casi siempre en la misma dirección, con una diferencia que importa:
 La fructosa se metaboliza mayoritariamente en el hígado y estimula ahí mismo la
 producción de grasa. Bebidas azucaradas y jugos son el blanco número uno.
 
+### El techo de azúcar libre: 25 g/día
+
+Fijado el 18/09/2026. **Azúcar libre** es el azúcar agregado más el que viene
+en miel, jarabes y jugos de fruta; **no** cuenta el de la fruta entera, la
+verdura ni la leche, donde viene con fibra, agua y matriz que cambian cómo se
+absorbe. Es la definición de la OMS, y el techo de 25 g es su meta exigente
+—el 5 % de las calorías— que es la que corresponde con hígado graso.
+
+Por qué un techo propio y no el azúcar que ya mide la app: `sugars` es azúcar
+**total**, y ahí adentro pesan lo mismo una cucharada de miel y una banana. Con
+un techo sobre el total, una banana de 118 g se llevaría 14 g del presupuesto
+sin ser el problema, y la miel del café pasaría desapercibida.
+
+Dónde vive el cálculo: `~/Documentos/Hernan/Salud/azucar_libre.py`, que
+clasifica cada alimento por su categoría de este catálogo —fruta, verdura,
+legumbre, lácteo y frutos secos son intrínsecos; dulces y bebidas azucaradas
+son libres— con una lista de excepciones para los casos que la categoría no
+puede resolver sola: la granola es un cereal pero va tostada con miel, y el
+jugo de naranja es una fruta pero es jugo. Lo que no se reconoce **cuenta como
+libre**, para que un producto nuevo con azúcar agregada se note en vez de
+pasar de largo.
+
+> **La fruta desecada no es azúcar libre.** El dátil tiene 63 g de azúcar por
+> 100 g y parece un caramelo, pero la definición solo cuenta el jugo y el
+> concentrado, no la fruta entera aunque esté seca. Es el caso que más se
+> presta a discutir y por eso queda escrito.
+
+Medido sobre los 32 días cargados, el máximo fue **21 g** (04/09, un jugo de
+naranja exprimido) y la mediana es 0: el techo no está para restringir lo que
+ya hace, sino para que se vea el día que eso cambie.
+
 ---
 
 ## 2. Los tipos de grasa
@@ -1031,7 +1062,8 @@ caminar más despacio durante más rato.
 - **El aceite virgen extra y el refinado figuran igual.** USDA no mide
   polifenoles, que son parte de por qué el virgen extra se considera mejor.
 - **`sugars` es azúcar total**, no libre. Por eso las frutas enteras se
-  eximen explícitamente en el criterio.
+  eximen explícitamente en el criterio, y por eso el techo de azúcar libre
+  (sección 1) se calcula afuera, clasificando alimento por alimento.
 - **No hay café en grano ni capuchino** en SR Legacy. Para espresso, la
   entrada correcta es *Café espresso*: el grano queda casi todo en la
   pastilla y anotarlo por peso sobreestimaría muchísimo.
