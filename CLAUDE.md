@@ -51,6 +51,14 @@ finales de línea de las tres versiones y fusionar con `git merge-file`: bajó d
 un conflicto de archivo entero a 7 bloques reales. Los `.json` de traducción
 conviene fusionarlos **por clave**, no por texto.
 
+**Trampa al fusionar (20/09/2026, v1.3.1): upstream commiteó un symlink
+`node_modules`** apuntando a `/home/papa/Documents/claude_code/nutritrace/`
+(su máquina). Su `.gitignore` usa `node_modules/` con barra, que tapa el
+directorio pero no un enlace con ese nombre. Al fusionar, el enlace roto
+reemplaza el `node_modules` real y deja el árbol sin dependencias. **Nuestro
+`.gitignore` ya lo tapa** (sin barra), pero si upstream lo vuelve a mover,
+revisar `git ls-files -s node_modules` antes de construir.
+
 Antes de dar por buena una actualización, verificar: los cuatro scripts de
 `Hernan/Salud/` y `Hernan/Home-Assistant/comida_estadisticas.py`, el
 `mqtt-bridge`, y que el chunk `base-foods-*.js` esté en `dist/assets`.
