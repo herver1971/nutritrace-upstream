@@ -381,6 +381,20 @@ Ordenados por **fibra sobre carbohidratos**, que es la señal de integral vs
 refinado y sobrevive a la cocción (la fibra absoluta no: un grano cocido es
 mayormente agua).
 
+> **Para comprar, el corte es 0,10, no el 0,04 del semáforo** (20/09/2026),
+> y sobre un rótulo argentino se calcula **fibra ÷ (carbohidratos + fibra)**:
+> el Mercosur declara carbohidratos *disponibles*, sin la fibra, y la regla de
+> Harvard usa *totales*. Dividir por el número del rótulo a secas infla el
+> ratio. Es la regla 10:1 de Harvard (Mozaffarian, 2013), validada justamente para
+> productos envasados de panadería y cereales — el caso de la góndola. Con
+> 0,04 entran en verde el pan blanco de molde (0,055), el pan francés (0,042)
+> y los fideos secos (0,043), porque el umbral se calibró contra el arroz, que
+> es el peor caso de esta métrica: su salvado lleva poca fibra por gramo de
+> almidón. **El semáforo se queda en 0,04** porque tiene que colorear también
+> arroz integral cocido (0,063) y crudo (0,047), que son integrales legítimos
+> y con 0,10 caerían a amarillo. Dos umbrales, dos trabajos: clasificar un
+> catálogo no es lo mismo que elegir un paquete.
+
 | | Alimento | kcal | Carb | Fibra | Fibra/Carb |
 |---|---|---|---|---|---|
 | 🟢 | Salvado de trigo | 216 | 64.5 | 42.8 | 0.663 |
