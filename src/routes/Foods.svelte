@@ -2,6 +2,7 @@
   import { onMount, onDestroy, tick } from 'svelte';
   import { push, location } from 'svelte-spa-router';
   import { _, locale } from 'svelte-i18n';
+  import { closeOnBack } from '../lib/back-stack.js';
   import { fade, fly, slide } from 'svelte/transition';
 
   import Tabs        from '../components/ui/Tabs.svelte';
@@ -26,8 +27,9 @@
   import { resolveAssetUrl } from '../lib/platform.js';
   import { offCountryTagToFlag, offCountryTagToName } from '../lib/off-country-flag.js';
   import { BaseFoods } from '../lib/base-foods.js';
-  import { foodsShowThumbnails, foodsShowCategories, foodsShowLabels, foodsShowNotes, foodsSort, mealsSort, recipesSort, foodCategories, foodsShowYesterdayMeals, foodsYesterdayCollapsed, foodsSavedCollapsed, mealNames, usdaEnabled, usdaApiKey, offEnabled, offSearchCountry, offSearchLanguage, foodsDefaultSource, baseFoodsEnabled, catName as _catName, catDisplay as _catDisplay, pageBanners, bannerStyle, energyUnit } from '../stores/settings.js';
+  import { foodsShowThumbnails, foodsShowCategories, foodsShowLabels, foodsShowNotes, foodsSort, mealsSort, recipesSort, foodCategories, foodsShowYesterdayMeals, foodsYesterdayCollapsed, foodsSavedCollapsed, mealNames, usdaEnabled, usdaApiKey, offEnabled, offSearchCountry, offSearchLanguage, foodsDefaultSource, diaryDefaultField, baseFoodsEnabled, catName as _catName, catDisplay as _catDisplay, pageBanners, bannerStyle, energyUnit } from '../stores/settings.js';
   import { mealIcon } from '../lib/mealIcon.js';
+  import { focusDefaultField } from '../lib/default-field.js';
   import { pageScrollTop, restorePageScroll } from '../lib/scroll-anchor.js';
 
   // Query string params
@@ -631,6 +633,7 @@
   let scannerOpen = false;
   let showQtyPrompt = false;
   let _qtyPromptPortionEl = null;
+  let _qtyPromptServingsEl = null;
   // Autofocus the portion input the moment the qty-prompt sheet opens
   // so a user tapping "Add to Diary" on a food can start typing quantity
   // immediately instead of tapping the field first. #170.
@@ -638,7 +641,11 @@
   // value so typing replaces it instead of appending. Matches the
   // Body Stats weight-edit pattern the user called out as the
   // reference. Same applied to every other sheet on this page.
-  $: if (showQtyPrompt) tick().then(() => { _qtyPromptPortionEl?.focus(); _qtyPromptPortionEl?.select?.(); });
+  // #224: the cursor starts in the box chosen in Settings, Diary, Default Field.
+  $: if (showQtyPrompt) tick().then(() => {
+    const el = $diaryDefaultField === 'portion' ? _qtyPromptPortionEl : (_qtyPromptServingsEl || _qtyPromptPortionEl);
+    el?.focus(); el?.select?.();
+  });
   // Enter anywhere in the sheet submits (mirrors QuickCalories + water
   // custom + activity flows). Guarded to not fire inside a select/textarea.
   function _onQtyPromptKey(e) {
@@ -711,9 +718,8 @@
   // Query the first portion input inside the sheet root after mount so we
   // don't have to bind ref per-item — cleaner with the {#each} loop.
   $: if (showMultiPortionSheet) tick().then(() => {
-    const _first = _multiPortionSheetEl?.querySelector('input[type="text"][inputmode="decimal"]');
-    _first?.focus();
-    _first?.select?.();
+    // #224: first item's Serving Size or Number of Servings, per Default Field.
+    focusDefaultField(_multiPortionSheetEl, $diaryDefaultField);
   });
   function _onMultiPortionKey(e) {
     if (e.key !== 'Enter') return;
@@ -2873,7 +2879,7 @@
         <div style="display:flex;gap:10px">
           <div style="flex:1">
             <label class="form-label" style="font-size:11px;color:var(--text-3);display:block;margin-bottom:5px">{$_('foods_deep.serving_size')}</label>
-            <input class="input" type="text" inputmode="decimal" use:decimalInput bind:value={item.portion} style="font-size:16px;width:100%" />
+            <input class="input" type="text" inputmode="decimal" use:decimalInput bind:value={item.portion} data-field="portion" style="font-size:16px;width:100%" />
           </div>
           <div style="width:100px">
             <label class="form-label" style="font-size:11px;color:var(--text-3);display:block;margin-bottom:5px">Unit</label>
@@ -2881,7 +2887,7 @@
           </div>
           <div style="width:72px">
             <label class="form-label" style="font-size:11px;color:var(--text-3);display:block;margin-bottom:5px">{$_('foods_deep.servings')}</label>
-            <input class="input" type="text" inputmode="decimal" use:decimalInput bind:value={item.servings} style="font-size:16px;width:100%" />
+            <input class="input" type="text" inputmode="decimal" use:decimalInput bind:value={item.servings} data-field="servings" style="font-size:16px;width:100%" />
           </div>
         </div>
       </div>
@@ -2947,7 +2953,7 @@
       <div style="flex:1">
         <label class="form-label" style="font-size:11px;color:var(--text-3);display:block;margin-bottom:6px">{$_('foods_deep.serving_size')}</label>
         <input class="input" type="text" inputmode="decimal" use:decimalInput
-          bind:value={promptPortion} bind:this={_qtyPromptPortionEl}
+          bind:value={promptPortion} bind:this={_qtyPromptPortionEl} data-field="portion"
           style="font-size:16px;width:100%" />
       </div>
       <div style="width:100px">
@@ -2972,6 +2978,7 @@
     <div>
       <label class="form-label" style="font-size:11px;color:var(--text-3);display:block;margin-bottom:6px">{$_('foods_deep.num_servings')}</label>
       <input class="input" type="text" inputmode="decimal" use:decimalInput bind:value={promptServings}
+        bind:this={_qtyPromptServingsEl} data-field="servings"
         style="font-size:16px;width:100%" />
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-md)">
@@ -3155,7 +3162,7 @@
 {#if baseDropdownOpen}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div use:portal class="tier-dropdown-backdrop"
+  <div use:portal class="tier-dropdown-backdrop" use:closeOnBack={_closeTierDropdowns}
     in:fade={{ duration: 120 }} out:fade={{ duration: 100 }}>
     <div class="tier-dropdown-panel"
       bind:this={baseDropdownPanelEl}
@@ -3186,7 +3193,7 @@
 {#if offDropdownOpen}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div use:portal class="tier-dropdown-backdrop"
+  <div use:portal class="tier-dropdown-backdrop" use:closeOnBack={_closeTierDropdowns}
     in:fade={{ duration: 120 }} out:fade={{ duration: 100 }}>
     <div class="tier-dropdown-panel"
       bind:this={offDropdownPanelEl}
@@ -3226,7 +3233,7 @@
 {#if usdaDropdownOpen}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div use:portal class="tier-dropdown-backdrop"
+  <div use:portal class="tier-dropdown-backdrop" use:closeOnBack={_closeTierDropdowns}
     in:fade={{ duration: 120 }} out:fade={{ duration: 100 }}>
     <div class="tier-dropdown-panel"
       bind:this={usdaDropdownPanelEl}
