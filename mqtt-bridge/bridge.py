@@ -16,7 +16,7 @@ Dos modos:
 Configuración por variables de entorno; ver .env.example.
 """
 import json, os, re, sys, threading, time, logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import paho.mqtt.client as mqtt
 import requests
@@ -46,6 +46,9 @@ HA_URL    = os.environ.get("HA_URL", "").rstrip("/")
 HA_TOKEN  = os.environ.get("HA_TOKEN", "")
 HA_SOURCE = os.environ.get("HA_SOURCE", "home-assistant")
 HA_POLL_SEC = int(os.environ.get("HA_POLL_SEC", "900"))
+# Contador del Garmin que marca de qué día es lo que muestran los demás (ver
+# _dia_del_ciclo). El gasto total sirve porque sube siempre, por el basal.
+HA_DAY_ENTITY = os.environ.get("HA_DAY_ENTITY", "sensor.garmin_connect_burned_calories")
 try:
     HA_METRICS = json.loads(os.environ.get("HA_METRICS", "{}"))
 except json.JSONDecodeError:
@@ -323,6 +326,51 @@ def _leer_ha(entity_id):
         return None
 
 
+def _dia_del_ciclo():
+    """Fecha a la que pertenece lo que muestran ahora los sensores del Garmin.
+
+    Los contadores diarios de `garmin_connect` NO vuelven a cero a medianoche,
+    sino cuando el reloj sincroniza el día nuevo (del 13 al 21/09/2026, entre las 00:12 y las 02:57).
+    Hasta entonces siguen mostrando AYER, y fecharlos con la hora de la lectura
+    metía el total de ayer en la fila de hoy y perdía lo que el reloj
+    sincronizaba de madrugada. Misma regla que
+    Hernan/Home-Assistant/garmin_diario_estadisticas.py y Hernan/Salud/garmin_ciclos.py:
+    reinicio = caída por debajo del 90 % del valor anterior; un ciclo es del día
+    en que empezó (+3 h de tolerancia). Si no se puede saber, hoy, como antes.
+    """
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    if not HA_DAY_ENTITY:
+        return hoy
+    ahora = datetime.now().astimezone()
+    try:
+        r = requests.get(
+            f"{HA_URL}/api/history/period/{(ahora - timedelta(hours=72)).isoformat()}",
+            params={"filter_entity_id": HA_DAY_ENTITY, "end_time": ahora.isoformat(),
+                    "minimal_response": "true", "no_attributes": "true"},
+            headers={"Authorization": f"Bearer {HA_TOKEN}"}, timeout=20)
+        r.raise_for_status()
+        serie = (r.json() or [[]])[0]
+    except (requests.RequestException, ValueError, IndexError) as e:
+        log.warning("no pude leer el historial de %s (%s): uso la fecha de hoy", HA_DAY_ENTITY, e)
+        return hoy
+    inicio, previo, reinicios = None, None, 0
+    for p in serie:
+        try:
+            v = float(p.get("state"))
+            t = datetime.fromisoformat(p.get("last_changed") or p.get("last_updated")).astimezone()
+        except (TypeError, ValueError):
+            continue
+        if inicio is None or (previo is not None and previo > 0 and v < 0.9 * previo):
+            if inicio is not None:
+                reinicios += 1
+            inicio = t
+        previo = v
+    if not reinicios:
+        log.warning("%s no se reinició en 72 h: uso la fecha de hoy", HA_DAY_ENTITY)
+        return hoy
+    return (inicio + timedelta(hours=3)).strftime("%Y-%m-%d")
+
+
 def sondear_ha():
     """Una pasada: lee cada entidad configurada y manda lo que haya."""
     metricas = {}
@@ -337,11 +385,9 @@ def sondear_ha():
     if not metricas:
         log.debug("HA: nada que enviar en esta pasada")
         return
-    # La fecha es la LOCAL del contenedor: los contadores diarios de pasos y
-    # calorias se resetean a medianoche local, y con TZ en UTC las lecturas de
-    # despues de las 21:00 se cargarian en el dia siguiente. Fijar TZ en el
-    # .env es parte de la instalacion.
-    cuerpo = {"date": datetime.now().strftime("%Y-%m-%d"),
+    # La fecha es la del ciclo del Garmin, no la de la lectura (_dia_del_ciclo).
+    # TZ en el .env sigue importando: el día de un ciclo es el día LOCAL.
+    cuerpo = {"date": _dia_del_ciclo(),
               "source": HA_SOURCE, "metrics": metricas}
     if DRY_RUN:
         log.info("DRY_RUN, no se envía: %s", json.dumps(cuerpo, ensure_ascii=False))
