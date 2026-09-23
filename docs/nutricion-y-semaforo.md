@@ -159,8 +159,9 @@ qué las curadas (jamón, panceta) quedan en rojo aunque su grasa sea baja.
 | 🟢 | Pechuga de pavo cruda | 114 | 1.5 | 0.3 | 0.5 | 23.7 | 113 |
 | 🟢 | Pechuga de pollo cruda (sin piel) | 120 | 2.6 | 0.6 | 1.1 | 22.5 | 45 |
 | 🟢 | Solomillo de cerdo crudo (magro) | 109 | 2.2 | 0.7 | 1.2 | 20.9 | 53 |
+| 🟢 | Pata de pollo cruda (sin piel) | 116 | 3.7 | 0.9 | 2.2 | 19.4 | 114 |
 | 🟢 | Pechuga de pollo al horno (sin piel) | 165 | 3.6 | 1.0 | 2.0 | 31.0 | 74 |
-| 🟢 | Pata de pollo cruda (sin piel) | 120 | 4.2 | 1.1 | 2.4 | 19.2 | 96 |
+| 🟢 | Pata muslo de pollo cruda (sin piel) | 120 | 4.2 | 1.1 | 2.4 | 19.2 | 96 |
 | 🟢 | Nalga cruda (magra) | 121 | 2.9 | 1.1 | 1.5 | 23.6 | 54 |
 | 🟢 | Solomillo de cerdo al horno (magro) | 143 | 3.5 | 1.2 | 1.8 | 26.2 | 57 |
 | 🟢 | Hígado de ternera crudo | 135 | 3.6 | 1.2 | 0.9 | 20.4 | 69 |
@@ -168,6 +169,7 @@ qué las curadas (jamón, panceta) quedan en rojo aunque su grasa sea baja.
 | 🟢 | Nalga al horno (magra) | 162 | 3.8 | 1.4 | 1.9 | 30.1 | 67 |
 | 🟢 | Bola de lomo cruda (magra) | 128 | 4.3 | 1.5 | 2.0 | 22.2 | 59 |
 | 🟢 | Cuadril crudo (magro) | 131 | 4.1 | 1.5 | 1.8 | 22.1 | 56 |
+| 🟢 | Pata de pollo al horno (sin piel) | 155 | 5.7 | 1.5 | 3.4 | 24.2 | 128 |
 | 🟢 | Hígado de pollo crudo | 119 | 4.8 | 1.6 | 2.6 | 16.9 | 71 |
 | 🟢 | Paleta cruda (magra) | 123 | 4.1 | 1.7 | 2.4 | 21.6 | 73 |
 | 🟢 | Conejo crudo | 136 | 5.5 | 1.7 | 2.6 | 20.1 | 41 |
@@ -176,7 +178,7 @@ qué las curadas (jamón, panceta) quedan en rojo aunque su grasa sea baja.
 | 🟢 | Pavo picado | 148 | 7.7 | 2.0 | 4.8 | 19.7 | 58 |
 | 🟢 | Vacío crudo (magro) | 141 | 5.5 | 2.1 | 2.1 | 21.6 | 55 |
 | 🟢 | Hígado de pollo estofado | 167 | 6.5 | 2.1 | 3.4 | 24.5 | 76 |
-| 🟢 | Pata de pollo al horno (sin piel) | 174 | 7.8 | 2.1 | 4.7 | 24.2 | 99 |
+| 🟢 | Pata muslo de pollo al horno (sin piel) | 174 | 7.8 | 2.1 | 4.7 | 24.2 | 99 |
 | 🟢 | Carne picada magra (95/5) | 137 | 5.0 | 2.2 | 2.3 | 21.4 | 66 |
 | 🟢 | Pechuga de pollo al horno (con piel) | 197 | 7.8 | 2.2 | 4.7 | 29.8 | 71 |
 | 🟢 | Cuadril a la plancha (magro) | 183 | 5.8 | 2.2 | 2.5 | 30.6 | 64 |
@@ -187,6 +189,7 @@ qué las curadas (jamón, panceta) quedan en rojo aunque su grasa sea baja.
 | 🟢 | Pato sin piel crudo | 135 | 6.0 | 2.3 | 2.3 | 18.3 | 74 |
 | 🟢 | Bife angosto crudo (magro) | 143 | 5.7 | 2.3 | 3.1 | 23.1 | 46 |
 | 🟢 | Conejo al horno | 197 | 8.1 | 2.4 | 3.7 | 29.1 | 47 |
+| 🟢 | Pata muslo de pollo a la sartén (sin piel) | 208 | 9.3 | 2.5 | 5.7 | 28.4 | 96 |
 | 🟢 | Aguja / Roast beef cruda (magra) | 137 | 6.0 | 2.5 | 3.4 | 20.6 | 85 |
 | 🟢 | Pecho de ternera crudo (magro) | 157 | 7.4 | 2.6 | 3.7 | 20.7 | 79 |
 | 🟢 | Paleta estofada (magra) | 196 | 7.8 | 2.6 | 3.8 | 31.5 | 61 |
@@ -1025,7 +1028,7 @@ en código de runtime.
 Para ajustar un umbral: editar `trafficLight`, correr
 `node scripts/build-base-foods.mjs`, revisar el diff del JSON.
 
-Reparto actual: **444 🟢 · 57 🟡 · 66 🔴** sobre 567 alimentos.
+Reparto actual: **449 🟢 · 57 🟡 · 66 🔴** sobre 572 alimentos.
 
 ---
 
@@ -1086,5 +1089,5 @@ caminar más despacio durante más rato.
 
 ---
 
-*Generado a partir del catálogo de 567 ingredientes base. Última revisión de
+*Generado a partir del catálogo de 572 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
