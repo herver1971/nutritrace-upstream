@@ -163,6 +163,12 @@ export function unitToGrams(unit) {
  * Returns null when not found or when the entry is malformed.
  */
 function altUnitGrams(altUnits, unit) {
+  // Diary items get alt_units back from hydrateItems() straight off the foods
+  // column, i.e. as the raw JSON string. Without parsing it here, "1 rebanada"
+  // -> "66 g" fell through to the plain 66/1 ratio and logged 66 slices.
+  if (typeof altUnits === 'string') {
+    try { altUnits = JSON.parse(altUnits); } catch { return null; }
+  }
   if (!Array.isArray(altUnits) || altUnits.length === 0 || !unit) return null;
   const u = String(unit).toLowerCase();
   for (const r of altUnits) {
