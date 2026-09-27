@@ -925,11 +925,18 @@
     return dp[m][n];
   }
 
+  // Lowercase and strip diacritics, so "oregano" finds "Orégano" and
+  // "limon" finds "Limón". Same folding the Básicos search already does
+  // (base-foods.js normalize); English names are unaffected.
+  function _fold(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
   function _fuzzyMatch(food, q) {
-    const name  = (food.name  || '').toLowerCase();
-    const brand = (food.brand || '').toLowerCase();
+    const name  = _fold(food.name);
+    const brand = _fold(food.brand);
     const combined = name + (brand ? ' ' + brand : '');
-    const qLow = q.toLowerCase().trim();
+    const qLow = _fold(q).trim();
     if (!qLow) return true;
     // 1. Exact substring (current behavior)
     if (combined.includes(qLow)) return true;

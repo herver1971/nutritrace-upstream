@@ -505,11 +505,13 @@
   // skip the local sort and the local search filter for those.
   $: _isExternalSearch = pickerTab === 0 && (_pickerSource === 'base' || _pickerSource === 'off' || _pickerSource === 'usda' || _pickerSource === 'mealie');
   $: _pickerListSorted = _isExternalSearch ? _pickerList : _applyPickerSort(_pickerList, _pickerSortMode);
+  // Lowercase and strip diacritics, so "oregano" finds "Orégano" (as in Foods).
+  const _fold = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   $: pickerFiltered = (_isExternalSearch || !pickerSearch)
     ? _pickerListSorted
     : _pickerListSorted.filter(f =>
-        (f.name||'').toLowerCase().includes(pickerSearch.toLowerCase()) ||
-        (f.brand||'').toLowerCase().includes(pickerSearch.toLowerCase()));
+        _fold(f.name).includes(_fold(pickerSearch)) ||
+        _fold(f.brand).includes(_fold(pickerSearch)));
 
   // Switching the outer tab (Foods/Meals/Recipes) resets cross-source state
   // so the Foods source filter doesn't leak into Meals/Recipes views.
