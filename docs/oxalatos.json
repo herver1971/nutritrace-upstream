@@ -1,0 +1,48 @@
+{
+  "_nota": "Oxalato total aproximado por 100 g del alimento como se come (bebidas: por 100 ml). Los valores varían mucho con la variedad, el cultivo, la cocción y el método de laboratorio: son referencias para ordenar, no cifras exactas. Fuentes: OHF = Oxalosis & Hyperoxaluria Foundation (ohf.org, tablas por 100 g); Harvard = base de la Escuela de Salud Pública de Harvard publicada por el programa de cálculos renales de la Universidad de Chicago (mg por porción, pasados a 100 g); Lit. = valores de literatura citados de forma consistente (p. ej. almendras tostadas 469, cacao 623, cajú 262, maní 140, trigo sarraceno 269). `ids` son las filas del semáforo que se marcan. Armado el 03/10/2026.",
+  "fuentes": [
+    {"clave": "OHF", "texto": "Oxalosis & Hyperoxaluria Foundation, tablas de oxalato en verduras", "url": "https://ohf.org/vegetables-oxalate/"},
+    {"clave": "Harvard", "texto": "Base de oxalato de la Escuela de Salud Pública de Harvard, vía el programa de cálculos renales de la Universidad de Chicago", "url": "https://kidneystones.uchicago.edu/2015/11/16/how-to-eat-a-low-oxalate-diet/"},
+    {"clave": "Calcio", "texto": "Calcio en la comida para bajar la absorción de oxalato (revisión, PMC)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6918943"}
+  ],
+  "alimentos": [
+    {"nombre": "Acelga cruda", "ids": ["acelga"], "porcion_g": 36, "porcion": "1 taza picada", "mg_100": 800, "rango": "657–1167", "fuente": "OHF"},
+    {"nombre": "Espinaca cruda", "ids": ["espinaca"], "porcion_g": 30, "porcion": "1 taza", "mg_100": 750, "rango": "650–970", "fuente": "OHF, Harvard"},
+    {"nombre": "Ruibarbo", "ids": ["ruibarbo"], "porcion_g": 120, "porcion": "½ taza cocido", "mg_100": 750, "rango": "~750", "fuente": "Lit."},
+    {"nombre": "Espinaca cocida", "ids": ["espinaca-cocida"], "porcion_g": 90, "porcion": "½ taza", "mg_100": 650, "rango": "567–840", "fuente": "OHF, Harvard"},
+    {"nombre": "Hojas de remolacha", "ids": [], "porcion_g": 38, "porcion": "1 taza cruda", "mg_100": 640, "rango": "~640", "fuente": "Lit."},
+    {"nombre": "Cacao en polvo", "ids": ["cacao-polvo"], "porcion_g": 10, "porcion": "1 cucharada colmada", "mg_100": 620, "rango": "~620", "fuente": "Lit."},
+    {"nombre": "Verdolaga", "ids": [], "porcion_g": 40, "porcion": "1 taza", "mg_100": 620, "rango": "~620", "fuente": "OHF"},
+    {"nombre": "Acelga hervida", "ids": ["acelga-cocida"], "porcion_g": 88, "porcion": "½ taza", "mg_100": 500, "rango": "335–679", "fuente": "OHF"},
+    {"nombre": "Almendras (y su manteca o harina)", "ids": ["almendra", "almendra-tostada", "manteca-almendra", "harina-almendras"], "porcion_g": 20, "porcion": "20 g (≈15 unidades)", "mg_100": 450, "rango": "436–469", "fuente": "Harvard, Lit."},
+    {"nombre": "Salvado de trigo", "ids": ["salvado-trigo"], "porcion_g": 15, "porcion": "2 cucharadas", "mg_100": 450, "rango": "variable", "fuente": "Lit."},
+    {"nombre": "Trigo sarraceno", "ids": ["trigo-sarraceno"], "porcion_g": 40, "porcion": "40 g crudo", "mg_100": 270, "rango": "~270", "fuente": "Lit."},
+    {"nombre": "Salvado de arroz", "ids": [], "porcion_g": 15, "porcion": "2 cucharadas", "mg_100": 240, "rango": "~240", "fuente": "Harvard"},
+    {"nombre": "Castaña de cajú", "ids": ["castana-caju", "caju-tostado"], "porcion_g": 20, "porcion": "20 g", "mg_100": 220, "rango": "175–262", "fuente": "Harvard, Lit."},
+    {"nombre": "Avellana", "ids": ["avellana"], "porcion_g": 20, "porcion": "20 g", "mg_100": 200, "rango": "167–222", "fuente": "Lit."},
+    {"nombre": "Chocolate amargo 60-85 %", "ids": ["chocolate-60", "chocolate-70"], "porcion_g": 20, "porcion": "2 cuadraditos", "mg_100": 150, "rango": "100–200", "fuente": "Lit."},
+    {"nombre": "Batata", "ids": ["batata", "batata-hervida"], "porcion_g": 150, "porcion": "1 chica", "mg_100": 126, "rango": "~126", "fuente": "OHF"},
+    {"nombre": "Maní (y su manteca)", "ids": ["mani", "mani-tostado", "manteca-mani"], "porcion_g": 28, "porcion": "un puñado (28 g)", "mg_100": 120, "rango": "96–140", "fuente": "Harvard, Lit."},
+    {"nombre": "Tahini y sésamo", "ids": ["tahini", "semilla-sesamo"], "porcion_g": 15, "porcion": "1 cucharada", "mg_100": 105, "rango": "~105", "fuente": "Harvard"},
+    {"nombre": "Dátil", "ids": ["datil-medjool", "datil"], "porcion_g": 24, "porcion": "1 unidad (Medjool)", "mg_100": 100, "rango": "24 mg por unidad", "fuente": "Harvard"},
+    {"nombre": "Remolacha", "ids": ["remolacha", "remolacha-hervida"], "porcion_g": 85, "porcion": "½ taza", "mg_100": 90, "rango": "~90", "fuente": "Harvard"},
+    {"nombre": "Poroto blanco o alubia", "ids": ["poroto-blanco-cocido", "poroto-blanco"], "porcion_g": 90, "porcion": "½ taza cocido", "mg_100": 85, "rango": "~85", "fuente": "Harvard"},
+    {"nombre": "Papa con cáscara", "ids": ["papa-horno", "papa-hervida"], "porcion_g": 170, "porcion": "1 mediana", "mg_100": 57, "rango": "~57", "fuente": "Harvard"},
+    {"nombre": "Pistacho", "ids": ["pistacho"], "porcion_g": 28, "porcion": "28 g", "mg_100": 50, "rango": "~50", "fuente": "Harvard"},
+    {"nombre": "Frambuesa", "ids": ["frambuesa"], "porcion_g": 123, "porcion": "1 taza", "mg_100": 39, "rango": "~39", "fuente": "Harvard"},
+    {"nombre": "Nuez", "ids": ["nuez"], "porcion_g": 28, "porcion": "28 g", "mg_100": 30, "rango": "~30", "fuente": "Harvard"},
+    {"nombre": "Chocolatada (cacao con leche)", "ids": [], "porcion_g": 240, "porcion": "1 taza", "mg_100": 27, "rango": "65 mg por taza", "fuente": "Harvard", "con_calcio": true},
+    {"nombre": "Naranja", "ids": ["naranja"], "porcion_g": 130, "porcion": "1 mediana", "mg_100": 22, "rango": "29 mg por unidad", "fuente": "Harvard"},
+    {"nombre": "Kiwi", "ids": ["kiwi"], "porcion_g": 75, "porcion": "1 unidad", "mg_100": 21, "rango": "16 mg por unidad", "fuente": "Harvard"},
+    {"nombre": "Lenteja", "ids": ["lenteja-cocida"], "porcion_g": 100, "porcion": "½ taza cocida", "mg_100": 8, "rango": "bajo", "fuente": "Harvard"},
+    {"nombre": "Té negro", "ids": ["te-negro"], "porcion_g": 240, "porcion": "1 taza", "mg_100": 6, "rango": "14 mg por taza", "fuente": "Harvard"},
+    {"nombre": "Garbanzo", "ids": ["garbanzo-cocido"], "porcion_g": 100, "porcion": "½ taza cocido", "mg_100": 5, "rango": "bajo", "fuente": "Harvard"}
+  ],
+  "bajos": "Kale, rúcula, lechuga, repollo, coliflor, brócoli, zapallito, pepino, cebolla, champiñones, arvejas, choclo, banana, frutilla, arándanos, durazno, carnes, pescados, huevos, lácteos, arroz blanco y café tienen muy poco oxalato (Harvard): son los reemplazos de la espinaca y la acelga.",
+  "lacteos": [
+    {"nombre": "Queso Port Salut alta proteína", "ficha": 152, "medida": "g", "mg_ca_100": 957, "nota": "1 feta = 30 g; trae grasa saturada"},
+    {"nombre": "Yogur Ser Pro+", "ficha": 160, "medida": "g", "mg_ca_100": 213, "nota": "1 pote = 175 g; el de menos grasa"},
+    {"nombre": "Leche Protein", "ficha": 124, "medida": "ml", "mg_ca_100": 149, "nota": "para una salsa blanca o con café"},
+    {"nombre": "Queso rallado (parmesano)", "ficha": null, "medida": "g", "mg_ca_100": 1184, "nota": "USDA; rinde mucho con poco, pero es salado"}
+  ]
+}

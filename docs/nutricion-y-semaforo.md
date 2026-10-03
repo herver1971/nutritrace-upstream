@@ -1091,3 +1091,48 @@ caminar más despacio durante más rato.
 
 *Generado a partir del catálogo de 572 ingredientes base. Última revisión de
 datos: `node scripts/build-base-foods.mjs`.*
+
+---
+
+<!-- oxalatos:inicio (generado por docs/oxalatos.py) -->
+## Oxalatos
+
+Tuvo un cálculo renal hace más de 10 años. El calcio en la **misma comida** liga el oxalato en el
+intestino y hace que se absorba **menos**: no se prohíbe nada, se acompaña. Valores aproximados;
+el detalle, las fuentes y la columna con quesos y leche están en `semaforo-nutricional.html#oxalatos`.
+
+| Alimento | Porción | mg/100 g | mg/porción | Nivel | Calcio en la comida |
+|---|---|---:|---:|---|---:|
+| Acelga cruda | 1 taza picada | 800 | 288 | muy alto | 200 mg |
+| Espinaca cruda | 1 taza | 750 | 225 | muy alto | 200 mg |
+| Ruibarbo | ½ taza cocido | 750 | 900 | muy alto | 450 mg |
+| Espinaca cocida | ½ taza | 650 | 585 | muy alto | 300 mg |
+| Hojas de remolacha | 1 taza cruda | 640 | 243 | muy alto | 200 mg |
+| Cacao en polvo | 1 cucharada colmada | 620 | 62 | alto | 200 mg |
+| Verdolaga | 1 taza | 620 | 248 | muy alto | 200 mg |
+| Acelga hervida | ½ taza | 500 | 440 | muy alto | 200 mg |
+| Almendras (y su manteca o harina) | 20 g (≈15 unidades) | 450 | 90 | alto | 200 mg |
+| Salvado de trigo | 2 cucharadas | 450 | 68 | alto | 200 mg |
+| Trigo sarraceno | 40 g crudo | 270 | 108 | muy alto | 200 mg |
+| Salvado de arroz | 2 cucharadas | 240 | 36 | alto | 200 mg |
+| Castaña de cajú | 20 g | 220 | 44 | alto | 200 mg |
+| Avellana | 20 g | 200 | 40 | alto | 200 mg |
+| Chocolate amargo 60-85 % | 2 cuadraditos | 150 | 30 | alto | 200 mg |
+| Batata | 1 chica | 126 | 189 | muy alto | 200 mg |
+| Maní (y su manteca) | un puñado (28 g) | 120 | 34 | alto | 200 mg |
+| Tahini y sésamo | 1 cucharada | 105 | 16 | moderado | 150 mg |
+| Dátil | 1 unidad (Medjool) | 100 | 24 | moderado | 150 mg |
+| Remolacha | ½ taza | 90 | 76 | alto | 200 mg |
+| Poroto blanco o alubia | ½ taza cocido | 85 | 76 | alto | 200 mg |
+| Papa con cáscara | 1 mediana | 57 | 97 | alto | 200 mg |
+| Pistacho | 28 g | 50 | 14 | moderado | 150 mg |
+| Frambuesa | 1 taza | 39 | 48 | alto | 200 mg |
+| Nuez | 28 g | 30 | 8 | bajo | — |
+| Chocolatada (cacao con leche) | 1 taza | 27 | 65 | alto | — |
+| Naranja | 1 mediana | 22 | 29 | alto | 200 mg |
+| Kiwi | 1 unidad | 21 | 16 | moderado | 150 mg |
+| Lenteja | ½ taza cocida | 8 | 8 | bajo | — |
+| Té negro | 1 taza | 6 | 14 | moderado | 150 mg |
+| Garbanzo | ½ taza cocido | 5 | 5 | bajo | — |
+
+<!-- oxalatos:fin -->
