@@ -33,7 +33,7 @@ export const SCOPE_DESCRIPTIONS = {
   'write:workouts':  "Post workouts into the token owner's wellness history. Used by LiftTrace federation.",
   'write:activity':  "Log manual activity entries into the diary Activity section. Used by external trackers and headless integrations (issue #154).",
   'write:wellness':  "Push daily wellness metrics (steps, active calories, sleep, resting HR) into the token owner's wellness history. Used by headless integrations such as Home Assistant.",
-  'mcp:read':        'MCP: read the diary, goals, daily totals, daily steps, profile (gender, date of birth), and the foods and meals catalog. Also unlocks the equivalent /api/v1 read routes when PUBLIC_API_ENABLED=1.',
+  'mcp:read':        'MCP: read the diary, goals, daily totals, daily steps, body composition, profile (gender, date of birth), and the foods and meals catalog. Also unlocks the equivalent /api/v1 read routes when PUBLIC_API_ENABLED=1.',
   'mcp:write':       'MCP: log food / water / meals / body stats (4 additive tools). Requires MCP_WRITE_ENABLED=1 on the server. Also unlocks the equivalent /api/v1 write routes when PUBLIC_API_WRITE_ENABLED=1.',
   'mcp:destroy':     'MCP: delete or edit diary entries, create catalog foods (3 tools). Requires MCP_DESTROY_ENABLED=1 AND every call to include confirm=true.',
 };
