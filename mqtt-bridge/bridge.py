@@ -353,22 +353,28 @@ def _dia_del_ciclo():
     except (requests.RequestException, ValueError, IndexError) as e:
         log.warning("no pude leer el historial de %s (%s): uso la fecha de hoy", HA_DAY_ENTITY, e)
         return hoy
-    inicio, previo, reinicios = None, None, 0
+    # Un ciclo no dura más de 32 h (el reinicio cae hasta las ~08:07). Una lectura más tardía sin
+    # caída es un reinicio que no se vio (22/10/2026: HA perdió del 21/10 05:44 al 22/10 15:52 y
+    # esto fechaba lo de hoy en el 20/10): es del día de la lectura, salvo de madrugada.
+    inicio, previo, reinicios, desfase = None, None, 0, timedelta(hours=3)
     for p in serie:
         try:
             v = float(p.get("state"))
             t = datetime.fromisoformat(p.get("last_changed") or p.get("last_updated")).astimezone()
         except (TypeError, ValueError):
             continue
-        if inicio is None or (previo is not None and previo > 0 and v < 0.9 * previo):
+        if inicio is not None and t - inicio > timedelta(hours=32):
+            inicio, desfase = t, timedelta(hours=-9)
+            reinicios += 1
+        elif inicio is None or (previo is not None and previo > 0 and v < 0.9 * previo):
             if inicio is not None:
                 reinicios += 1
-            inicio = t
+            inicio, desfase = t, timedelta(hours=3)
         previo = v
     if not reinicios:
         log.warning("%s no se reinició en 72 h: uso la fecha de hoy", HA_DAY_ENTITY)
         return hoy
-    return (inicio + timedelta(hours=3)).strftime("%Y-%m-%d")
+    return (inicio + desfase).strftime("%Y-%m-%d")
 
 
 def sondear_ha():
