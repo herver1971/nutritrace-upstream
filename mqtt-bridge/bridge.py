@@ -27,10 +27,28 @@ MQTT_HOST  = os.environ.get("MQTT_HOST", "127.0.0.1")
 MQTT_PORT  = int(os.environ.get("MQTT_PORT", "1883"))
 MQTT_USER  = os.environ.get("MQTT_USER") or None
 MQTT_PASS  = os.environ.get("MQTT_PASS") or None
-MQTT_TOPIC = os.environ.get("MQTT_TOPIC", "#")
+# openScale Sync publica en openScaleSync/<n>/measurements/<insert|update|last|history>,
+# con <n> el número de usuario de openScale. El comodín atiende a todos.
+MQTT_TOPIC = os.environ.get("MQTT_TOPIC", "openScaleSync/+/measurements/#")
 
 NT_URL   = os.environ.get("NT_URL", "http://127.0.0.1:3001").rstrip("/")
 NT_TOKEN = os.environ.get("NT_TOKEN", "")
+
+# Varios usuarios: {"<número de openScale>": "<token de API de NutriTrace>"}.
+# Cada balanza escribe en la cuenta cuyo token le toca. Un token vacío o que
+# empiece con PENDIENTE se trata como "todavía sin token": ese usuario se salta.
+# Compatibilidad: sin OPENSCALE_TOKENS, el usuario 1 usa NT_TOKEN (config vieja).
+try:
+    OPENSCALE_TOKENS = {str(k): str(v) for k, v in
+                        json.loads(os.environ.get("OPENSCALE_TOKENS") or "{}").items()}
+except (json.JSONDecodeError, AttributeError):
+    OPENSCALE_TOKENS = {}
+if not OPENSCALE_TOKENS and NT_TOKEN:
+    OPENSCALE_TOKENS = {"1": NT_TOKEN}
+# `history` trae todo el historial; se reprocesan solo las pesadas de los últimos
+# N días (cada día es un upsert, repetir no duplica). Sirve para recuperar lo que
+# el celular publicó mientras el puente estaba apagado.
+HISTORIA_DIAS = int(os.environ.get("HISTORIA_DIAS", "3"))
 SOURCE   = os.environ.get("SOURCE", "mqtt-balanza")
 
 # ── Home Assistant (opcional) ──────────────────────────────────────────────
@@ -129,6 +147,15 @@ def _plano(obj, prefijo=""):
     return salida
 
 
+def _iso(texto):
+    """Normaliza '2026-11-08T08:27-0300' (el formato de openScale) a ISO con ':' en el huso."""
+    t = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", texto.strip())
+    try:
+        return datetime.fromisoformat(t).isoformat()
+    except ValueError:
+        return texto
+
+
 def _marca_temporal(plano):
     """Saca la hora de la medición del payload; si no viene, usa la de ahora."""
     for k, v in plano.items():
@@ -142,7 +169,7 @@ def _marca_temporal(plano):
                 except (ValueError, OSError):
                     continue
             if isinstance(v, str) and re.search(r"\d{4}-\d{2}-\d{2}", v):
-                return v
+                return _iso(v)
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -282,23 +309,102 @@ def construir(payload):
     return cuerpo
 
 
-def enviar(cuerpo):
+def enviar(cuerpo, token=None, etiqueta=""):
+    """POST de una pesada. Devuelve True si NutriTrace la guardó (o en DRY_RUN)."""
     if DRY_RUN:
-        log.info("DRY_RUN, no se envía: %s", json.dumps(cuerpo, ensure_ascii=False))
-        return
+        log.info("DRY_RUN, no se envía [%s]: %s", etiqueta, json.dumps(cuerpo, ensure_ascii=False))
+        return True
     r = requests.post(
         f"{NT_URL}/api/v1/body-measurements",
         json=cuerpo,
-        headers={"Authorization": f"Bearer {NT_TOKEN}"},
+        headers={"Authorization": f"Bearer {token or NT_TOKEN}"},
         timeout=15,
     )
     if r.status_code == 201:
         d = r.json()
-        log.info("guardado %s: %s", d.get("date"), ", ".join(d.get("stored", [])))
-    elif r.status_code == 429:
+        log.info("guardado [%s] %s: %s", etiqueta, d.get("date"), ", ".join(d.get("stored", [])))
+        return True
+    if r.status_code == 429:
         log.warning("rate limit; reintento en %ss", r.headers.get("Retry-After", "?"))
     else:
-        log.error("NutriTrace respondió %s: %s", r.status_code, r.text[:300])
+        log.error("NutriTrace respondió %s [%s]: %s", r.status_code, etiqueta, r.text[:300])
+    return False
+
+
+# ── openScale Sync: varios usuarios ───────────────────────────────────────
+TOPIC_OPENSCALE = re.compile(r"^openScaleSync/(\d+)/measurements/(\w+)$")
+KINDS = ("insert", "update", "last", "history")
+_ya_enviado = {}        # (usuario, día) -> (instante de la pesada, cuerpo sin 'source')
+_sin_token = set()
+
+
+def _instante(cuerpo):
+    try:
+        return datetime.fromisoformat(cuerpo["measured_at"])
+    except (KeyError, ValueError, TypeError):
+        return None
+
+
+def _filas_historia(payload, dias):
+    """`history` ({fields, units, rows}) → lista de payloads tipo `last`, de más vieja a más nueva.
+
+    Cada fila se rearma como {date, values:[{name, unit, value}]} para pasar por el mismo
+    `construir()` (con la conversión de % a kg). Solo las pesadas de los últimos `dias` días.
+    """
+    campos, unidades, filas = payload.get("fields"), payload.get("units") or {}, payload.get("rows")
+    if not (isinstance(campos, list) and isinstance(filas, list) and "date" in campos):
+        return []
+    i_fecha = campos.index("date")
+    desde = (datetime.now(timezone.utc) - timedelta(days=dias)).timestamp() * 1000
+    salida = []
+    for fila in filas:
+        if not isinstance(fila, list) or len(fila) != len(campos) or not isinstance(fila[i_fecha], (int, float)):
+            continue
+        if fila[i_fecha] < desde:
+            continue
+        valores = [{"name": c.upper(), "unit": unidades.get(c, ""), "value": v}
+                   for c, v in zip(campos, fila) if c != "date" and isinstance(v, (int, float))]
+        salida.append((fila[i_fecha], {"date": fila[i_fecha], "values": valores}))
+    return [p for _, p in sorted(salida, key=lambda x: x[0])]
+
+
+def procesar_openscale(uid, kind, payload):
+    token = OPENSCALE_TOKENS.get(uid, "")
+    if not token or token.upper().startswith("PENDIENTE"):
+        if uid not in _sin_token:
+            _sin_token.add(uid)
+            log.warning("openScale %s no tiene token de NutriTrace en OPENSCALE_TOKENS: "
+                        "sus pesadas se ignoran hasta cargarlo y reiniciar el puente", uid)
+        return
+    if kind == "history":
+        payloads = _filas_historia(payload, HISTORIA_DIAS) if isinstance(payload, dict) else []
+    elif kind in ("insert", "update", "last"):
+        payloads = [payload]
+    else:
+        return
+    for p in payloads:
+        cuerpo = construir(p)
+        if not cuerpo:
+            log.debug("sin campos reconocidos (openScale %s/%s)", uid, kind)
+            continue
+        inst = _instante(cuerpo)
+        # Día local (TZ del contenedor) y firma por instante, no por texto: la misma pesada
+        # llega como "09:41-03:00" en last y como "12:41+00:00" en history.
+        dia = inst.astimezone().date().isoformat() if inst and inst.tzinfo else cuerpo["measured_at"][:10]
+        clave = (uid, dia)
+        firma = {k: v for k, v in cuerpo.items() if k not in ("source", "measured_at")}
+        firma["t"] = inst.timestamp() if inst and inst.tzinfo else cuerpo["measured_at"]
+        previo = _ya_enviado.get(clave)
+        if previo:
+            if previo[1] == firma:
+                continue                       # ya mandada (last + insert, o history repetido)
+            if inst and previo[0] and inst < previo[0]:
+                continue                       # una pesada más vieja no pisa a la última del día
+        try:
+            if enviar(cuerpo, token, f"openscale {uid}/{kind}"):
+                _ya_enviado[clave] = (inst, firma)
+        except requests.RequestException as e:
+            log.error("no se pudo enviar (openScale %s): %s", uid, e)
 
 
 # ── Home Assistant → /api/v1/wellness ─────────────────────────────────────
@@ -428,7 +534,8 @@ def bucle_ha():
 
 def on_connect(client, _u, _f, rc, *_):
     if rc == 0:
-        log.info("conectado a %s:%s, suscribiendo a %r", MQTT_HOST, MQTT_PORT, MQTT_TOPIC)
+        log.info("conectado a %s:%s, suscribiendo a %r (usuarios con token: %s)", MQTT_HOST, MQTT_PORT,
+                 MQTT_TOPIC, ", ".join(sorted(OPENSCALE_TOKENS)) or "ninguno")
         client.subscribe(MQTT_TOPIC)
     else:
         log.error("fallo de conexión MQTT rc=%s (5 = credenciales rechazadas)", rc)
@@ -447,12 +554,16 @@ def on_message(_c, _u, msg):
         except ValueError:
             log.debug("payload ignorado en %s: %s", msg.topic, texto[:80])
             return
+    m = TOPIC_OPENSCALE.match(msg.topic)
+    if m:
+        procesar_openscale(m.group(1), m.group(2), payload)
+        return
     cuerpo = construir(payload)
     if not cuerpo:
         log.debug("sin campos reconocidos en %s", msg.topic)
         return
     try:
-        enviar(cuerpo)
+        enviar(cuerpo, NT_TOKEN, msg.topic)
     except requests.RequestException as e:
         log.error("no se pudo enviar: %s", e)
 
@@ -463,8 +574,8 @@ def main():
         format="%(asctime)s %(levelname)-7s %(message)s",
         datefmt="%H:%M:%S",
     )
-    if MODE == "run" and not NT_TOKEN and not DRY_RUN:
-        log.error("falta NT_TOKEN. Creá el token en Ajustes → API tokens "
+    if MODE == "run" and not (NT_TOKEN or OPENSCALE_TOKENS) and not DRY_RUN:
+        log.error("falta OPENSCALE_TOKENS (o NT_TOKEN). Creá el token en Ajustes → API tokens "
                   "con el scope write:body-measurements.")
         sys.exit(1)
     if MODE == "discover":
@@ -474,6 +585,8 @@ def main():
         log.info("sondeo de Home Assistant cada %ss: %s",
                  HA_POLL_SEC, ", ".join(sorted(HA_METRICS)))
         threading.Thread(target=bucle_ha, daemon=True).start()
+    elif not HA_URL:
+        log.info("Home Assistant apagado (HA_URL vacío): no se sondea.")
     elif HA_URL or HA_TOKEN or HA_METRICS:
         log.warning("Home Assistant a medio configurar: hacen falta HA_URL, "
                     "HA_TOKEN y HA_METRICS. No se sondea.")

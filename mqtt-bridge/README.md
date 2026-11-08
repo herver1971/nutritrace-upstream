@@ -30,6 +30,17 @@ Además admite **masa muscular y masa ósea**, que la carga manual no tiene.
 5. Probar el mapeo sin escribir: `MODE=run` + `DRY_RUN=1`.
 6. Quitar `DRY_RUN` y levantar: `docker compose up -d mqtt-bridge`.
 
+## Varios usuarios (08/11/2026)
+
+El puente atiende `openScaleSync/<n>/measurements/{insert,update,last,history}` de todos los
+usuarios de openScale a la vez (`MQTT_TOPIC=openScaleSync/+/measurements/#`). El mapa
+`OPENSCALE_TOKENS={"1":"…","2":"…"}` dice a qué cuenta de NutriTrace va cada número; un usuario
+sin token (o con uno que empiece con `PENDIENTE`) se ignora y se avisa una vez en el registro.
+`history` trae todo el historial: solo se reprocesan los últimos `HISTORIA_DIAS` (3) días, de la
+más vieja a la más nueva. La misma pesada llega por `last` e `insert` (y `history`): se manda una
+sola vez, y una pesada más vieja no pisa a la última del día. Con `HA_URL` vacío no se sondea
+Home Assistant.
+
 ## Campos
 
 Nativos (NutriTrace los dibuja): `weight`, `body_fat`, `muscle_mass`,
