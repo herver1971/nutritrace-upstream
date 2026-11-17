@@ -18,6 +18,7 @@ import { isServerOnlyKey } from '../lib/server-only-keys.js';
 import { localizeImage, isExternalUrl } from '../lib/image-localizer.js';
 import { mirrorWeightToBodyStats } from '../lib/wellness-mirror.js';
 import { cleanCreateKey, findByCreateKey, setCreateKey } from '../lib/create-keys.js';
+import { findCatalogDuplicate } from '../lib/catalog-dup.js';
 import { clientClock, parseUtc, pushWins as clockPushWins, editStamp, resolveNote } from '../lib/sync-clock.js';
 
 // #199 (@tellis82): the POST /api/foods and POST /api/meals routes
@@ -326,6 +327,11 @@ router.post('/push', wrap(async (req, res) => {
         const fKey = cleanCreateKey(f.client_key);
         const fMade = findByCreateKey('foods', u, fKey);
         if (fMade) { result.foods.push({ client_id: f.client_id, server_id: fMade.id }); continue; }
+        // A catalogue food the account already owns (same fdcId_ barcode, name
+        // and calories) is that row, not a new one: the copy made offline had
+        // no photo and no CookTrace link.
+        const fDup = findCatalogDuplicate(db, u, f);
+        if (fDup) { result.foods.push({ client_id: f.client_id, server_id: fDup.id }); continue; }
         const vis = resolveNewItemVisibility(u);
         const r = db.prepare(
           `INSERT INTO foods (user_id, name, brand, nutrition, portion, unit, img_url, notes, category, barcode, favorite, usage_count, last_used_at, nutrition_basis, alt_units, density_g_ml, source_app, source_external_id, source_url, visibility, updated_at)
